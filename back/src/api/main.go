@@ -3,41 +3,53 @@ package main
 import (
 	"net/http"
 
+	"./db"
+
 	"github.com/gin-gonic/gin"
 )
 
-var secrets = gin.H{
-	"foo":     gin.H{"email": "foo@bar.com", "phone": "123"},
-	"austion": gin.H{"email": "austin@example.com", "phone": "666"},
-	"nyao":    gin.H{"email": "nyao@mails.com", "phone": "54232"},
-}
+// var secrets = gin.H{
+// 	"foo":     gin.H{"email": "foo@bar.com", "phone": "123"},
+// 	"austion": gin.H{"email": "austin@example.com", "phone": "666"},
+// 	"nyao":    gin.H{"email": "nyao@mails.com", "phone": "54232"},
+// }
 
 func main() {
 	r := gin.Default()
 	r.LoadHTMLGlob("../../../front/templates/*")
 
+	db.Init()
+
+	// todo一覧
 	r.GET("", func(c *gin.Context) {
 		animal := "neco"
-		c.HTML(http.StatusOK, "index.html", gin.H{
+		lists := db.GetAll()
+		// c.HTML(http.StatusOK, "index.html", gin.H{
+		// 	"lists":  lists,
+		// 	"animal": animal,
+		// })
+		c.JSON(http.StatusOK, gin.H{
+			"lists":  lists,
 			"animal": animal,
 		})
 	})
 
-	auth := r.Group("", gin.BasicAuth(gin.Accounts{
-		"foo":    "bar",
-		"austin": "1234",
-		"lena":   "hello2",
-		"manu":   "4321",
-	}))
+	// todo登録
 
-	auth.GET("/secrets", func(c *gin.Context) {
-		user := c.MustGet(gin.AuthUserKey).(string)
-		if secret, ok := secrets[user]; ok {
-			c.JSON(http.StatusOK, gin.H{"user": user, "secret": secret})
-		} else {
-			c.JSON(http.StatusOK, gin.H{"user": user, "secret": "NONE"})
-		}
-	})
+	// r.GET("/:user", func(c *gin.Context) {
+	// 	user := c.MustGet(gin.AuthUserKey).(string)
+	// 	if secret, ok := secrets[user]; ok {
+	// 		c.HTML(http.StatusOK, "user_top.html", gin.H{
+	// 			"user":  user,
+	// 			"email": secret,
+	// 		})
+	// 	} else {
+	// 		c.HTML(http.StatusOK, "user_top.html", gin.H{
+	// 			"user":  user,
+	// 			"email": "NONE",
+	// 		})
+	// 	}
+	// })
 
 	r.Run()
 

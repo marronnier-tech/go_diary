@@ -7,6 +7,14 @@
 
 <body>
     hello, {{.animal}} !
+
+    <main>
+        {{range.lists}}
+        <li>
+            {{.Content}}
+        </li>
+        {{end}}
+    </main>
 </body>
 
 </html>
