@@ -4,49 +4,53 @@ import (
 	"fmt"
 	"time"
 
-	_ "github.com/go-sql-driver/mysql"
-	"github.com/jinzhu/gorm"
+	"gorm.io/driver/mysql"
+	"gorm.io/gorm"
 )
 
 const (
-	DB         = "mysql"
-	DBuser     = "tocchy"
-	DBpass     = "remon109166"
-	DBProtocol = "tcp(127.0.0.1:3306)"
-	DBname     = "daily_todo"
+	DBuser      = "tocchy"
+	DBpass      = "remon109166"
+	DBProtocol  = "tcp(127.0.0.1:3306)"
+	DBname      = "daily_todo"
+	DBchar      = "utf8mb4"
+	DBparseTime = "True"
+	DBloc       = "Local"
 )
 
 type ToDoList struct {
-	ID        int `gorm:"primary_key"`
-	UserID    int
-	Content   string
-	CreatedAt time.Time
-	UpdatedAt time.Time
+	ID        int       `gorm:"column:id"`
+	UserID    int       `gorm:"column:user_id"`
+	Content   string    `gorm:"column:content"`
+	CreatedAt time.Time `gorm:"column:created_at"`
+	UpdatedAt time.Time `gorm:"column:updated_at"`
 }
 
-func gormConnect() *gorm.DB {
-	connect := fmt.Sprintf("%s:%s@%s/%s?parseTime=true", DBuser, DBpass, DBProtocol, DBname)
-	db, err := gorm.Open(DB, connect)
+func DBConnect() *gorm.DB {
+	connect := fmt.Sprintf(
+		"%s:%s@%s/%s?charset=%s&parseTime=%s&loc=%s",
+		DBuser, DBpass, DBProtocol, DBname, DBchar, DBparseTime, DBloc,
+	)
+	sqlDB, err := gorm.Open(mysql.Open(connect), &gorm.Config{})
 
 	if err != nil {
 		panic(err.Error())
 	}
-	return db
+	return sqlDB
 }
 
 func Init() {
-	con := gormConnect()
+	db := DBConnect()
 
-	defer con.Close()
-
-	con.AutoMigrate(&ToDoList{})
+	db.AutoMigrate(&ToDoList{})
 
 }
 
 func GetAll() []ToDoList {
-	con := gormConnect()
+	db := DBConnect()
 
 	var todo []ToDoList
-	con.Find(&todo)
+	db.Find(&todo)
+
 	return todo
 }

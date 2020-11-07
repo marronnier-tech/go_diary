@@ -15,10 +15,11 @@ import (
 // }
 
 func main() {
-	r := gin.Default()
-	r.LoadHTMLGlob("../../../front/templates/*")
 
 	db.Init()
+
+	r := gin.Default()
+	r.LoadHTMLGlob("../../../front/templates/*")
 
 	// todo一覧
 	r.GET("", func(c *gin.Context) {
