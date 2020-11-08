@@ -13,7 +13,7 @@ import (
 const (
 	DB          = "mysql"
 	DBuser      = "tocchy"
-	DBpass      = "remon109166"
+	DBpass      = "******"
 	DBProtocol  = "tcp(127.0.0.1:3306)"
 	DBname      = "daily_todo"
 	DBchar      = "utf8mb4"
