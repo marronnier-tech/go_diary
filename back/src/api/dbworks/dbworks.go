@@ -1,16 +1,19 @@
-package db
+package dbworks
 
 import (
 	"fmt"
 	"time"
+
+	"database/sql"
 
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 )
 
 const (
+	DB          = "mysql"
 	DBuser      = "tocchy"
-	DBpass      = "*******"
+	DBpass      = "remon109166"
 	DBProtocol  = "tcp(127.0.0.1:3306)"
 	DBname      = "daily_todo"
 	DBchar      = "utf8mb4"
@@ -31,23 +34,25 @@ func DBConnect() *gorm.DB {
 		"%s:%s@%s/%s?charset=%s&parseTime=%s&loc=%s",
 		DBuser, DBpass, DBProtocol, DBname, DBchar, DBparseTime, DBloc,
 	)
-	sqlDB, err := gorm.Open(mysql.Open(connect), &gorm.Config{})
+
+	sqlDB, err := sql.Open(DB, connect)
 
 	if err != nil {
 		panic(err.Error())
 	}
-	return sqlDB
+
+	gormDB, err := gorm.Open(mysql.New(mysql.Config{
+		Conn: sqlDB,
+	}), &gorm.Config{})
+
+	if err != nil {
+		panic(err.Error())
+	}
+
+	return gormDB
 }
 
-func Init() {
-	db := DBConnect()
-
-	db.AutoMigrate(&ToDoList{})
-
-}
-
-func GetAll() []ToDoList {
-	db := DBConnect()
+func GetAll(db *gorm.DB) []ToDoList {
 
 	var todo []ToDoList
 	db.Find(&todo)
