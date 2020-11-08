@@ -29,7 +29,7 @@ type ToDoList struct {
 	UpdatedAt time.Time `gorm:"column:updated_at"`
 }
 
-func DBConnect() *gorm.DB {
+func DBConnect() (*sql.DB, *gorm.DB) {
 	connect := fmt.Sprintf(
 		"%s:%s@%s/%s?charset=%s&parseTime=%s&loc=%s",
 		DBuser, DBpass, DBProtocol, DBname, DBchar, DBparseTime, DBloc,
@@ -49,7 +49,7 @@ func DBConnect() *gorm.DB {
 		panic(err.Error())
 	}
 
-	return gormDB
+	return sqlDB, gormDB
 }
 
 func GetAll(db *gorm.DB) []ToDoList {

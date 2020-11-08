@@ -17,7 +17,7 @@ import (
 
 func main() {
 
-	db := dbworks.DBConnect()
+	sqldb, gormdb := dbworks.DBConnect()
 
 	r := gin.Default()
 	r.LoadHTMLGlob("../../../front/templates/*")
@@ -25,7 +25,7 @@ func main() {
 	// todo一覧
 	r.GET("", func(c *gin.Context) {
 		animal := "neco"
-		lists := dbworks.GetAll(db)
+		lists := dbworks.GetAll(gormdb)
 		// c.HTML(http.StatusOK, "index.html", gin.H{
 		// 	"lists":  lists,
 		// 	"animal": animal,
@@ -55,5 +55,7 @@ func main() {
 	// })
 
 	r.Run()
+
+	sqldb.Close()
 
 }
