@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"net/http"
 
-	"./dbworks"
+	"./infra"
 
 	"github.com/gin-gonic/gin"
 )
@@ -17,7 +17,7 @@ import (
 
 func main() {
 
-	sqldb, gormdb := dbworks.DBConnect()
+	sqldb, gormdb := infra.DBConnect()
 
 	r := gin.Default()
 	r.LoadHTMLGlob("../../../front/templates/*")
@@ -25,7 +25,7 @@ func main() {
 	// todo一覧
 	r.GET("", func(c *gin.Context) {
 		animal := "neco"
-		lists := dbworks.GetAll(gormdb)
+		lists := infra.GetAll(gormdb)
 		// c.HTML(http.StatusOK, "index.html", gin.H{
 		// 	"lists":  lists,
 		// 	"animal": animal,

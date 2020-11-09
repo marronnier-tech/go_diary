@@ -1,4 +1,4 @@
-package dbworks
+package infra
 
 import (
 	"./model"
