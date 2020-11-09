@@ -14,7 +14,7 @@ import (
 func DBConnect() (*sql.DB, *gorm.DB) {
 	connect := fmt.Sprintf(
 		"%s:%s@%s/%s?charset=%s&parseTime=%s&loc=%s",
-		def.User, def.Pass, def.Protocol, def.Database, def.Char, def.ParseTime, def.Loc,
+		def.GetEnvUser(), def.GetEnvPass(), def.Protocol, def.Database, def.Char, def.ParseTime, def.Loc,
 	)
 
 	sqlDB, err := sql.Open(def.DBAdmin, connect)
