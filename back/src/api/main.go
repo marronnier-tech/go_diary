@@ -1,10 +1,11 @@
 package main
 
 import (
-	"fmt"
-	"net/http"
+	stc "strconv"
+	"time"
 
 	"./infra"
+	"./infra/model"
 
 	"github.com/gin-gonic/gin"
 )
@@ -30,11 +31,44 @@ func main() {
 		// 	"lists":  lists,
 		// 	"animal": animal,
 		// })
-		fmt.Println(lists)
-		c.JSON(http.StatusOK, gin.H{
+		c.JSON(200, gin.H{
 			"lists":  lists,
 			"animal": animal,
 		})
+	})
+
+	r.POST("/list", func(c *gin.Context) {
+
+		id, _ := stc.Atoi(c.PostForm("id"))
+		user, _ := stc.Atoi(c.PostForm("user"))
+		content := c.PostForm("content")
+
+		data := model.ToDoList{
+			ID:        id,
+			UserID:    user,
+			Content:   content,
+			CreatedAt: time.Now(),
+			UpdatedAt: time.Now(),
+		}
+
+		gormdb.Create(&data)
+		c.JSON(201, nil)
+
+	})
+
+	r.DELETE("/list", func(c *gin.Context) {
+		id, _ := stc.Atoi(c.PostForm("id"))
+		data := model.ToDoList{}
+		gormdb.Delete(&data, id)
+
+		c.JSON(201, nil)
+	})
+
+	r.GET("/user", func(c *gin.Context) {
+		userlist := infra.GetAllUsers(gormdb)
+
+		c.JSON(200, userlist)
+
 	})
 
 	// todo登録

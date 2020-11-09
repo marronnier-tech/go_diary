@@ -14,9 +14,9 @@ const (
 )
 
 func GetEnvUser() string {
-	return os.Getenv("DBuser")
+	return os.Getenv("user")
 }
 
 func GetEnvPass() string {
-	return os.Getenv("DBpass")
+	return os.Getenv("pass")
 }
