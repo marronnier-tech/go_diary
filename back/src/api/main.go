@@ -1,13 +1,7 @@
 package main
 
 import (
-	"crypto/aes"
-	"crypto/cipher"
-	"crypto/rand"
-	"encoding/hex"
 	"fmt"
-	"io"
-	"os"
 	stc "strconv"
 	"time"
 
@@ -15,14 +9,15 @@ import (
 	"./infra/model"
 
 	"github.com/gin-gonic/gin"
+	"golang.org/x/crypto/bcrypt"
 	_ "gorm.io/gorm"
 )
 
-var secrets = gin.H{
-	"foo":     gin.H{"email": "foo@bar.com", "phone": "123"},
-	"austion": gin.H{"email": "austin@example.com", "phone": "666"},
-	"nyao":    gin.H{"email": "nyao@mails.com", "phone": "54232"},
-}
+// var secrets = gin.H{
+// 	"foo":     gin.H{"email": "foo@bar.com", "phone": "123"},
+// 	"austion": gin.H{"email": "austin@example.com", "phone": "666"},
+// 	"nyao":    gin.H{"email": "nyao@mails.com", "phone": "54232"},
+// }
 
 func main() {
 
@@ -101,6 +96,29 @@ func main() {
 		}
 	})
 
+	r.GET("/login", func(c *gin.Context) {
+		var userauth model.User
+
+		var hashStr []byte
+		inputuser := c.PostForm("user")
+		inputpass := c.PostForm("password")
+
+		hashStr = gormdb.Select("pass").Where("name = ?", inputuser).Find(&userauth)
+
+		if hashStr == nil {
+			c.JSON(500, gin.H{"err": "you are not a user."})
+		}
+
+		err := bcrypt.CompareHashAndPassword([]byte(hashStr), []byte(inputpass))
+
+		if err != nil {
+			c.JSON(500, gin.H{"err": err})
+		}
+
+		c.JSON(200, gin.H{"user": inputuser, "status": "success"})
+
+	})
+
 	r.GET("/success", func(c *gin.Context) {
 		c.JSON(201, gin.H{"message": "success!"})
 	})
@@ -146,55 +164,6 @@ func main() {
 
 // ここからあとで分ける
 
-func Encrypt(key, pass []byte) ([]byte, error) {
-	blockCipher, err := aes.NewCipher(key)
-	if err != nil {
-		return nil, err
-	}
-
-	gcm, err := cipher.NewGCM(blockCipher)
-	if err != nil {
-		return nil, err
-	}
-
-	nonce := make([]byte, gcm.NonceSize())
-	if _, err = rand.Read(nonce); err != nil {
-		return nil, err
-	}
-	ciphertext := gcm.Seal(nonce, nonce, pass, nil)
-
-	return ciphertext, nil
-
-}
-
-func readKey() ([]byte, error) {
-	key := make([]byte, 32)
-	_, err := rand.Read(key)
-	if err != nil {
-		return nil, err
-	}
-	file, err := os.Open("key.txt")
-	if err != nil {
-		return nil, err
-	}
-	defer file.Close()
-
-	for {
-		read, err := file.Read(key)
-		if read == 0 {
-			break
-		}
-		if err == io.EOF {
-			break
-		}
-		if err != nil {
-			return nil, err
-		}
-	}
-
-	return key, nil
-}
-
 func signUp(id string, user string, mailaddress string, pass string) (err error) {
 
 	sqldb, gormdb := infra.DBConnect()
@@ -202,26 +171,18 @@ func signUp(id string, user string, mailaddress string, pass string) (err error)
 
 	newid, _ := stc.Atoi(id)
 
-	passbyte := []byte(pass)
+	hash, err := bcrypt.GenerateFromPassword([]byte(pass), bcrypt.DefaultCost)
 
-	key, err := readKey()
 	if err != nil {
 		return err
 	}
-
-	cipherpass, err := Encrypt(key, passbyte)
-	if err != nil {
-		return err
-	}
-
-	fmt.Printf("ciphertext: %s\n", hex.EncodeToString(cipherpass))
-	//passEncrypt, _ := crypto.PasswordEncrypt(pass)
+	fmt.Printf("user:%s, pass:%s", user, pass)
 
 	newuser := model.User{
 		ID:          newid,
 		Name:        user,
 		MailAddress: mailaddress,
-		Pass:        cipherpass,
+		Pass:        hash,
 		CreatedAt:   time.Now(),
 		UpdatedAt:   time.Now(),
 	}
@@ -233,4 +194,12 @@ func signUp(id string, user string, mailaddress string, pass string) (err error)
 	}
 
 	return nil
+}
+
+func getUser(username string) model.User {
+	sqldb, gormdb := infra.DBConnect()
+	defer sqldb.Close()
+	var user model.User
+	gormdb.First(&user, "user = ", username)
+	return user
 }
