@@ -69,16 +69,16 @@ GET /{?page,limit,order}
 | key | type | content | 
 | -- | -- | -- | -- |
 | TodoArray | array | 全todoのリスト| 
-| TodoObj[TodoArray] | object | todo内容 | |
-| TodoID{TodoObj} | numeric | todoのID | |
-| Content{TodoObj} | string | todoの詳細 | |
+| TodoObj[TodoArray] | object | todo内容 |
+| TodoID{TodoObj} | numeric | todoのID |
+| Content{TodoObj} | string | todoの詳細 |
 | CreatedAt{TodoObj} | numeric | todo登録日 | 
-| LastAchieved{TodoObj} | numeric | 最終達成日（n日前） | |
-| User[TodoArray] | list | 所有user情報| |
-| UserId{User} | numeric | 所有userのID | |
-| UserName{User} | string | 所有ユーザー名 | |
-| UserHN{User} | string | 所有ユーザーのハンドルネーム | |
-| UserImg{User} | string | 所有ユーザーのアイコン；非優先 | |
+| LastAchieved{TodoObj} | numeric | 最終達成日（n日前） |
+| User[TodoArray] | list | 所有user情報|
+| UserId{User} | numeric | 所有userのID |
+| UserName{User} | string | 所有ユーザー名 |
+| UserHN{User} | string | 所有ユーザーのハンドルネーム |
+| UserImg{User} | string | 所有ユーザーのアイコン；非優先 |
 | limit | numeric | ページ内表示Todo数 |
 | page | numeric | ページ数 | 
 | order | string | 順序 | 
@@ -412,15 +412,15 @@ GET /goal{?page,limit}
 | key | type | content | 
 | -- | -- | -- | -- |
 | TodoArray | array | 全ゴールリスト| 
-| TodoObj[TodoArray] | object | ゴール内容 | |
-| TodoID{TodoObj} | numeric | ゴールしたtodoのID | |
-| Content{TodoObj} | string | ゴールしたtodoの詳細 | |
-| GoaledAt{TodoObj} | numeric | ゴール日 | |
-| User[TodoArray] | list | 所有user情報| |
-| UserId{User} | numeric | 所有userのID | |
-| UserName{User} | string | 所有ユーザーの名前 | |
+| TodoObj[TodoArray] | object | ゴール内容 |
+| TodoID{TodoObj} | numeric | ゴールしたtodoのID |
+| Content{TodoObj} | string | ゴールしたtodoの詳細 |
+| GoaledAt{TodoObj} | numeric | ゴール日 |
+| User[TodoArray] | list | 所有user情報|
+| UserId{User} | numeric | 所有userのID |
+| UserName{User} | string | 所有ユーザーの名前 |
 | UserHN{User} | string | 所有ユーザーのハンドルネーム |
-| UserImg{User} | string | 所有ユーザーのアイコン；非優先 | |
+| UserImg{User} | string | 所有ユーザーのアイコン；非優先 |
 | limit | numeric | ページ内表示Todo数 |
 | page | numeric | ページ数 | 
 
@@ -770,10 +770,10 @@ GET /:name/profile
 ### レスポンスパラメータ
 | key | type | content | 
 | -- | -- | -- | -- |
-| ID | numeric | ユーザーID | |
-| Name | string | ユーザーの名前 | |
+| ID | numeric | ユーザーID |
+| Name | string | ユーザーの名前 |
 | HN | string | ユーザーのハンドルネーム |
-| Img | string | ユーザーのアイコン；非優先 | |
+| Img | string | ユーザーのアイコン；非優先 |
 | FinalGoal | string | ユーザーの目標 |
 | Profile | string | ユーザーのプロフィール（自由記述） |
 | Twitter | string | ユーザーのTwitterアカウント |
