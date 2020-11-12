@@ -53,7 +53,7 @@ GET /{?page,limit,order}
 - 全ユーザーのTODO一覧を表示する。
 - limitで各ページ上限、pageでページ数を指定できる。
 デフォルトはlimit:100、page:1。クエリパラメータで取得する。
-- orderは最終達成日順（last_Achieved）、達成回数順（Achieved_times）、最近設定された順（set）にできる。デフォルトは最終達成日順。
+- orderは最終達成日順（last_achieved）、達成回数順（achieved_times）、最近設定された順（set）にできる。デフォルトは最終達成日順。
 - ゴールは含まない
 
 
@@ -159,11 +159,11 @@ GET /:name{?order}
 | UserName{User} | string | ユーザー名 |
 | UserHN{User} | string | ユーザーのハンドルネーム |
 | UserImg{User} | string | ユーザー画像 |
-| TodoArray | object | todo内容 |
-| TodoID{TodoArray} | numeric | todoのID |
-| Content{TodoArray} | string | todoの詳細 |
-| CreatedAt{TodoArray} | numeric | todo登録日 |
-| LastAchieved{TodoArray} | numeric | 最終達成日（n日前） | 
+| TodoArray | Array | todo内容 |
+| TodoID[TodoArray] | numeric | todoのID |
+| Content[TodoArray] | string | todoの詳細 |
+| CreatedAt[TodoArray] | numeric | todo登録日 |
+| LastAchieved[TodoArray] | numeric | 最終達成日（n日前） | 
 
 ### 正常レスポンス
 ```json
