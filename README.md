@@ -359,7 +359,7 @@ PATCH /todo/:id
 
 ### レスポンスパラメータ
 | key | type | content | 
-| ---- | ---- | ---- | ---- |
+| ---- | ---- | ---- |
 | TodoID | numeric | TodoのID |
 | Goaled | boolean | Todoがゴールか |
 | GoaledAt | datetime | ゴールした日 |
