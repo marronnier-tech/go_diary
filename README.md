@@ -40,7 +40,7 @@
 
 ※ゴール……完全に自分の達成したい目標に達成し、そのTODOをやる必要がなくなったこと
 
----
+-----
 
 # APIリクエスト・レスポンス詳細
 
@@ -59,7 +59,7 @@ GET /{?page,limit,order}
 
 ### リクエストパラメータ
 | key | type | content | null |
-| -- | -- | -- | -- | -- |
+| ---- | ---- | ---- | ---- | ---- |
 | page | numeric | ページ数 |  o |
 | limit | numeric | ページ内表示Todo数 | o |
 | order | string | 順序 |  o |
@@ -67,7 +67,7 @@ GET /{?page,limit,order}
 
 ### レスポンスパラメータ
 | key | type | content | 
-| -- | -- | -- | -- |
+| ---- | ---- | ---- | ---- |
 | TodoArray | array | 全todoのリスト| 
 | TodoObj[TodoArray] | object | todo内容 |
 | TodoID{TodoObj} | numeric | todoのID |
@@ -136,7 +136,7 @@ GET /:name{?order}
 
 ### リクエストパラメータ
 | key | type | content | null |
-| -- | -- | -- | -- |
+| ---- | ---- | ---- | ---- |
 | name | string | ユーザー名 | x |
 | order | string | 表示順 | o |
 
@@ -149,7 +149,7 @@ GET /:name{?order}
 
 ### レスポンスパラメータ
 | key | type | content | 
-| -- | -- | -- | -- |
+| ---- | ---- | ---- | ---- |
 | User | list | ユーザー情報 | 
 | UserID{User} | numeric | ユーザーID | 
 | UserName{User} | string | ユーザー名 |
@@ -208,7 +208,7 @@ POST /todo
 
 ### リクエストパラメータ
 | key | type | content | null |
-| -- | -- | -- | -- |
+| ---- | ---- | ---- | ---- |
 | Content | string | Todoの詳細 | x |
 
 ### 入力例
@@ -220,7 +220,7 @@ POST /todo
 
 ### レスポンスパラメータ
 | key | type | content | 
-| -- | -- | -- | -- |
+| ---- | ---- | ---- | ---- |
 | User | list | ユーザー情報 | 
 | UserID{User} | numeric | ユーザーID | 
 | UserName{User} | string | ユーザー名 |
@@ -278,7 +278,7 @@ DELETE /todo/:id
 
 ### リクエストパラメータ
 | key | type | content |  null |
-| -- | -- | -- | -- |
+| ---- | ---- | ---- | ---- |
 | TodoID | numeric | TodoのID | x |
 
 ### 入力例
@@ -292,7 +292,7 @@ DELETE /todo/:id
 
 ### レスポンスパラメータ
 | key | type | content | 
-| -- | -- | -- | -- |
+| ---- | ---- | ---- | ---- |
 | TodoID | numeric | TodoのID |
 | DeletedTodo | boolean | Todoが削除されたか |
 
@@ -338,7 +338,7 @@ PATCH /todo/:id
 
 ### リクエストパラメータ
 | key | type | content |  null |
-| -- | -- | -- | -- |
+| ---- | ---- | ---- | ---- |
 | id | int | TodoのID | x |
 
 ### 入力例
@@ -350,7 +350,7 @@ PATCH /todo/:id
 
 ### レスポンスパラメータ
 | key | type | content | 
-| -- | -- | -- | -- |
+| ---- | ---- | ---- | ---- |
 | TodoID | numeric | TodoのID |
 | Goaled | boolean | Todoがゴールか |
 | GoaledAt | datetime | ゴールした日 |
@@ -403,14 +403,14 @@ GET /goal{?page,limit}
 
 ### リクエストパラメータ
 | key | type | content | null |
-| -- | -- | -- | -- | -- |
+| ---- | ---- | ---- | ---- | ---- |
 | page | numeric | ページ数 |  o |
 | limit | numeric | ページ内表示Todo数 | o |
 
 
 ### レスポンスパラメータ
 | key | type | content | 
-| -- | -- | -- | -- |
+| ---- | ---- | ---- | ---- |
 | TodoArray | array | 全ゴールリスト| 
 | TodoObj[TodoArray] | object | ゴール内容 |
 | TodoID{TodoObj} | numeric | ゴールしたtodoのID |
@@ -476,7 +476,7 @@ GET /:name/goal
 
 ### リクエストパラメータ
 | key | type | content | null |
-| -- | -- | -- | -- |
+| ---- | ---- | ---- | ---- |
 | name | string | ユーザー名 | x |
 
 ### 入力例
@@ -488,7 +488,7 @@ GET /:name/goal
 
 ### レスポンスパラメータ
 | key | type | content | 
-| -- | -- | -- | -- |
+| ---- | ---- | ---- | ---- |
 | User | list | ユーザー情報 | 
 | UserID{User} | numeric | ユーザーID | 
 | UserName{User} | string | ユーザー名 |
@@ -532,7 +532,7 @@ POST /:todoid
 
 ### リクエストパラメータ
 | key | type | content | null |
-| -- | -- | -- | -- |
+| ---- | ---- | ---- | ---- |
 | todoid | string | TodoのID | x |
 
 ### 入力例
@@ -544,7 +544,7 @@ POST /:todoid
 
 ### レスポンスパラメータ
 | key | type | content | 
-| -- | -- | -- | -- |
+| ---- | ---- | ---- | ---- |
 | TodoId | numeric | todoのID |
 | TodayAchieved | boolean | 本日達成しているか |
 
@@ -588,7 +588,7 @@ POST /:todoid
 
 ### リクエストパラメータ
 | key | type | content | null |
-| -- | -- | -- | -- |
+| ---- | ---- | ---- | ---- |
 | todoid | string | TodoのID | x |
 
 ### 入力例
@@ -600,7 +600,7 @@ POST /:todoid
 
 ### レスポンスパラメータ
 | key | type | content | 
-| -- | -- | -- | -- |
+| ---- | ---- | ---- | ---- |
 | TodoId | numeric | todoのID |
 | TodayAchieved | boolean | 本日達成しているか |
 
@@ -648,7 +648,7 @@ GET /:name/
 
 ### リクエストパラメータ
 | key | type | content | null |
-| -- | -- | -- | -- |
+| ---- | ---- | ---- | ---- |
 | name | string | ユーザー名 | x |
 
 
@@ -661,7 +661,7 @@ GET /:name/
 
 ### レスポンスパラメータ
 | key | type | content | 
-| -- | -- | -- | -- |
+| ---- | ---- | ---- | ---- |
 | User | list | ユーザー情報 | 
 | UserID{User} | numeric | ユーザーID | 
 | UserName{User} | string | ユーザー名 |
@@ -758,6 +758,7 @@ GET /:name/profile
 
 ### リクエストパラメータ
 | key | type | content | null |
+| ---- | ---- | ---- | ---- |
 | name | string | ユーザー名 | x |
 
 ### 入力例
@@ -769,7 +770,7 @@ GET /:name/profile
 
 ### レスポンスパラメータ
 | key | type | content | 
-| -- | -- | -- | -- |
+| ---- | ---- | ---- | ---- |
 | ID | numeric | ユーザーID |
 | Name | string | ユーザーの名前 |
 | HN | string | ユーザーのハンドルネーム |
@@ -828,7 +829,7 @@ POST /register
 
 ### リクエストパラメータ
 | key | type | content | null |
-| -- | -- | -- | -- |
+| ---- | ---- | ---- | ---- |
 | Name | string | ユーザー名 | x |
 | HN | string | ハンドルネーム | o |
 | MailAddress | string | メールアドレス | x |
@@ -883,7 +884,7 @@ GET /profile
 
 ### リクエストパラメータ
 | key | type | content | null |
-| -- | -- | -- | -- |
+| ---- | ---- | ---- | ---- |
 | Name | string | ユーザーの名前 | x |
 | HN | string | ユーザーのハンドルネーム | x |
 | Img | string | ユーザーのアイコン；非優先 | o |
@@ -944,7 +945,7 @@ DELETE /bye
 
 ### リクエストパラメータ
 | key | type | content | null |
-| -- | -- | -- | -- |
+| ---- | ---- | ---- | ---- |
 | Password | string | パスワード | x |
 
 ### 入力例
@@ -991,7 +992,7 @@ GET /secret
 
 ### リクエストパラメータ
 | key | type | content | null |
-| -- | -- | -- | -- |
+| ---- | ---- | ---- | ---- |
 | Password | string | パスワード | x |
 
 ### 入力例
@@ -1003,7 +1004,7 @@ GET /secret
 
 ### レスポンスパラメータ
 | key | type | content | null |
-| -- | -- | -- | -- |
+| ---- | ---- | ---- | ---- |
 | ID | numeric | ユーザーID |
 | Name | string | ユーザー名 |
 | HN | string | ハンドルネーム |
@@ -1050,7 +1051,7 @@ PATCH /secret
 
 ### リクエストパラメータ
 | key | type | content | null |
-| -- | -- | -- | -- |
+| ---- | ---- | ---- | ---- |
 | MailAddress | string | メールアドレス | x |
 | Password | string | パスワード | x |
 
@@ -1064,7 +1065,7 @@ PATCH /secret
 
 ### レスポンスパラメータ
 | key | type | content | null |
-| -- | -- | -- | -- |
+| ---- | ---- | ---- | ---- |
 | ID | numeric | ユーザーID |
 | Name | string | ユーザー名 |
 | HN | string | ハンドルネーム |
