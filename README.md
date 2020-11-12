@@ -13,7 +13,7 @@
 ## ゴール（※）系列
 - [PATCH-TODOをゴールに変更](##PATCH-TODOをゴールに変更)
 - [GET-全ユーザーのゴールしたTODOリスト](##GET-全ユーザーのゴールTODOリスト)
-- [GET-該当ユーザーのゴールしたTODOリスト](##GET-該当ユーザーのゴールTODOリスト)
+- [GET-該当ユーザーのゴールTODOリスト](##GET-該当ユーザーのゴールTODOリスト)
 
 
 ## TODO当日系列
@@ -60,7 +60,7 @@ GET /{?page,limit,order}
 ### リクエストパラメータ
 
 | key | type | content | null |
-| ---- | ---- | ---- | ---- | ---- |
+| ---- | ---- | ---- | ---- |
 | page | numeric | ページ数 |  o |
 | limit | numeric | ページ内表示Todo数 | o |
 | order | string | 順序 |  o |
@@ -345,6 +345,7 @@ PATCH /todo/:id
 - Todoリストの達成状況を「ゴール」に変更する
 
 ### リクエストパラメータ
+
 | key | type | content |  null |
 | ---- | ---- | ---- | ---- |
 | id | int | TodoのID | x |
@@ -396,7 +397,7 @@ PATCH /todo/:id
 
 
 
-## GET-全ユーザーのゴールしたTODOリスト
+## GET-全ユーザーのゴールTODOリスト
 ### URI
 ```
 GET /goal{?page,limit}
@@ -474,7 +475,7 @@ GET /goal{?page,limit}
 
 ```
 
-## GET-該当ユーザーのゴールしたTODOリスト
+## GET-該当ユーザーのゴールTODOリスト
 
 ### URI
 ```
@@ -500,13 +501,13 @@ GET /:name/goal
 ### レスポンスパラメータ
 
 | key | type | content | 
-| ---- | ---- | ---- | ---- |
+| ---- | ---- | ---- |
 | User | list | ユーザー情報 | 
 | UserID{User} | numeric | ユーザーID | 
 | UserName{User} | string | ユーザー名 |
 | UserHN{User} | string | ユーザーのハンドルネーム |
 | UserImg{User} | string | ユーザー画像 |
-| TodoArray | array | todo取得 |
+| TodoArray | array | todo取得 |
 | TodoID[TodoArray] | numeric | todoのID |
 | Content[TodoArray] | string | todoの詳細 |
 | CreatedAt[TodoArray] | numeric | todo登録日 |
@@ -678,7 +679,7 @@ GET /:name/
 ### レスポンスパラメータ
 
 | key | type | content | 
-| ---- | ---- | ---- | ---- |
+| ---- | ---- | ---- |
 | User | list | ユーザー情報 | 
 | UserID{User} | numeric | ユーザーID | 
 | UserName{User} | string | ユーザー名 |
@@ -1027,8 +1028,8 @@ GET /secret
 
 ### レスポンスパラメータ
 
-| key | type | content | null |
-| ---- | ---- | ---- | ---- |
+| key | type | content |
+| ---- | ---- | ---- |
 | ID | numeric | ユーザーID |
 | Name | string | ユーザー名 |
 | HN | string | ハンドルネーム |
