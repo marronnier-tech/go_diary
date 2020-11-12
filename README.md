@@ -58,6 +58,7 @@ GET /{?page,limit,order}
 
 
 ### リクエストパラメータ
+
 | key | type | content | null |
 | ---- | ---- | ---- | ---- | ---- |
 | page | numeric | ページ数 |  o |
@@ -66,8 +67,9 @@ GET /{?page,limit,order}
 
 
 ### レスポンスパラメータ
+
 | key | type | content | 
-| ---- | ---- | ---- | ---- |
+| ---- | ---- | ---- |
 | TodoArray | array | 全todoのリスト| 
 | TodoObj[TodoArray] | object | todo内容 |
 | TodoID{TodoObj} | numeric | todoのID |
@@ -135,6 +137,7 @@ GET /:name{?order}
 - orderは最終達成日順（last_Achieved）、達成回数順（Achieved_times）、最近設定された順（set）にできる。デフォルトは最終達成日順。
 
 ### リクエストパラメータ
+
 | key | type | content | null |
 | ---- | ---- | ---- | ---- |
 | name | string | ユーザー名 | x |
@@ -148,8 +151,9 @@ GET /:name{?order}
 ```
 
 ### レスポンスパラメータ
+
 | key | type | content | 
-| ---- | ---- | ---- | ---- |
+| ---- | ---- | ---- |
 | User | list | ユーザー情報 | 
 | UserID{User} | numeric | ユーザーID | 
 | UserName{User} | string | ユーザー名 |
@@ -207,6 +211,7 @@ POST /todo
 - Todoリストに内容を登録する
 
 ### リクエストパラメータ
+
 | key | type | content | null |
 | ---- | ---- | ---- | ---- |
 | Content | string | Todoの詳細 | x |
@@ -219,8 +224,9 @@ POST /todo
 ```
 
 ### レスポンスパラメータ
+
 | key | type | content | 
-| ---- | ---- | ---- | ---- |
+| ---- | ---- | ---- |
 | User | list | ユーザー情報 | 
 | UserID{User} | numeric | ユーザーID | 
 | UserName{User} | string | ユーザー名 |
@@ -277,6 +283,7 @@ DELETE /todo/:id
 - ゴールしたTodoはDeleteできない
 
 ### リクエストパラメータ
+
 | key | type | content |  null |
 | ---- | ---- | ---- | ---- |
 | TodoID | numeric | TodoのID | x |
@@ -291,8 +298,9 @@ DELETE /todo/:id
 ### ステータスコード
 
 ### レスポンスパラメータ
+
 | key | type | content | 
-| ---- | ---- | ---- | ---- |
+| ---- | ---- | ---- | 
 | TodoID | numeric | TodoのID |
 | DeletedTodo | boolean | Todoが削除されたか |
 
@@ -402,15 +410,17 @@ GET /goal{?page,limit}
 
 
 ### リクエストパラメータ
+
 | key | type | content | null |
-| ---- | ---- | ---- | ---- | ---- |
+| ---- | ---- | ---- | ---- |
 | page | numeric | ページ数 |  o |
 | limit | numeric | ページ内表示Todo数 | o |
 
 
 ### レスポンスパラメータ
+
 | key | type | content | 
-| ---- | ---- | ---- | ---- |
+| ---- | ---- | ---- |
 | TodoArray | array | 全ゴールリスト| 
 | TodoObj[TodoArray] | object | ゴール内容 |
 | TodoID{TodoObj} | numeric | ゴールしたtodoのID |
@@ -475,6 +485,7 @@ GET /:name/goal
 - ゴール日順に表示する。
 
 ### リクエストパラメータ
+
 | key | type | content | null |
 | ---- | ---- | ---- | ---- |
 | name | string | ユーザー名 | x |
@@ -487,6 +498,7 @@ GET /:name/goal
 ```
 
 ### レスポンスパラメータ
+
 | key | type | content | 
 | ---- | ---- | ---- | ---- |
 | User | list | ユーザー情報 | 
@@ -543,8 +555,9 @@ POST /:todoid
 ```
 
 ### レスポンスパラメータ
+
 | key | type | content | 
-| ---- | ---- | ---- | ---- |
+| ---- | ---- | ---- |
 | TodoId | numeric | todoのID |
 | TodayAchieved | boolean | 本日達成しているか |
 
@@ -587,6 +600,7 @@ POST /:todoid
 - Todoリストの当日のtodo達成を取り消す
 
 ### リクエストパラメータ
+
 | key | type | content | null |
 | ---- | ---- | ---- | ---- |
 | todoid | string | TodoのID | x |
@@ -599,8 +613,9 @@ POST /:todoid
 ```
 
 ### レスポンスパラメータ
+
 | key | type | content | 
-| ---- | ---- | ---- | ---- |
+| ---- | ---- | ---- |
 | TodoId | numeric | todoのID |
 | TodayAchieved | boolean | 本日達成しているか |
 
@@ -647,6 +662,7 @@ GET /:name/
 - キーで取得したユーザーのTODO達成状況を確認する
 
 ### リクエストパラメータ
+
 | key | type | content | null |
 | ---- | ---- | ---- | ---- |
 | name | string | ユーザー名 | x |
@@ -660,6 +676,7 @@ GET /:name/
 ```
 
 ### レスポンスパラメータ
+
 | key | type | content | 
 | ---- | ---- | ---- | ---- |
 | User | list | ユーザー情報 | 
@@ -757,6 +774,7 @@ GET /:name/profile
 - ユーザー情報の詳細を取得する
 
 ### リクエストパラメータ
+
 | key | type | content | null |
 | ---- | ---- | ---- | ---- |
 | name | string | ユーザー名 | x |
@@ -769,8 +787,9 @@ GET /:name/profile
 ```
 
 ### レスポンスパラメータ
+
 | key | type | content | 
-| ---- | ---- | ---- | ---- |
+| ---- | ---- | ---- |
 | ID | numeric | ユーザーID |
 | Name | string | ユーザーの名前 |
 | HN | string | ユーザーのハンドルネーム |
@@ -828,6 +847,7 @@ POST /register
 - 詳細情報は空になる。
 
 ### リクエストパラメータ
+
 | key | type | content | null |
 | ---- | ---- | ---- | ---- |
 | Name | string | ユーザー名 | x |
@@ -883,6 +903,7 @@ GET /profile
 - ユーザー情報を更新する（秘匿情報以外）
 
 ### リクエストパラメータ
+
 | key | type | content | null |
 | ---- | ---- | ---- | ---- |
 | Name | string | ユーザーの名前 | x |
@@ -944,6 +965,7 @@ DELETE /bye
 - ユーザーを削除する（論理削除）
 
 ### リクエストパラメータ
+
 | key | type | content | null |
 | ---- | ---- | ---- | ---- |
 | Password | string | パスワード | x |
@@ -991,6 +1013,7 @@ GET /secret
 - 秘匿情報を表示する（本人のみ）
 
 ### リクエストパラメータ
+
 | key | type | content | null |
 | ---- | ---- | ---- | ---- |
 | Password | string | パスワード | x |
@@ -1003,6 +1026,7 @@ GET /secret
 ```
 
 ### レスポンスパラメータ
+
 | key | type | content | null |
 | ---- | ---- | ---- | ---- |
 | ID | numeric | ユーザーID |
@@ -1050,6 +1074,7 @@ PATCH /secret
 - メールアドレス を更新する（本人のみ）
 
 ### リクエストパラメータ
+
 | key | type | content | null |
 | ---- | ---- | ---- | ---- |
 | MailAddress | string | メールアドレス | x |
@@ -1064,6 +1089,7 @@ PATCH /secret
 ```
 
 ### レスポンスパラメータ
+
 | key | type | content | null |
 | ---- | ---- | ---- | ---- |
 | ID | numeric | ユーザーID |
