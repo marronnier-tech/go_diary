@@ -18,5 +18,5 @@ func GetEnvUser() string {
 }
 
 func GetEnvPass() string {
-	return os.Getenv("pass")
+	return os.Getenv("envpass")
 }

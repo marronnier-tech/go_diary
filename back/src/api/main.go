@@ -13,12 +13,6 @@ import (
 	_ "gorm.io/gorm"
 )
 
-// var secrets = gin.H{
-// 	"foo":     gin.H{"email": "foo@bar.com", "phone": "123"},
-// 	"austion": gin.H{"email": "austin@example.com", "phone": "666"},
-// 	"nyao":    gin.H{"email": "nyao@mails.com", "phone": "54232"},
-// }
-
 func main() {
 
 	sqldb, gormdb := infra.DBConnect()
@@ -85,9 +79,9 @@ func main() {
 			id := c.PostForm("id")
 			user := c.PostForm("user")
 			mailaddress := c.PostForm("mailaddress")
-			pass := c.PostForm("pass")
+			password := c.PostForm("password")
 
-			if err := signUp(id, user, mailaddress, pass); err != nil {
+			if err := signUp(id, user, mailaddress, password); err != nil {
 				c.JSON(500, gin.H{"err": err})
 			}
 
@@ -99,23 +93,24 @@ func main() {
 	r.GET("/login", func(c *gin.Context) {
 		var userauth model.User
 
-		var hashStr []byte
+		// var hashStr []byte
 		inputuser := c.PostForm("user")
 		inputpass := c.PostForm("password")
 
-		hashStr = gormdb.Select("pass").Where("name = ?", inputuser).Find(&userauth)
+		gormdb.Select("password").Where("name = ?", inputuser).Find(&userauth)
+		selectpass := userauth.Password
 
-		if hashStr == nil {
-			c.JSON(500, gin.H{"err": "you are not a user."})
-		}
+		fmt.Println([]byte(inputpass))
 
-		err := bcrypt.CompareHashAndPassword([]byte(hashStr), []byte(inputpass))
+		err := bcrypt.CompareHashAndPassword(selectpass, []byte(inputpass))
+
+		fmt.Println(err)
 
 		if err != nil {
-			c.JSON(500, gin.H{"err": err})
+			c.JSON(500, gin.H{"user": inputuser, "status": "password is wrong"})
+		} else {
+			c.JSON(200, gin.H{"user": inputuser, "status": "success"})
 		}
-
-		c.JSON(200, gin.H{"user": inputuser, "status": "success"})
 
 	})
 
@@ -141,21 +136,6 @@ func main() {
 
 	// todo登録
 
-	// r.GET("/:user", func(c *gin.Context) {
-	// 	user := c.MustGet(gin.AuthUserKey).(string)
-	// 	if secret, ok := secrets[user]; ok {
-	// 		c.HTML(http.StatusOK, "user_top.html", gin.H{
-	// 			"user":  user,
-	// 			"email": secret,
-	// 		})
-	// 	} else {
-	// 		c.HTML(http.StatusOK, "user_top.html", gin.H{
-	// 			"user":  user,
-	// 			"email": "NONE",
-	// 		})
-	// 	}
-	// })
-
 	r.Run()
 
 	sqldb.Close()
@@ -164,25 +144,26 @@ func main() {
 
 // ここからあとで分ける
 
-func signUp(id string, user string, mailaddress string, pass string) (err error) {
+func signUp(id string, user string, mailaddress string, password string) (err error) {
 
 	sqldb, gormdb := infra.DBConnect()
 	defer sqldb.Close()
 
 	newid, _ := stc.Atoi(id)
 
-	hash, err := bcrypt.GenerateFromPassword([]byte(pass), bcrypt.DefaultCost)
+	hash, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
+
+	fmt.Println(hash)
 
 	if err != nil {
 		return err
 	}
-	fmt.Printf("user:%s, pass:%s", user, pass)
 
 	newuser := model.User{
 		ID:          newid,
 		Name:        user,
 		MailAddress: mailaddress,
-		Pass:        hash,
+		Password:    hash,
 		CreatedAt:   time.Now(),
 		UpdatedAt:   time.Now(),
 	}
