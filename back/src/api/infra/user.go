@@ -1,14 +1,14 @@
 package infra
 
 import (
-	"./model"
+	"../domain"
 
 	"gorm.io/gorm"
 )
 
-func GetAllUsers(db *gorm.DB) []model.User {
+func GetAllUsers(db *gorm.DB) []domain.User {
 
-	var user []model.User
+	var user []domain.User
 	db.Find(&user)
 
 	return user

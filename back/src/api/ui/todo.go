@@ -1,6 +1,7 @@
 package ui
 
 import (
+	"fmt"
 	stc "strconv"
 
 	"../app/todo"
@@ -10,15 +11,13 @@ import (
 
 func GetTodo(c *gin.Context) {
 
-	lists, err := todo.ToGetAll()
+	res, err := todo.ToGetAll()
 
 	if err != nil {
-		errHundle(err, 500, c)
+		fmt.Println(err)
 	}
 
-	c.JSON(200, gin.H{
-		"lists": lists,
-	})
+	c.JSON(200, res)
 
 	return
 

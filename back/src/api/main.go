@@ -8,7 +8,7 @@ import (
 	"./ui"
 
 	"./infra"
-	"./infra/model"
+	"./domain"
 
 	"github.com/gin-gonic/gin"
 	"golang.org/x/crypto/bcrypt"
@@ -42,10 +42,10 @@ func main() {
 	// 	"manu":   "4321",
 	// }))
 
-	// ログイン
+	// ログイン、あとで移動
 
 	r.POST("/secrets", func(c *gin.Context) {
-		var sign model.User
+		var sign domain.User
 
 		if err := c.Bind(&sign); err != nil {
 			c.JSON(500, gin.H{"err": err})
@@ -66,7 +66,7 @@ func main() {
 	})
 
 	r.GET("/login", func(c *gin.Context) {
-		var userauth model.User
+		var userauth domain.User
 
 		// var hashStr []byte
 		inputuser := c.PostForm("user")
@@ -139,7 +139,7 @@ func signUp(id string, user string, mailaddress string, password string) (err er
 		return err
 	}
 
-	newuser := model.User{
+	newuser := domain.User{
 		ID:          newid,
 		Name:        user,
 		MailAddress: mailaddress,
@@ -157,10 +157,10 @@ func signUp(id string, user string, mailaddress string, password string) (err er
 	return nil
 }
 
-/* func getUser(username string) model.User {
+/* func getUser(username string) domain.User {
 	gormdb, err := infra.DBConnect()
 	defer gormdb.Close()
-	var user model.User
+	var user domain.User
 	gormdb.First(&user, "user = ", username)
 	return user
 } */
