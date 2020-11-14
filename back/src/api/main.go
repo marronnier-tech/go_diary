@@ -26,16 +26,13 @@ func main() {
 	r := gin.Default()
 	r.LoadHTMLGlob("../../../front/templates/*")
 
-	// todo一覧
-	r.GET("", ui.GetAllTodo)
+	r.GET("", ui.GetTodo)
 
 	mytodo := r.Group("/todo")
 	{
-		mytodo.POST("", ui.PutMyTodo)
-		mytodo.DELETE("/:id", ui.DeleteMyTodo)
+		mytodo.POST("", ui.PostTodo)
+		mytodo.DELETE("/:id", ui.DeleteTodo)
 	}
-
-
 
 	// auth := r.Group("/admin", gin.BasicAuth(gin.Accounts{
 
@@ -44,8 +41,6 @@ func main() {
 	// 	"lena":   "hello2",
 	// 	"manu":   "4321",
 	// }))
-
-
 
 	// ログイン
 

@@ -1,73 +1,58 @@
 package ui
 
 import (
-	"fmt"
 	stc "strconv"
-	"time"
 
-	"../infra"
-	"../infra/model"
+	"../app/todo"
 
 	"github.com/gin-gonic/gin"
-	"gorm.io/gorm"
 )
 
-func GetAllTodo(c *gin.Context) {
-	gormdb := getDB()
+func GetTodo(c *gin.Context) {
 
-	animal := "neco"
-	lists := infra.GetAll(gormdb)
+	lists, err := todo.ToGetAll()
+
+	if err != nil {
+		errHundle(err, 500, c)
+	}
+
 	c.JSON(200, gin.H{
-		"lists":  lists,
-		"animal": animal,
+		"lists": lists,
 	})
 
 	return
 
 }
 
-func PutMyTodo(c *gin.Context) {
-	gormdb := getDB()
+func PostTodo(c *gin.Context) {
 
 	id, _ := stc.Atoi(c.PostForm("id"))
 	user, _ := stc.Atoi(c.PostForm("user"))
 	content := c.PostForm("content")
 
-	data := model.ToDoList{
-		ID:        id,
-		UserID:    user,
-		Content:   content,
-		CreatedAt: time.Now(),
-		UpdatedAt: time.Now(),
-	}
-
-	gormdb.Create(&data)
-	c.JSON(201, nil)
-
-	return
-
-}
-
-func DeleteMyTodo(c *gin.Context) {
-	gormdb := getDB()
-
-	id, _ := stc.Atoi(c.Param("id"))
-	data := model.ToDoList{}
-
-	gormdb.Delete(&data, id)
-
-	c.JSON(201, nil)
-
-	return
-}
-
-// gormdb取得
-func getDB() (gormdb *gorm.DB) {
-	gormdb, err := infra.DBConnect()
+	err := todo.ToPost(id, user, content)
 
 	if err != nil {
-		fmt.Println("error")
+		errHundle(err, 500, c)
 	}
 
-	return gormdb
+	c.JSON(201, nil)
+
+	return
+
+}
+
+func DeleteTodo(c *gin.Context) {
+
+	id, _ := stc.Atoi(c.Param("id"))
+
+	err := todo.ToDelete(id)
+
+	if err != nil {
+		errHundle(err, 500, c)
+	}
+
+	c.JSON(201, nil)
+
+	return
 }
