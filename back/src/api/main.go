@@ -5,6 +5,8 @@ import (
 	stc "strconv"
 	"time"
 
+	"./ui"
+
 	"./infra"
 	"./infra/model"
 
@@ -15,51 +17,25 @@ import (
 
 func main() {
 
-	sqldb, gormdb := infra.DBConnect()
+	gormdb, err := infra.DBConnect()
+
+	if err != nil {
+		fmt.Println("error")
+	}
 
 	r := gin.Default()
 	r.LoadHTMLGlob("../../../front/templates/*")
 
 	// todo一覧
-	r.GET("", func(c *gin.Context) {
-		animal := "neco"
-		lists := infra.GetAll(gormdb)
-		// c.HTML(http.StatusOK, "index.html", gin.H{
-		// 	"lists":  lists,
-		// 	"animal": animal,
-		// })
-		c.JSON(200, gin.H{
-			"lists":  lists,
-			"animal": animal,
-		})
-	})
+	r.GET("", ui.GetAllTodo)
 
-	r.POST("/list", func(c *gin.Context) {
+	mytodo := r.Group("/todo")
+	{
+		mytodo.POST("", ui.PutMyTodo)
+		mytodo.DELETE("/:id", ui.DeleteMyTodo)
+	}
 
-		id, _ := stc.Atoi(c.PostForm("id"))
-		user, _ := stc.Atoi(c.PostForm("user"))
-		content := c.PostForm("content")
 
-		data := model.ToDoList{
-			ID:        id,
-			UserID:    user,
-			Content:   content,
-			CreatedAt: time.Now(),
-			UpdatedAt: time.Now(),
-		}
-
-		gormdb.Create(&data)
-		c.JSON(201, nil)
-
-	})
-
-	r.DELETE("/list", func(c *gin.Context) {
-		id, _ := stc.Atoi(c.PostForm("id"))
-		data := model.ToDoList{}
-		gormdb.Delete(&data, id)
-
-		c.JSON(201, nil)
-	})
 
 	// auth := r.Group("/admin", gin.BasicAuth(gin.Accounts{
 
@@ -68,6 +44,10 @@ func main() {
 	// 	"lena":   "hello2",
 	// 	"manu":   "4321",
 	// }))
+
+
+
+	// ログイン
 
 	r.POST("/secrets", func(c *gin.Context) {
 		var sign model.User
@@ -134,11 +114,17 @@ func main() {
 
 	// })
 
-	// todo登録
+	// ここでDBとじるのは問題なのであとでなんとかする
 
-	r.Run()
+	sqldb, err := gormdb.DB()
+
+	if err != nil {
+		fmt.Println("cannot use sqldb.")
+	}
 
 	sqldb.Close()
+
+	r.Run()
 
 }
 
@@ -146,8 +132,7 @@ func main() {
 
 func signUp(id string, user string, mailaddress string, password string) (err error) {
 
-	sqldb, gormdb := infra.DBConnect()
-	defer sqldb.Close()
+	gormdb, err := infra.DBConnect()
 
 	newid, _ := stc.Atoi(id)
 
@@ -177,10 +162,10 @@ func signUp(id string, user string, mailaddress string, password string) (err er
 	return nil
 }
 
-func getUser(username string) model.User {
-	sqldb, gormdb := infra.DBConnect()
-	defer sqldb.Close()
+/* func getUser(username string) model.User {
+	gormdb, err := infra.DBConnect()
+	defer gormdb.Close()
 	var user model.User
 	gormdb.First(&user, "user = ", username)
 	return user
-}
+} */
