@@ -5,57 +5,144 @@ import (
 
 	"../../domain"
 	"../../infra"
+	"github.com/lib/pq"
 )
 
-func ToGetAll() (out getAll, err error) {
+func ToGetAll(limit int, page int, order string) (out []allTodoArray, err error) {
 
 	db, err := infra.DBConnect()
 
 	if err != nil {
-		return nil, err
+		return
 	}
 
-	var rows []domain.TodoList
+	var rows []inGetAll
 
-	/* err = db.Table("todo_lists").
-	Select("todo_lists.ID, todo_lists.Content, todo_lists.last_achieved, users.ID, users.name, users.handlename, users.img").
-	Joins("left join users on users.ID = todo_lists.ID").
-	Scan(&rows).
-	Error */
+	base := db.Table("todo_lists").
+		Select("todo_lists.id, todo_lists.Content, todo_lists.user_id, todo_lists.created_at, todo_lists.last_achieved, todo_lists.is_deleted, todo_lists.is_goaled, users.name, users.handle_name, users.img").
+		Where("todo_lists.is_deleted = ? and todo_lists.is_goaled = ?", "false", "false").
+		Joins("left join users on users.ID = todo_lists.user_id").
+		Limit(limit).
+		Offset(limit * (page - 1))
 
-	err = db.Table("todo_lists").
-		Select("todo_lists.Content, todo_lists.user_id, todo_lists.content, users.name").
-		Joins("left join users on users.ID = todo_lists.ID").
+	err = base.
+		Order("todo_lists.last_achieved").
 		Scan(&rows).
 		Error
 
 	if err != nil {
-		return nil, err
+		return
 	}
 
-	var info []todoArray
+	var obj todoObjInfo
+	var user outUserInfo
 
-	limit := 100
+	for _, r := range rows {
 
-	for i, r := range rows {
-		if i > limit {
-			break
+		obj = todoObjInfo{
+			TodoID:       r.ID,
+			Content:      r.Content,
+			CreatedAt:    r.CreatedAt,
+			LastAchieved: r.LastAchieved,
 		}
-		info[i] = todoArray{
-			Content:  r.Content,
+
+		if r.UserHN == "" {
+			r.UserHN = r.UserName
+
+		}
+
+		user = outUserInfo{
 			UserID:   r.UserID,
-			UserName: r.Users.Name,
+			UserName: r.UserName,
+			UserHN:   r.UserHN,
+			UserImg:  r.UserImg,
 		}
 
-	}
+		out = append(out, allTodoArray{
+			TodoObj: obj,
+			User:    user,
+		})
 
-	out = getAll{info, limit}
+	}
 
 	return
 
 }
 
-func ToPost(id int, user int, content string) (err error) {
+func ToGetOneUser(name string, order string) (out userTodoArray, err error) {
+	db, err := infra.DBConnect()
+
+	if err != nil {
+		return
+	}
+
+	var u inUserInfo
+
+	err = db.Table("users").
+		Select("id, name, handle_name, img").
+		Where("name = ?", name).
+		Scan(&u).
+		Error
+
+	if err != nil {
+		return
+	}
+
+	userID := u.UserID
+
+	if u.UserHN == "" {
+		u.UserHN = u.UserName
+
+	}
+
+	user := outUserInfo{
+		UserID:   u.UserID,
+		UserName: u.UserName,
+		UserHN:   u.UserHN,
+		UserImg:  u.UserImg,
+	}
+
+	var rows []inGetOneUser
+
+	base := db.Table("todo_lists").
+		Select("id, user_id, content, created_at, last_achieved, is_deleted, is_goaled").
+		Where("user_id = ? and is_deleted = ? and is_goaled = ?", userID, false, false)
+
+	err = base.
+		Order("last_achieved").
+		Scan(&rows).
+		Error
+
+	if err != nil {
+		return
+	}
+
+	var obj todoObjInfo
+	var objArray []todoObjInfo
+
+	for _, r := range rows {
+
+		obj = todoObjInfo{
+			TodoID:       r.ID,
+			Content:      r.Content,
+			CreatedAt:    r.CreatedAt,
+			LastAchieved: pq.NullTime{Time: time.Now(), Valid: false},
+		}
+
+		objArray = append(objArray, obj)
+
+	}
+
+	out = userTodoArray{
+		User:    user,
+		TodoObj: objArray,
+	}
+
+	return
+
+}
+
+func ToPost(name string, content string) (err error) {
 
 	db, err := infra.DBConnect()
 
@@ -63,13 +150,28 @@ func ToPost(id int, user int, content string) (err error) {
 		return err
 	}
 
+	var u inUserInfo
+
+	err = db.Table("users").
+		Select("id, name").
+		Where("name = ?", name).
+		Scan(&u).
+		Error
+
+	if err != nil {
+		return
+	}
+
+	userID := u.UserID
+
 	data := domain.TodoList{
-		ID:        id,
-		UserID:    user,
-		Content:   content,
-		CreatedAt: time.Now(),
-		IsDeleted: false,
-		IsGoaled:  false,
+		UserID:       userID,
+		Content:      content,
+		CreatedAt:    time.Now(),
+		LastAchieved: pq.NullTime{Time: time.Now(), Valid: false},
+		IsDeleted:    false,
+		IsGoaled:     false,
+		GoaledAt:     pq.NullTime{Time: time.Now(), Valid: false},
 	}
 
 	db.Create(&data)
@@ -86,8 +188,15 @@ func ToDelete(id int) (err error) {
 		return err
 	}
 
-	data := domain.TodoList{}
-	db.Delete(&data, id)
+	var todo domain.TodoList
+
+	db.Table("todo_lists").
+		Where("id = ?", id).
+		First(&todo)
+
+	todo.IsDeleted = true
+
+	db.Save(&todo)
 
 	return
 

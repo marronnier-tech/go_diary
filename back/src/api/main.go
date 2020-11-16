@@ -7,8 +7,8 @@ import (
 
 	"./ui"
 
-	"./infra"
 	"./domain"
+	"./infra"
 
 	"github.com/gin-gonic/gin"
 	"golang.org/x/crypto/bcrypt"
@@ -26,12 +26,17 @@ func main() {
 	r := gin.Default()
 	r.LoadHTMLGlob("../../../front/templates/*")
 
-	r.GET("", ui.GetTodo)
-
-	mytodo := r.Group("/todo")
+	todo := r.Group("/todo")
 	{
-		mytodo.POST("", ui.PostTodo)
-		mytodo.DELETE("/:id", ui.DeleteTodo)
+		todo.GET("", ui.GetTodo)
+		todo.GET("/:name", ui.GetOneUserTodo)
+		todo.POST("", ui.PostTodo)
+		todo.DELETE("/:id", ui.DeleteTodo)
+	}
+
+	goal := r.Group("goal")
+	{
+		goal.PATCH("/:id", ui.PatchGoal)
 	}
 
 	// auth := r.Group("/admin", gin.BasicAuth(gin.Accounts{
@@ -44,7 +49,7 @@ func main() {
 
 	// ログイン、あとで移動
 
-	r.POST("/secrets", func(c *gin.Context) {
+	r.POST("/admin/secrets", func(c *gin.Context) {
 		var sign domain.User
 
 		if err := c.Bind(&sign); err != nil {
@@ -65,7 +70,7 @@ func main() {
 		}
 	})
 
-	r.GET("/login", func(c *gin.Context) {
+	r.GET("/admin/login", func(c *gin.Context) {
 		var userauth domain.User
 
 		// var hashStr []byte
@@ -111,13 +116,13 @@ func main() {
 
 	// ここでDBとじるのは問題なのであとでなんとかする
 
-	sqldb, err := gormdb.DB()
+	/* sqldb, err := gormdb.DB()
 
 	if err != nil {
 		fmt.Println("cannot use sqldb.")
 	}
 
-	sqldb.Close()
+	sqldb.Close() */
 
 	r.Run()
 
