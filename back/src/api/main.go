@@ -5,8 +5,10 @@ import (
 	stc "strconv"
 	"time"
 
+	"./ui"
+
+	"./domain"
 	"./infra"
-	"./infra/model"
 
 	"github.com/gin-gonic/gin"
 	"golang.org/x/crypto/bcrypt"
@@ -15,51 +17,27 @@ import (
 
 func main() {
 
-	sqldb, gormdb := infra.DBConnect()
+	gormdb, err := infra.DBConnect()
+
+	if err != nil {
+		fmt.Println("error")
+	}
 
 	r := gin.Default()
 	r.LoadHTMLGlob("../../../front/templates/*")
 
-	// todo一覧
-	r.GET("", func(c *gin.Context) {
-		animal := "neco"
-		lists := infra.GetAll(gormdb)
-		// c.HTML(http.StatusOK, "index.html", gin.H{
-		// 	"lists":  lists,
-		// 	"animal": animal,
-		// })
-		c.JSON(200, gin.H{
-			"lists":  lists,
-			"animal": animal,
-		})
-	})
+	todo := r.Group("/todo")
+	{
+		todo.GET("", ui.GetTodo)
+		todo.GET("/:name", ui.GetOneUserTodo)
+		todo.POST("", ui.PostTodo)
+		todo.DELETE("/:id", ui.DeleteTodo)
+	}
 
-	r.POST("/list", func(c *gin.Context) {
-
-		id, _ := stc.Atoi(c.PostForm("id"))
-		user, _ := stc.Atoi(c.PostForm("user"))
-		content := c.PostForm("content")
-
-		data := model.ToDoList{
-			ID:        id,
-			UserID:    user,
-			Content:   content,
-			CreatedAt: time.Now(),
-			UpdatedAt: time.Now(),
-		}
-
-		gormdb.Create(&data)
-		c.JSON(201, nil)
-
-	})
-
-	r.DELETE("/list", func(c *gin.Context) {
-		id, _ := stc.Atoi(c.PostForm("id"))
-		data := model.ToDoList{}
-		gormdb.Delete(&data, id)
-
-		c.JSON(201, nil)
-	})
+	goal := r.Group("goal")
+	{
+		goal.PATCH("/:id", ui.PatchGoal)
+	}
 
 	// auth := r.Group("/admin", gin.BasicAuth(gin.Accounts{
 
@@ -69,8 +47,10 @@ func main() {
 	// 	"manu":   "4321",
 	// }))
 
-	r.POST("/secrets", func(c *gin.Context) {
-		var sign model.User
+	// ログイン、あとで移動
+
+	r.POST("/admin/secrets", func(c *gin.Context) {
+		var sign domain.User
 
 		if err := c.Bind(&sign); err != nil {
 			c.JSON(500, gin.H{"err": err})
@@ -90,8 +70,8 @@ func main() {
 		}
 	})
 
-	r.GET("/login", func(c *gin.Context) {
-		var userauth model.User
+	r.GET("/admin/login", func(c *gin.Context) {
+		var userauth domain.User
 
 		// var hashStr []byte
 		inputuser := c.PostForm("user")
@@ -134,11 +114,17 @@ func main() {
 
 	// })
 
-	// todo登録
+	// ここでDBとじるのは問題なのであとでなんとかする
+
+	/* sqldb, err := gormdb.DB()
+
+	if err != nil {
+		fmt.Println("cannot use sqldb.")
+	}
+
+	sqldb.Close() */
 
 	r.Run()
-
-	sqldb.Close()
 
 }
 
@@ -146,8 +132,7 @@ func main() {
 
 func signUp(id string, user string, mailaddress string, password string) (err error) {
 
-	sqldb, gormdb := infra.DBConnect()
-	defer sqldb.Close()
+	gormdb, err := infra.DBConnect()
 
 	newid, _ := stc.Atoi(id)
 
@@ -159,7 +144,7 @@ func signUp(id string, user string, mailaddress string, password string) (err er
 		return err
 	}
 
-	newuser := model.User{
+	newuser := domain.User{
 		ID:          newid,
 		Name:        user,
 		MailAddress: mailaddress,
@@ -177,10 +162,10 @@ func signUp(id string, user string, mailaddress string, password string) (err er
 	return nil
 }
 
-func getUser(username string) model.User {
-	sqldb, gormdb := infra.DBConnect()
-	defer sqldb.Close()
-	var user model.User
+/* func getUser(username string) domain.User {
+	gormdb, err := infra.DBConnect()
+	defer gormdb.Close()
+	var user domain.User
 	gormdb.First(&user, "user = ", username)
 	return user
-}
+} */

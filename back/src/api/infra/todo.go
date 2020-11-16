@@ -1,15 +1,11 @@
 package infra
 
-import (
-	"./model"
+/*
+func GetAll(db *gorm.DB) []domain.TodoList {
 
-	"gorm.io/gorm"
-)
-
-func GetAll(db *gorm.DB) []model.ToDoList {
-
-	var todo []model.ToDoList
+	var todo []domain.TodoList
 	db.Find(&todo)
 
 	return todo
 }
+*/
