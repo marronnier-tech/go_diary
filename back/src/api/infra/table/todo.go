@@ -18,8 +18,9 @@ type TodoList struct {
 }
 
 // 達成ログ
-/* type TodoAchievedLogs struct {
-	ID           int       `gorm:"column:id"`
-	TodoID       int       `gorm:"column:todo_id"`
-	AchievedDate time.Time `gorm:"column:achieved_date"`
-} */
+
+type TodoAchievedLog struct {
+	ID           int         `gorm:"column:id; autoIncrement"`
+	TodoID       int         `gorm:"column:todo_id"`
+	AchievedDate pq.NullTime `gorm:"column:achieved_date"`
+}

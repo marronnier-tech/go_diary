@@ -27,7 +27,7 @@ func ToGetAll(limit int, page int, order string) (out []allTodoArray, err error)
 		Offset(limit * (page - 1))
 
 	err = base.
-		Order("todo_lists.last_achieved").
+		Order("todo_lists.last_achieved desc").
 		Scan(&rows).
 		Error
 
@@ -110,7 +110,7 @@ func ToGetOneUser(name string, order string) (out userTodoArray, err error) {
 		Where("user_id = ? and is_deleted = ? and is_goaled = ?", userID, false, false)
 
 	err = base.
-		Order("last_achieved").
+		Order("last_achieved desc").
 		Scan(&rows).
 		Error
 

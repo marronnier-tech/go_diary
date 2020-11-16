@@ -7,8 +7,8 @@ import (
 
 	"./ui"
 
-	"./infra/table"
 	"./infra"
+	"./infra/table"
 
 	"github.com/gin-gonic/gin"
 	"golang.org/x/crypto/bcrypt"
@@ -32,6 +32,10 @@ func main() {
 		todo.GET("/:name", ui.GetOneUserTodo)
 		todo.POST("", ui.PostTodo)
 		todo.DELETE("/:id", ui.DeleteTodo)
+
+		todo.POST("/:id/today", ui.PutAchieveTodo)
+		todo.DELETE("/:id/today", ui.ClearAchieveTodo)
+
 	}
 
 	goal := r.Group("goal")
