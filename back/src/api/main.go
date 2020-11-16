@@ -7,8 +7,8 @@ import (
 
 	"./ui"
 
-	"./domain"
 	"./infra"
+	"./infra/table"
 
 	"github.com/gin-gonic/gin"
 	"golang.org/x/crypto/bcrypt"
@@ -32,11 +32,18 @@ func main() {
 		todo.GET("/:name", ui.GetOneUserTodo)
 		todo.POST("", ui.PostTodo)
 		todo.DELETE("/:id", ui.DeleteTodo)
+
+		todo.POST("/:id/today", ui.PutAchieveTodo)
+		todo.DELETE("/:id/today", ui.ClearAchieveTodo)
+
 	}
 
 	goal := r.Group("goal")
 	{
 		goal.PATCH("/:id", ui.PatchGoal)
+		goal.GET("", ui.GetGoal)
+		goal.GET("/:name", ui.GetOneUserGoal)
+
 	}
 
 	// auth := r.Group("/admin", gin.BasicAuth(gin.Accounts{
@@ -50,7 +57,7 @@ func main() {
 	// ログイン、あとで移動
 
 	r.POST("/admin/secrets", func(c *gin.Context) {
-		var sign domain.User
+		var sign table.User
 
 		if err := c.Bind(&sign); err != nil {
 			c.JSON(500, gin.H{"err": err})
@@ -71,7 +78,7 @@ func main() {
 	})
 
 	r.GET("/admin/login", func(c *gin.Context) {
-		var userauth domain.User
+		var userauth table.User
 
 		// var hashStr []byte
 		inputuser := c.PostForm("user")
@@ -144,7 +151,7 @@ func signUp(id string, user string, mailaddress string, password string) (err er
 		return err
 	}
 
-	newuser := domain.User{
+	newuser := table.User{
 		ID:          newid,
 		Name:        user,
 		MailAddress: mailaddress,
@@ -162,10 +169,10 @@ func signUp(id string, user string, mailaddress string, password string) (err er
 	return nil
 }
 
-/* func getUser(username string) domain.User {
+/* func getUser(username string) table.User {
 	gormdb, err := infra.DBConnect()
 	defer gormdb.Close()
-	var user domain.User
+	var user table.User
 	gormdb.First(&user, "user = ", username)
 	return user
 } */
