@@ -6,20 +6,9 @@ import (
 	"github.com/lib/pq"
 )
 
-type TodoList struct {
-	ID           int         `gorm:"column:id;autoIncrement"`
-	UserID       int         `gorm:"column:user_id"`
-	Content      string      `gorm:"column:content"`
-	CreatedAt    time.Time   `gorm:"column:created_at"`
-	LastAchieved pq.NullTime `gorm:"column:last_achieved"`
-	IsDeleted    bool        `gorm:"column:is_deleted"`
-	IsGoaled     bool        `gorm:"column:is_goaled"`
-	GoaledAt     pq.NullTime `gorm:"column:goaled_at"`
+type TodoObjInfo struct {
+	TodoID       int         `json:"TodoID"`
+	Content      string      `json:"Content"`
+	CreatedAt    time.Time   `json:"CreatedAt"`
+	LastAchieved pq.NullTime `json:"LastAchieved"`
 }
-
-// 達成ログ
-/* type TodoAchievedLogs struct {
-	ID           int       `gorm:"column:id"`
-	TodoID       int       `gorm:"column:todo_id"`
-	AchievedDate time.Time `gorm:"column:achieved_date"`
-} */

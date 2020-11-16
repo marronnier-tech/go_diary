@@ -52,7 +52,6 @@ func GetOneUserTodo(c *gin.Context) {
 
 func PostTodo(c *gin.Context) {
 
-	// id, _ := stc.Atoi(c.PostForm("id"))
 	name := c.PostForm("name")
 	content := c.PostForm("content")
 
