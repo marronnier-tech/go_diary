@@ -49,35 +49,3 @@ func GetOneUserTodo(c *gin.Context) {
 	})
 
 }
-
-func PostTodo(c *gin.Context) {
-
-	name := c.PostForm("name")
-	content := c.PostForm("content")
-
-	err := todo.ToPost(name, content)
-
-	if err != nil {
-		c.JSON(500, err)
-	}
-
-	c.JSON(201, nil)
-
-	return
-
-}
-
-func DeleteTodo(c *gin.Context) {
-
-	id, _ := stc.Atoi(c.Param("id"))
-
-	err := todo.ToDelete(id)
-
-	if err != nil {
-		c.JSON(500, err)
-	}
-
-	c.JSON(201, nil)
-
-	return
-}

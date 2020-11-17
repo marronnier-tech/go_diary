@@ -7,19 +7,6 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func PatchGoal(c *gin.Context) {
-	id, _ := stc.Atoi(c.Param("id"))
-
-	err := todo.ToPatchGoal(id)
-
-	if err != nil {
-		c.JSON(500, gin.H{"error": err})
-	}
-
-	c.JSON(201, nil)
-
-}
-
 func GetGoal(c *gin.Context) {
 	page, _ := stc.Atoi(c.DefaultQuery("page", "1"))
 	limit, _ := stc.Atoi(c.DefaultQuery("limit", "100"))
