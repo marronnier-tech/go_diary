@@ -17,5 +17,5 @@ type userTodoArray struct {
 
 type todayTodo struct {
 	TodoLog       table.TodoAchievedLog `json:"TodoLogInfo"`
-	TodayAchieved bool                  `json:"TodayAchieved`
+	TodayAchieved bool                  `json:"TodayAchieved"`
 }

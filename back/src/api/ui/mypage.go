@@ -1,6 +1,7 @@
 package ui
 
 import (
+	"fmt"
 	stc "strconv"
 
 	"../app/todo"
@@ -8,18 +9,34 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func PostTodo(c *gin.Context) {
-
-	user, err := SessionLogin(c)
+func MyTodo(c *gin.Context) {
+	_, name, err := SessionLogin(c)
 
 	if err != nil {
 		c.JSON(500, gin.H{"error": err})
-		return
+		c.Abort()
+	}
+
+	c.Redirect(302, fmt.Sprintf("/todolist/%s", name))
+
+}
+
+func PostTodo(c *gin.Context) {
+	id, _, err := SessionLogin(c)
+
+	if err != nil {
+		c.JSON(500, gin.H{"error": err})
+		c.Abort()
 	}
 
 	content := c.PostForm("content")
 
-	err = todo.ToPost(user, content)
+	if content == "" {
+		c.JSON(500, gin.H{"error": "content is null!"})
+		return
+	}
+
+	err = todo.ToPost(id, content)
 
 	if err != nil {
 		c.JSON(500, err)
@@ -32,13 +49,20 @@ func PostTodo(c *gin.Context) {
 }
 
 func DeleteTodo(c *gin.Context) {
-
-	id, _ := stc.Atoi(c.Param("id"))
-
-	err := todo.ToDelete(id)
+	userid, _, err := SessionLogin(c)
 
 	if err != nil {
-		c.JSON(500, err)
+		c.JSON(500, gin.H{"error": err})
+		c.Abort()
+	}
+
+	todoid, _ := stc.Atoi(c.Param("id"))
+
+	err = todo.ToDelete(todoid, userid)
+
+	if err != nil {
+		c.JSON(500, gin.H{"error": err})
+		return
 	}
 
 	c.JSON(201, nil)
@@ -48,19 +72,19 @@ func DeleteTodo(c *gin.Context) {
 
 func PutAchieveTodo(c *gin.Context) {
 
-	user, err := SessionLogin(c)
+	userid, _, err := SessionLogin(c)
 
 	if err != nil {
 		c.JSON(500, gin.H{"error": err})
 		return
 	}
 
-	id, _ := stc.Atoi(c.Param("id"))
+	todoid, _ := stc.Atoi(c.Param("id"))
 
-	res, err := todo.ToPutAchieve(id, user)
+	res, err := todo.ToPutAchieve(todoid, userid)
 
 	if err != nil {
-		c.JSON(500, gin.H{"error": err})
+		c.JSON(500, gin.H{"error": "It's not your Todo!"})
 		return
 	}
 
@@ -69,9 +93,17 @@ func PutAchieveTodo(c *gin.Context) {
 }
 
 func ClearAchieveTodo(c *gin.Context) {
-	id, _ := stc.Atoi(c.Param("id"))
 
-	res, err := todo.ToClearAchieve(id)
+	userid, _, err := SessionLogin(c)
+
+	if err != nil {
+		c.JSON(500, gin.H{"error": err})
+		return
+	}
+
+	todoid, _ := stc.Atoi(c.Param("id"))
+
+	res, err := todo.ToClearAchieve(todoid, userid)
 
 	if err != nil {
 		c.JSON(500, gin.H{"error": err})
@@ -81,9 +113,16 @@ func ClearAchieveTodo(c *gin.Context) {
 }
 
 func PatchGoal(c *gin.Context) {
-	id, _ := stc.Atoi(c.Param("id"))
+	userid, _, err := SessionLogin(c)
 
-	err := todo.ToPatchGoal(id)
+	if err != nil {
+		c.JSON(500, gin.H{"error": err})
+		return
+	}
+
+	todoid, _ := stc.Atoi(c.Param("id"))
+
+	err = todo.ToPatchGoal(todoid, userid)
 
 	if err != nil {
 		c.JSON(500, gin.H{"error": err})

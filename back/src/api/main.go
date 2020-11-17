@@ -31,6 +31,7 @@ func main() {
 
 	my := r.Group("mypage")
 	{
+		my.GET("", ui.MyTodo)
 		my.POST("", ui.PostTodo)
 		my.DELETE("/:id", ui.DeleteTodo)
 
