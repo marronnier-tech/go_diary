@@ -1,6 +1,7 @@
 package todo
 
 import (
+	"errors"
 	"time"
 
 	"../../infra"
@@ -8,7 +9,7 @@ import (
 	"github.com/lib/pq"
 )
 
-func ToPutAchieve(id int) (out todayTodo, err error) {
+func ToPutAchieve(id int, user int) (out todayTodo, err error) {
 	db, err := infra.DBConnect()
 	if err != nil {
 		return
@@ -22,6 +23,11 @@ func ToPutAchieve(id int) (out todayTodo, err error) {
 		Error
 
 	if err != nil {
+		return
+	}
+
+	if user != todo.UserID {
+		err = errors.New("This user is invalid")
 		return
 	}
 

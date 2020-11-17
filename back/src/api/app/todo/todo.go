@@ -143,7 +143,7 @@ func ToGetOneUser(name string, order string) (out userTodoArray, err error) {
 
 }
 
-func ToPost(name string, content string) (err error) {
+func ToPost(user int, content string) (err error) {
 
 	db, err := infra.DBConnect()
 
@@ -154,8 +154,8 @@ func ToPost(name string, content string) (err error) {
 	var u domain.UserSimpleInfo
 
 	err = db.Table("users").
-		Select("id, name").
-		Where("name = ?", name).
+		Select("id").
+		Where("id = ?", user).
 		Scan(&u).
 		Error
 
