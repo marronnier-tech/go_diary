@@ -49,3 +49,15 @@ func GetOneUserTodo(c *gin.Context) {
 	})
 
 }
+
+func MyTodo(c *gin.Context) {
+	_, name, err := SessionLogin(c)
+
+	if err != nil {
+		c.JSON(500, gin.H{"error": err})
+		c.Abort()
+	}
+
+	c.Redirect(302, fmt.Sprintf("/todolist/%s", name))
+
+}

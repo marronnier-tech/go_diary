@@ -12,3 +12,17 @@ type LoginInfo struct {
 	UserName string `gorm:"column:name"`
 	Password []byte `gorm:"column:password"`
 }
+
+type UserDetailInfo struct {
+	ID        int     `gorm:"column:id; type:autoIncrement"`
+	Name      string  `gorm:"column:name;unique"`
+	HN        *string `gorm:"column:handle_name"`
+	Img       *string `gorm:"column:img"`
+	FinalGoal *string `gorm:"column:final_goal"`
+	Profile   *string `gorm:"column:profile"`
+	Twitter   *string `gorm:"column:twitter"`
+	Instagram *string `gorm:"column:instagram"`
+	Facebook  *string `gorm:"column:facebook"`
+	Github    *string `gorm:"column:github"`
+	URL       *string `gorm:"column:url"`
+}

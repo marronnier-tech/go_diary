@@ -11,7 +11,6 @@ func SessionLogin(c *gin.Context) (id int, user string, err error) {
 
 	session := sessions.Default(c)
 
-	// var hashStr []byte
 	name := session.Get("name")
 	password := session.Get("password")
 

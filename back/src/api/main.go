@@ -41,11 +41,20 @@ func main() {
 
 	}
 
+	profile := r.Group("/profile")
+	{
+		profile.GET("", ui.GetMyProfile)
+		profile.PATCH("", ui.PatchProfile)
+
+		profile.GET("/:name", ui.GetOnesProfile)
+
+	}
+
 	// ログイン、あとでsuccess変更
 
-	r.POST("/admin/register", ui.Register)
+	r.POST("/register", ui.Register)
 
-	r.GET("/admin/login", ui.Login)
+	r.GET("/login", ui.Login)
 
 	r.GET("/success", func(c *gin.Context) {
 		c.JSON(201, gin.H{"message": "success!"})
