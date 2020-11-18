@@ -50,11 +50,15 @@ func main() {
 
 	}
 
+	
+
 	// ログイン、あとでsuccess変更
 
 	r.POST("/register", ui.Register)
 
 	r.GET("/login", ui.Login)
+
+	r.DELETE("/delete", ui.DeleteMembership)
 
 	r.GET("/success", func(c *gin.Context) {
 		c.JSON(201, gin.H{"message": "success!"})

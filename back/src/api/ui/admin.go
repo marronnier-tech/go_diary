@@ -69,3 +69,23 @@ func Register(c *gin.Context) {
 	c.Redirect(302, "/success")
 
 }
+
+func DeleteMembership(c *gin.Context) {
+	userid, _, err := SessionLogin(c)
+
+	if err != nil {
+		c.JSON(500, gin.H{"error": err})
+		c.Abort()
+	}
+
+	err = admin.ToDeleteMember(userid)
+
+	if err != nil {
+		c.JSON(500, err)
+	}
+
+	c.JSON(200, gin.H{
+		"DeleteProcess": true,
+	})
+
+}
