@@ -1,25 +1,12 @@
 package ui
 
 import (
-	"fmt"
 	stc "strconv"
 
 	"../app/todo"
 
 	"github.com/gin-gonic/gin"
 )
-
-func MyTodo(c *gin.Context) {
-	_, name, err := SessionLogin(c)
-
-	if err != nil {
-		c.JSON(500, gin.H{"error": err})
-		c.Abort()
-	}
-
-	c.Redirect(302, fmt.Sprintf("/todolist/%s", name))
-
-}
 
 func PostTodo(c *gin.Context) {
 	id, _, err := SessionLogin(c)

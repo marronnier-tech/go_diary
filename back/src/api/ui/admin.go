@@ -11,7 +11,6 @@ func SessionLogin(c *gin.Context) (id int, user string, err error) {
 
 	session := sessions.Default(c)
 
-	// var hashStr []byte
 	name := session.Get("name")
 	password := session.Get("password")
 
@@ -68,5 +67,25 @@ func Register(c *gin.Context) {
 	session.Save()
 
 	c.Redirect(302, "/success")
+
+}
+
+func DeleteMembership(c *gin.Context) {
+	userid, _, err := SessionLogin(c)
+
+	if err != nil {
+		c.JSON(500, gin.H{"error": err})
+		c.Abort()
+	}
+
+	err = admin.ToDeleteMember(userid)
+
+	if err != nil {
+		c.JSON(500, err)
+	}
+
+	c.JSON(200, gin.H{
+		"DeleteProcess": true,
+	})
 
 }

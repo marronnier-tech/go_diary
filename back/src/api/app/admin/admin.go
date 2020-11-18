@@ -71,3 +71,29 @@ func SignUp(user string, password string) (err error) {
 
 	return nil
 }
+
+func ToDeleteMember(userid int) (err error) {
+	db, err := infra.DBConnect()
+
+	if err != nil {
+		return
+	}
+
+	var user table.User
+
+	err = db.Table("users").
+		Where("id = ?", userid).
+		First(&user).
+		Error
+
+	if err != nil {
+		return
+	}
+
+	user.IsDeleted = true
+
+	db.Save(&user)
+
+	return
+
+}
