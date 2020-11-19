@@ -4,33 +4,33 @@
 
 # API一覧
 
-## TODO一覧系列
+## 一覧系列（ログイン未定）
 - [GET-全ユーザーのTODO一覧を表示](#GET-全ユーザーのTODO一覧を表示)；非優先：フォローに限定
 - [GET-該当ユーザーのTODO一覧を表示](#GET-該当ユーザーのTODO一覧を表示)
-- [POST-TODOを登録](#POST-TODOを登録)
-- [DELETE-TODOを削除（論理削除）](#DELETE-TODOを削除（論理削除）)
-
-## ゴール（※）系列
-- [PATCH-TODOをゴールに変更](#PATCH-TODOをゴールに変更)
 - [GET-全ユーザーのゴールしたTODOリスト](#GET-全ユーザーのゴールTODOリスト)
 - [GET-該当ユーザーのゴールTODOリスト](#GET-該当ユーザーのゴールTODOリスト)
 
-
-## TODO当日系列
+## ログイン必須系列
+- [GET-本人のTODO一覧を表示](#GET-本人のTODO一覧を表示)
+- [POST-TODOを登録](#POST-TODOを登録)
+- [DELETE-TODOを削除（論理削除）](#DELETE-TODOを削除（論理削除）)
 - [POST-当日TODO完了](#POST-当日TODO完了)
 - [DELETE-当日TODO完了取消](#DELETE-当日TODO完了取消)
-
-## TODO達成データ系列
+- [PATCH-TODOをゴールに変更](#PATCH-TODOをゴールに変更)
 - [GET-該当ユーザーの月別TODO達成状況取得](#GET-該当ユーザーの月別TODO達成状況取得) - 非優先：グラフで可視化
 
-## ユーザー情報系列
+## ユーザー情報詳細系列
 - [GET-ユーザー情報詳細表示](#GET-ユーザー情報詳細表示)
-- [POST-ユーザー登録](#POST-ユーザー登録)
 - [PATCH-ユーザー情報の更新](#PATCH-ユーザー情報の変更)
+
+
+## ユーザー登録・大会
+- [POST-ユーザー登録](#POST-ユーザー登録)
+- [GET-ユーザーログイン](#POST-ユーザーログイン)
 - [DELETE-退会（論理削除）](#DELETE-退会（論理削除）)
 
 
-## ユーザー秘匿情報系列
+## ユーザー秘匿情報系列 - ＜＜非優先＞＞
 - [GET-ユーザー秘匿情報表示](#GET-ユーザー秘匿情報表示)
 - [PATCH-メールアドレス更新](#PATCH-メールアドレス更新)
 
@@ -47,7 +47,7 @@
 ## GET-全ユーザーのTODO一覧を表示
 ### URI
 ```
-GET /{?page,limit,order}
+GET /todolist{?page,limit,order}
 ```
 ### 処理概要
 - 全ユーザーのTODO一覧を表示する。
@@ -143,13 +143,6 @@ GET /:name{?order}
 | name | string | ユーザー名 | x |
 | order | string | 表示順 | o |
 
-### 入力例
-```json
-{
-    "name": "gopher0120"
-}
-```
-
 ### レスポンスパラメータ
 
 | key | type | content | 
@@ -200,202 +193,6 @@ GET /:name{?order}
 }
 
 ```
-
-## POST-TODOを登録
-
-### URI
-```
-POST /todo
-```
-### 処理概要
-- Todoリストに内容を登録する
-
-### リクエストパラメータ
-
-| key | type | content | null |
-| ---- | ---- | ---- | ---- |
-| Content | string | Todoの詳細 | x |
-
-### 入力例
-```json
-{
-    "Content": "プログラミング"
-}
-```
-
-### レスポンスパラメータ
-
-| key | type | content | 
-| ---- | ---- | ---- |
-| User | list | ユーザー情報 | 
-| UserID{User} | numeric | ユーザーID | 
-| UserName{User} | string | ユーザー名 |
-| UserHN{User} | string | ユーザーのハンドルネーム |
-| UserImg{User} | string | ユーザー画像 |
-| TodoArray | object | todo内容 |
-| TodoId[TodoArray] | numeric | todoのID |
-| Content[TodoArray] | string | todoの詳細 |
-| CreatedAt[TodoArray] | numeric | todo登録日 | 
-
-### 正常レスポンス
-```json
-/* status: 200 */
-{
-    "User": {
-        "UserID": 1,
-        "UserName": "gopher0120",
-        "UserHN": "Gopherくん",
-        "UserImg": "cutiegopher.jpg",
-    },
-    "TodoArray": [
-        {
-        "TodoID" : 1,
-        "Content": "プログラミング",
-        "CreatedAt": "20201031"
-        }
-    ]
-}
-```
-
-### 異常レスポンス
-```json
-/* status: 404 */
-{
-    "Error": "Not Found."
-}
-```
-```json
-/* status: 500 */
-{
-    "error": "Server Error."
-}
-
-```
-
-## DELETE-TODOを削除（論理削除）
-
-### URI
-```
-DELETE /todo/:id
-```
-### 処理概要
-- Todoリストの内容を削除する（ゴールリストには表示しない）
-- ゴールしたTodoはDeleteできない
-
-### リクエストパラメータ
-
-| key | type | content |  null |
-| ---- | ---- | ---- | ---- |
-| TodoID | numeric | TodoのID | x |
-
-### 入力例
-```json
-{
-    "TodoId": 1
-}
-```
-
-### ステータスコード
-
-### レスポンスパラメータ
-
-| key | type | content | 
-| ---- | ---- | ---- | 
-| TodoID | numeric | TodoのID |
-| DeletedTodo | boolean | Todoが削除されたか |
-
-### 正常レスポンス
-```json
-/* status: 200 */
-{
-    "TodoID": 1,
-    " DeletedTodo": true,
-}
-```
-
-### 異常レスポンス
-```json
-/* status: 400 */
-{
-    "Error": "Bad Request."
-}
-```
-```json
-/* status: 404 */
-{
-    "Error": "Not Found."
-}
-```
-```json
-/* status: 500 */
-{
-    "error": "Server Error."
-}
-
-```
-
-## PATCH-TODOをゴールに変更
-
-### URI
-```
-PATCH /todo/:id
-```
-
-### 処理概要
-- Todoリストの達成状況を「ゴール」に変更する
-
-### リクエストパラメータ
-
-| key | type | content |  null |
-| ---- | ---- | ---- | ---- |
-| id | int | TodoのID | x |
-
-### 入力例
-```json
-{
-    "id": 1
-}
-```
-
-### レスポンスパラメータ
-| key | type | content | 
-| ---- | ---- | ---- |
-| TodoID | numeric | TodoのID |
-| Goaled | boolean | Todoがゴールか |
-| GoaledAt | datetime | ゴールした日 |
-
-### 正常レスポンス
-```json
-/* status: 200 */
-{
-    "TodoID": 1,
-    "Goaled": true,
-    "GoaledAt": 20201110
-}
-```
-
-### 異常レスポンス
-```json
-/* status: 400 */
-{
-    "Error": "Bad Request."
-}
-```
-```json
-/* status: 404 */
-{
-    "Error": "Not Found."
-}
-```
-```json
-/* status: 500 */
-{
-    "error": "Server Error."
-}
-
-```
-
-
 
 ## GET-全ユーザーのゴールTODOリスト
 ### URI
@@ -534,6 +331,141 @@ GET /:name/goal
 }
 ```
 
+## GET-本人のTODO一覧を表示
+
+
+## POST-TODOを登録
+
+### URI
+```
+POST /todo
+```
+### 処理概要
+- Todoリストに内容を登録する
+
+### リクエストパラメータ
+
+| key | type | content | null |
+| ---- | ---- | ---- | ---- |
+| Content | string | Todoの詳細 | x |
+
+### 入力例
+```json
+{
+    "Content": "プログラミング"
+}
+```
+
+### レスポンスパラメータ
+
+| key | type | content | 
+| ---- | ---- | ---- |
+| User | list | ユーザー情報 | 
+| UserID{User} | numeric | ユーザーID | 
+| UserName{User} | string | ユーザー名 |
+| UserHN{User} | string | ユーザーのハンドルネーム |
+| UserImg{User} | string | ユーザー画像 |
+| TodoArray | object | todo内容 |
+| TodoId[TodoArray] | numeric | todoのID |
+| Content[TodoArray] | string | todoの詳細 |
+| CreatedAt[TodoArray] | numeric | todo登録日 | 
+
+### 正常レスポンス
+```json
+/* status: 200 */
+{
+    "User": {
+        "UserID": 1,
+        "UserName": "gopher0120",
+        "UserHN": "Gopherくん",
+        "UserImg": "cutiegopher.jpg",
+    },
+    "TodoArray": [
+        {
+        "TodoID" : 1,
+        "Content": "プログラミング",
+        "CreatedAt": "20201031"
+        }
+    ]
+}
+```
+
+### 異常レスポンス
+```json
+/* status: 404 */
+{
+    "Error": "Not Found."
+}
+```
+```json
+/* status: 500 */
+{
+    "error": "Server Error."
+}
+
+```
+
+## DELETE-TODOを削除（論理削除）
+
+### URI
+```
+DELETE /todo/:id
+```
+### 処理概要
+- Todoリストの内容を削除する（ゴールリストには表示しない）
+- ゴールしたTodoはDeleteできない
+
+### リクエストパラメータ
+
+| key | type | content |  null |
+| ---- | ---- | ---- | ---- |
+| TodoID | numeric | TodoのID | x |
+
+### 入力例
+```json
+{
+    "TodoId": 1
+}
+```
+
+### ステータスコード
+
+### レスポンスパラメータ
+
+| key | type | content | 
+| ---- | ---- | ---- | 
+| TodoID | numeric | TodoのID |
+| DeletedTodo | boolean | Todoが削除されたか |
+
+### 正常レスポンス
+```json
+/* status: 200 */
+{
+    "TodoID": 1,
+    " DeletedTodo": true,
+}
+```
+
+### 異常レスポンス
+```json
+/* status: 400 */
+{
+    "Error": "Bad Request."
+}
+```
+```json
+/* status: 404 */
+{
+    "Error": "Not Found."
+}
+```
+```json
+/* status: 500 */
+{
+    "error": "Server Error."
+}
+
+```
 
 ## POST-当日TODO完了
 ### URI
@@ -592,6 +524,8 @@ POST /:todoid
 
 ```
 
+
+
 ## DELETE-当日TODO完了取消
 ### URI
 ```
@@ -649,6 +583,73 @@ POST /:todoid
 }
 
 ```
+
+
+## PATCH-TODOをゴールに変更
+
+### URI
+```
+PATCH /todo/:id
+```
+
+### 処理概要
+- Todoリストの達成状況を「ゴール」に変更する
+
+### リクエストパラメータ
+
+| key | type | content |  null |
+| ---- | ---- | ---- | ---- |
+| id | int | TodoのID | x |
+
+### 入力例
+```json
+{
+    "id": 1
+}
+```
+
+### レスポンスパラメータ
+| key | type | content | 
+| ---- | ---- | ---- |
+| TodoID | numeric | TodoのID |
+| Goaled | boolean | Todoがゴールか |
+| GoaledAt | datetime | ゴールした日 |
+
+### 正常レスポンス
+```json
+/* status: 200 */
+{
+    "TodoID": 1,
+    "Goaled": true,
+    "GoaledAt": 20201110
+}
+```
+
+### 異常レスポンス
+```json
+/* status: 400 */
+{
+    "Error": "Bad Request."
+}
+```
+```json
+/* status: 404 */
+{
+    "Error": "Not Found."
+}
+```
+```json
+/* status: 500 */
+{
+    "error": "Server Error."
+}
+
+```
+
+
+
+
+
 
 
 
@@ -836,63 +837,6 @@ GET /:name/profile
 
 ```
 
-## POST-ユーザー登録
-### URI
-```
-POST /register
-```
-### 処理概要
-- ユーザー登録をする。
-- 固有のユーザー名、メールアドレス、パスワードが必須。
-- HNがない場合は、ユーザー名がそのまま使用される。
-- 詳細情報は空になる。
-
-### リクエストパラメータ
-
-| key | type | content | null |
-| ---- | ---- | ---- | ---- |
-| Name | string | ユーザー名 | x |
-| HN | string | ハンドルネーム | o |
-| MailAddress | string | メールアドレス | x |
-| Password | string | パスワード | x | 
-
-### 入力例
-```json
-{
-    "Name": "gopher0120",
-    "HN": "Gopherくん",
-    "MailAddress": "cutegopher@gophergogo.com",
-    "Password": "golanggggggg"
-}
-```
-
-### レスポンスパラメータ
-- "/"にリダイレクト
-
-```json
-/* status 302 */
-```
-
-### 異常レスポンス
-```json
-/* status 400 */
-{
-    "Error": "Bad Request."
-}
-```
-```json
-/* status: 404 */
-{
-    "Error": "Not Found."
-}
-```
-```json
-/* status: 500 */
-{
-    "error": "Server Error."
-}
-
-```
 
 ## PATCH-ユーザー情報の更新
 
@@ -956,6 +900,71 @@ GET /profile
 }
 
 ```
+
+## POST-ユーザー登録
+### URI
+```
+POST /register
+```
+### 処理概要
+- ユーザー登録をする。
+- 固有のユーザー名、メールアドレス、パスワードが必須。
+- HNがない場合は、ユーザー名がそのまま使用される。
+- 詳細情報は空になる。
+
+### リクエストパラメータ
+
+| key | type | content | null |
+| ---- | ---- | ---- | ---- |
+| Name | string | ユーザー名 | x |
+| HN | string | ハンドルネーム | o |
+| MailAddress | string | メールアドレス | x |
+| Password | string | パスワード | x | 
+
+### 入力例
+```json
+{
+    "Name": "gopher0120",
+    "HN": "Gopherくん",
+    "MailAddress": "cutegopher@gophergogo.com",
+    "Password": "golanggggggg"
+}
+```
+
+### レスポンスパラメータ
+- "/"にリダイレクト
+
+```json
+/* status 302 */
+```
+
+### 異常レスポンス
+```json
+/* status 400 */
+{
+    "Error": "Bad Request."
+}
+```
+```json
+/* status: 404 */
+{
+    "Error": "Not Found."
+}
+```
+```json
+/* status: 500 */
+{
+    "error": "Server Error."
+}
+
+```
+
+
+
+
+
+
+## GET-ユーザーログイン
 
 ## DELETE-退会（論理削除）
 ### URI

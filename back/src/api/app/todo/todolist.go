@@ -37,6 +37,16 @@ func ToGetAll(limit int, page int, order string) (out []allTodoArray, err error)
 
 	for _, r := range rows {
 
+		if r.LastAchieved.Valid == false{
+			obj = domain.TodoObjInfo{
+				TodoID:       r.ID,
+				Content:      r.Content,
+				CreatedAt:    r.CreatedAt,
+				LastAchieved: r.LastAchieved,
+			}
+			
+		}
+
 		obj = domain.TodoObjInfo{
 			TodoID:       r.ID,
 			Content:      r.Content,
