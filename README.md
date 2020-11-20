@@ -20,13 +20,14 @@
 - [GET-該当ユーザーの月別TODO達成状況取得](#GET-該当ユーザーの月別TODO達成状況取得) - 非優先：グラフで可視化
 
 ## ユーザー情報詳細系列
-- [GET-ユーザー情報詳細表示](#GET-ユーザー情報詳細表示)
+- [GET-本人情報詳細表示](#GET-本人情報詳細表示)
 - [PATCH-ユーザー情報の更新](#PATCH-ユーザー情報の変更)
+- [GET-ユーザー情報詳細表示](#GET-ユーザー情報詳細表示)
 
 
 ## ユーザー登録・大会
 - [POST-ユーザー登録](#POST-ユーザー登録)
-- [GET-ユーザーログイン](#POST-ユーザーログイン)
+- [GET-ユーザーログイン](#GET-ユーザーログイン)
 - [DELETE-退会（論理削除）](#DELETE-退会（論理削除）)
 
 
@@ -47,7 +48,7 @@
 ## GET-全ユーザーのTODO一覧を表示
 ### URI
 ```
-GET /todolist{?page,limit,order}
+GET /todo{?page,limit,order}
 ```
 ### 処理概要
 - 全ユーザーのTODO一覧を表示する。
@@ -201,9 +202,8 @@ GET /goal{?page,limit}
 ```
 ### 処理概要
 - 全ユーザーのゴールしたTODO一覧を表示する。
-- limitで各ページ上限、pageでページ数を指定できる。
-デフォルトはlimit:100、page:1。クエリパラメータで取得する。
-- ゴール日順に表示
+- limitで各ページ上限、pageでページ数、orderで表示順序を指定できる。
+デフォルトはlimit:100、page:1、order:"last_achieved"。クエリパラメータで取得する。
 - ゴールのみ表示
 
 
@@ -213,7 +213,7 @@ GET /goal{?page,limit}
 | ---- | ---- | ---- | ---- |
 | page | numeric | ページ数 |  o |
 | limit | numeric | ページ内表示Todo数 | o |
-
+| order | string | 表示順序 | o |
 
 ### レスポンスパラメータ
 
@@ -231,6 +231,7 @@ GET /goal{?page,limit}
 | UserImg{User} | string | 所有ユーザーのアイコン；非優先 |
 | limit | numeric | ページ内表示Todo数 |
 | page | numeric | ページ数 | 
+| order | string | 表示順序 |
 
 ### 正常レスポンス
 - ステータス：200
@@ -247,13 +248,14 @@ GET /goal{?page,limit}
             "User":{
                 "UserId": 1,
                 "UserName": "gopher0120",
-                "UserHN": "Gopherくん"
+                "UserHN": "Gopherくん",
                 "UserImg": "cutiegopher.jpg",
             },
         },
     ],
     "limit": 100,
-    "page": 1
+    "page": 1,
+    "order": "last_achieved"
 }
 ```
 
@@ -276,24 +278,19 @@ GET /goal{?page,limit}
 
 ### URI
 ```
-GET /:name/goal
+GET /goal/:name
 ```
 ### 処理概要
 - キーで取得したユーザーのTODO一覧を表示する。
 - ゴール日順に表示する。
+- orderで表示順序を指定できる。デフォルトは"last_achieved"。
 
 ### リクエストパラメータ
 
 | key | type | content | null |
 | ---- | ---- | ---- | ---- |
 | name | string | ユーザー名 | x |
-
-### 入力例
-```json
-{
-    "name": "gopher0120"
-}
-```
+| order | string | 表示順序 | o |
 
 ### レスポンスパラメータ
 
@@ -304,11 +301,12 @@ GET /:name/goal
 | UserName{User} | string | ユーザー名 |
 | UserHN{User} | string | ユーザーのハンドルネーム |
 | UserImg{User} | string | ユーザー画像 |
-| TodoArray | array | todo取得 |
+| TodoObj | array | todo取得 |
 | TodoID[TodoArray] | numeric | todoのID |
 | Content[TodoArray] | string | todoの詳細 |
 | CreatedAt[TodoArray] | numeric | todo登録日 |
 | GoaledAt[TodoArray] | numeric | ゴール日 | 
+| order | string | 表示順序 |
 
 ### 正常レスポンス
 ```json
@@ -333,12 +331,16 @@ GET /:name/goal
 
 ## GET-本人のTODO一覧を表示
 
+GET /mypage{?order}
+
+該当ユーザーのTODO一覧と同じ
+ただしname = 本人UserName
 
 ## POST-TODOを登録
 
 ### URI
 ```
-POST /todo
+POST /mypage
 ```
 ### 処理概要
 - Todoリストに内容を登録する
@@ -360,33 +362,24 @@ POST /todo
 
 | key | type | content | 
 | ---- | ---- | ---- |
-| User | list | ユーザー情報 | 
-| UserID{User} | numeric | ユーザーID | 
-| UserName{User} | string | ユーザー名 |
-| UserHN{User} | string | ユーザーのハンドルネーム |
-| UserImg{User} | string | ユーザー画像 |
-| TodoArray | object | todo内容 |
-| TodoId[TodoArray] | numeric | todoのID |
-| Content[TodoArray] | string | todoの詳細 |
-| CreatedAt[TodoArray] | numeric | todo登録日 | 
+| TodoObj | object | todo内容 |
+| TodoId{TodoObj} | numeric | todoのID |
+| Content{TodoObj} | string | todoの詳細 |
+| CreatedAt{TodoObj} | numeric | todo登録日 | 
+| LastAchieved{TodoObj} | numeric | 最終達成日（0日前） |
 
 ### 正常レスポンス
 ```json
-/* status: 200 */
+HTTP/1.1 201 Created
 {
-    "User": {
-        "UserID": 1,
-        "UserName": "gopher0120",
-        "UserHN": "Gopherくん",
-        "UserImg": "cutiegopher.jpg",
-    },
-    "TodoArray": [
+    
+    "TodoObj": 
         {
-        "TodoID" : 1,
-        "Content": "プログラミング",
-        "CreatedAt": "20201031"
+            "TodoID" : 1,
+            "Content": "プログラミング",
+            "CreatedAt": "20201031",
+            "LastAchieved": 0
         }
-    ]
 }
 ```
 
@@ -409,10 +402,10 @@ POST /todo
 
 ### URI
 ```
-DELETE /todo/:id
+DELETE /mypage/:id
 ```
 ### 処理概要
-- Todoリストの内容を削除する（ゴールリストには表示しない）
+- 取得したキーのTodo項目をTodoリストから削除する
 - ゴールしたTodoはDeleteできない
 
 ### リクエストパラメータ
@@ -420,13 +413,6 @@ DELETE /todo/:id
 | key | type | content |  null |
 | ---- | ---- | ---- | ---- |
 | TodoID | numeric | TodoのID | x |
-
-### 入力例
-```json
-{
-    "TodoId": 1
-}
-```
 
 ### ステータスコード
 
@@ -439,10 +425,10 @@ DELETE /todo/:id
 
 ### 正常レスポンス
 ```json
-/* status: 200 */
+HTTP/1.1 200 OK
 {
     "TodoID": 1,
-    " DeletedTodo": true,
+    "Is_Deleted": true,
 }
 ```
 
@@ -470,36 +456,39 @@ DELETE /todo/:id
 ## POST-当日TODO完了
 ### URI
 ```
-POST /:todoid
+POST /:id/today
 ```
 ### 処理概要
 - Todoリストに当日のtodo達成を登録する
 
 ### リクエストパラメータ
+
 | key | type | content | null |
 | ---- | ---- | ---- | ---- |
-| todoid | string | TodoのID | x |
-
-### 入力例
-```json
-{
-    "todoid" : 1
-}
-```
+| id | string | TodoのID | x |
 
 ### レスポンスパラメータ
 
 | key | type | content | 
 | ---- | ---- | ---- |
+| TodoObj | list | todo |
 | TodoId | numeric | todoのID |
+| Content | string | todo内容 |
+| LastAchieved | numeric | 0日前に達成 |
 | TodayAchieved | boolean | 本日達成しているか |
 
 ### 正常レスポンス
 ```json
-/* status: 200 */
+HTTP/1.1 200 OK
 {
-    "TodoID" : 1,
-    "TodayAchieved": true
+    "TodoObj": {
+        "ID": 1,
+        "Content": "プログラミング",
+        "CreatedAt": 20201117,
+        "LastAchieved": 0,
+        "TodayAchieved": true
+    }
+    
 }
 ```
 
@@ -529,7 +518,7 @@ POST /:todoid
 ## DELETE-当日TODO完了取消
 ### URI
 ```
-POST /:todoid
+POST /:id/today
 ```
 ### 処理概要
 - Todoリストの当日のtodo達成を取り消す
@@ -538,31 +527,32 @@ POST /:todoid
 
 | key | type | content | null |
 | ---- | ---- | ---- | ---- |
-| todoid | string | TodoのID | x |
-
-### 入力例
-```json
-{
-    "todoid" : 1
-}
-```
+| id | string | TodoのID | x |
 
 ### レスポンスパラメータ
 
 | key | type | content | 
 | ---- | ---- | ---- |
+| TodoObj | list | todo |
 | TodoId | numeric | todoのID |
+| Content | string | todo内容 |
+| LastAchieved | numeric | n日前に達成 |
 | TodayAchieved | boolean | 本日達成しているか |
 
 ### 正常レスポンス
 ```json
-/* status: 200 */
+HTTP/1.1 200 OK
 {
-    "TodoID" : 1,
-    "TodayAchieved": false
+    "TodoObj": {
+        "ID": 1,
+        "Content": "プログラミング",
+        "CreatedAt": 20201117,
+        "LastAchieved": 4,
+        "TodayAchieved": false
+    }
+    
 }
 ```
-
 ### 異常レスポンス
 ```json
 /* status: 400 */
@@ -589,7 +579,7 @@ POST /:todoid
 
 ### URI
 ```
-PATCH /todo/:id
+PATCH /:id/goal
 ```
 
 ### 処理概要
@@ -617,12 +607,7 @@ PATCH /todo/:id
 
 ### 正常レスポンス
 ```json
-/* status: 200 */
-{
-    "TodoID": 1,
-    "Goaled": true,
-    "GoaledAt": 20201110
-}
+HTTP/1.1 201 Created
 ```
 
 ### 異常レスポンス
@@ -658,7 +643,7 @@ PATCH /todo/:id
 
 ### URI
 ```
-GET /:name/
+GET /mypage/achieved
 ```
 ### 処理概要
 - キーで取得したユーザーのTODO達成状況を確認する
@@ -766,11 +751,83 @@ GET /:name/
 
 
 
+
+
+## GET-本人情報詳細表示
+
+[GET-ユーザー情報詳細表示](#GET-ユーザー情報詳細表示)と同じ
+ただしname = UserName
+
+## PATCH-ユーザー情報の更新
+
+### URI
+```
+GET /profile
+```
+### 処理概要
+- ユーザー情報を更新する（秘匿情報以外）
+
+### リクエストパラメータ
+
+| key | type | content | null |
+| ---- | ---- | ---- | ---- |
+| Name | string | ユーザーの名前 | x |
+| HN | string | ユーザーのハンドルネーム | x |
+| Img | string | ユーザーのアイコン；非優先 | o |
+| FinalGoal | string | ユーザーの目標 | o |
+| Profile | string | ユーザーのプロフィール（自由記述） | o |
+| Twitter | string | ユーザーのTwitterアカウント | o |
+| Instagram | string | ユーザーのInstagramアカウント | o |
+| Facebook | string | ユーザーのFacebookアカウント | o |
+| GitHub | string | ユーザーのGitHubアカウント | o |
+| URL | string | その他ユーザーが載せたいURL | o |
+
+### 入力例
+```json
+{
+    "Name": "gopher0120",
+    "HN": "Gopherくん",
+    "Img": "cutiegopher.jpg",
+    "FinalGoal": "Golangの神になりたい！！",
+    "Profile": "僕はGopher。Golangが大好き！最近Goで参加する競技プログラミングのYouTubeチャンネル始めました。Golangがもっと広まると嬉しいな！",
+    "Twitter": "go",
+    "Instagram": "go",
+    "Facebook": "go",
+    "Github": "go",
+    "URL": "http://www.cutiegophergogogo.com/"
+}
+```
+
+### レスポンスパラメータ
+- なし
+
+### 正常レスポンス
+```json
+/* status: 204 */
+```
+
+### 異常レスポンス
+```json
+/* status: 404 */
+{
+    "Error": "Not Found."
+}
+```
+```json
+/* status: 500 */
+{
+    "error": "Server Error."
+}
+
+```
+
+
+
 ## GET-ユーザー情報詳細表示
 
 ### URI
 ```
-GET /:name/profile
+GET /profile
 ```
 ### 処理概要
 - ユーザー情報の詳細を取得する
@@ -838,68 +895,6 @@ GET /:name/profile
 ```
 
 
-## PATCH-ユーザー情報の更新
-
-### URI
-```
-GET /profile
-```
-### 処理概要
-- ユーザー情報を更新する（秘匿情報以外）
-
-### リクエストパラメータ
-
-| key | type | content | null |
-| ---- | ---- | ---- | ---- |
-| Name | string | ユーザーの名前 | x |
-| HN | string | ユーザーのハンドルネーム | x |
-| Img | string | ユーザーのアイコン；非優先 | o |
-| FinalGoal | string | ユーザーの目標 | o |
-| Profile | string | ユーザーのプロフィール（自由記述） | o |
-| Twitter | string | ユーザーのTwitterアカウント | o |
-| Instagram | string | ユーザーのInstagramアカウント | o |
-| Facebook | string | ユーザーのFacebookアカウント | o |
-| GitHub | string | ユーザーのGitHubアカウント | o |
-| URL | string | その他ユーザーが載せたいURL | o |
-
-### 入力例
-```json
-{
-    "Name": "gopher0120",
-    "HN": "Gopherくん",
-    "Img": "cutiegopher.jpg",
-    "FinalGoal": "Golangの神になりたい！！",
-    "Profile": "僕はGopher。Golangが大好き！最近Goで参加する競技プログラミングのYouTubeチャンネル始めました。Golangがもっと広まると嬉しいな！",
-    "Twitter": "go",
-    "Instagram": "go",
-    "Facebook": "go",
-    "Github": "go",
-    "URL": "http://www.cutiegophergogogo.com/"
-}
-```
-
-### レスポンスパラメータ
-- なし
-
-### 正常レスポンス
-```json
-/* status: 204 */
-```
-
-### 異常レスポンス
-```json
-/* status: 404 */
-{
-    "Error": "Not Found."
-}
-```
-```json
-/* status: 500 */
-{
-    "error": "Server Error."
-}
-
-```
 
 ## POST-ユーザー登録
 ### URI
@@ -966,10 +961,41 @@ POST /register
 
 ## GET-ユーザーログイン
 
+### URI
+```
+GET /login
+```
+
+### 処理概要
+- ユーザーのログイン
+- nameとpasswordで認証する
+- クッキーで情報を保存する
+- セッション中はログインをキープする
+
+### リクエストパラメータ
+
+| key | type | content | null |
+| --- | --- | --- | --- | 
+| name | string | ユーザーネーム | x |
+| password | string | パスワード | x |
+
+### 正常レスポンス
+
+```json
+HTTP/1.1 302 Redirect 
+GET /mypage
+```
+
+### 異常レスポンス
+
+```json
+HTTP/1.1 〜〜〜 
+```
+
 ## DELETE-退会（論理削除）
 ### URI
 ```
-DELETE /bye
+DELETE /delete
 ```
 ### 処理概要
 - ユーザーを削除する（論理削除）
@@ -980,19 +1006,13 @@ DELETE /bye
 | ---- | ---- | ---- | ---- |
 | Password | string | パスワード | x |
 
-### 入力例
-```json
-{
-    "Password": "golanggggggg"
-}
-```
-
 ### レスポンスパラメータ
 - なし。"/"にリダイレクト
 
 ### 正常レスポンス
 ```json
-/* status 302 */
+HTTP/1.1 302 Redirect
+GET /
 ```
 ### 異常レスポンス
 ```json
