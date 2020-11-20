@@ -58,6 +58,6 @@ func MyTodo(c *gin.Context) {
 		c.Abort()
 	}
 
-	c.Redirect(302, fmt.Sprintf("/todolist/%s", name))
+	c.Redirect(302, fmt.Sprintf("/todo/%s", name))
 
 }

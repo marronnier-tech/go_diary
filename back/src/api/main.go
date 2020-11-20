@@ -17,19 +17,19 @@ func main() {
 	store := cookie.NewStore([]byte("secret"))
 	r.Use(sessions.Sessions("useradmin", store))
 
-	todolist := r.Group("/todolist")
+	todolist := r.Group("/todo")
 	{
 		todolist.GET("", ui.GetTodo)
 		todolist.GET("/:name", ui.GetOneUserTodo)
 	}
 
-	goallist := r.Group("/goallist")
+	goallist := r.Group("/goal")
 	{
 		goallist.GET("", ui.GetGoal)
 		goallist.GET("/:name", ui.GetOneUserGoal)
 	}
 
-	my := r.Group("mypage")
+	my := r.Group("/mypage")
 	{
 		my.GET("", ui.MyTodo)
 		my.POST("", ui.PostTodo)
@@ -37,7 +37,7 @@ func main() {
 
 		my.POST("/:id/today", ui.PutAchieveTodo)
 		my.DELETE("/:id/today", ui.ClearAchieveTodo)
-		my.PATCH("/:id", ui.PatchGoal)
+		my.PATCH("/:id/goal", ui.PatchGoal)
 
 	}
 
@@ -49,8 +49,6 @@ func main() {
 		profile.GET("/:name", ui.GetOnesProfile)
 
 	}
-
-	
 
 	// ログイン、あとでsuccess変更
 
