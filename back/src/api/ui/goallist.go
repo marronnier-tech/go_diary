@@ -37,7 +37,7 @@ func GetOneUserGoal(c *gin.Context) {
 	}
 
 	c.JSON(200, gin.H{
-		"Todo":  res,
+		"Goal":  res,
 		"order": order,
 	})
 

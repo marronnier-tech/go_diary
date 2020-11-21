@@ -4,6 +4,7 @@ import (
 	"../../domain"
 	"../../infra"
 	"../../infra/table"
+	"../timecalc"
 )
 
 func ToGetAllGoal(limit int, page int, order string) (out []allTodoArray, err error) {
@@ -40,8 +41,8 @@ func ToGetAllGoal(limit int, page int, order string) (out []allTodoArray, err er
 		obj = domain.TodoObjInfo{
 			TodoID:       r.ID,
 			Content:      r.Content,
-			CreatedAt:    r.CreatedAt,
-			LastAchieved: r.LastAchieved,
+			CreatedAt:    timecalc.PickDate(r.CreatedAt),
+			LastAchieved: timecalc.DifftoNow(r.LastAchieved),
 		}
 
 		if r.UserHN == "" {
@@ -123,8 +124,8 @@ func ToGetOneGoal(name string, order string) (out userTodoArray, err error) {
 		obj = domain.TodoObjInfo{
 			TodoID:       r.ID,
 			Content:      r.Content,
-			CreatedAt:    r.CreatedAt,
-			LastAchieved: r.LastAchieved,
+			CreatedAt:    timecalc.PickDate(r.CreatedAt),
+			LastAchieved: timecalc.DifftoNow(r.LastAchieved),
 		}
 
 		objArray = append(objArray, obj)

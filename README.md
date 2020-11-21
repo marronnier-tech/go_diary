@@ -74,9 +74,10 @@ GET /todo{?page,limit,order}
 | TodoArray | array | 全todoのリスト| 
 | TodoObj[TodoArray] | object | todo内容 |
 | TodoID{TodoObj} | numeric | todoのID |
+| IsDeleted{TodoObj} | boolean | 削除されたか（falseのみ表示） |
 | Content{TodoObj} | string | todoの詳細 |
-| CreatedAt{TodoObj} | numeric | todo登録日 | 
-| LastAchieved{TodoObj} | numeric | 最終達成日（n日前） |
+| CreatedAt{TodoObj} | string | todo登録日 | 
+| LastAchieved{TodoObj} | string | 最終達成日（n日前） |
 | User[TodoArray] | list | 所有user情報|
 | UserId{User} | numeric | 所有userのID |
 | UserName{User} | string | 所有ユーザー名 |
@@ -89,14 +90,16 @@ GET /todo{?page,limit,order}
 ### 正常レスポンス
 - ステータス：200
 ```json
-/* status: 200 */
+HTTP/1.1 200 OK
 {
     "TodoArray" :[
         {
             "TodoObj":{
                 "TodoID": 1,
+                "IsDeleted": false,
                 "Content": "プログラミング",
-                "LastAchieved": 2
+                "CreatedAt": "2020-10-31",
+                "LastAchieved": "2日前"
             },
             "User":{
                 "UserId": 1,
@@ -155,28 +158,36 @@ GET /:name{?order}
 | UserImg{User} | string | ユーザー画像 |
 | TodoArray | Array | todo内容 |
 | TodoID[TodoArray] | numeric | todoのID |
+| IsDeleted[TodoArray] | boolean | 削除されたか（falseのみ表示） |
 | Content[TodoArray] | string | todoの詳細 |
-| CreatedAt[TodoArray] | numeric | todo登録日 |
-| LastAchieved[TodoArray] | numeric | 最終達成日（n日前） | 
+| CreatedAt[TodoArray] | string | todo登録日 |
+| LastAchieved[TodoArray] | string | 最終達成日（n日前） | 
+| TodayAchieved[TodoArray] | boolean | 本日達成したか |
+| order | string | 表示順序 |
 
 ### 正常レスポンス
 ```json
-/* status: 200 */
+HTTP/1.1 200 OK
 {
-    "User": {
-        "UserID": 1,
-        "UserName": "gopher0120",
-        "UserHN": "Gopherくん",
-        "UserImg": "cutiegopher.jpg",
+    "Todo": {
+        "User": {
+            "UserID": 1,
+            "UserName": "gopher0120",
+            "UserHN": "Gopherくん",
+            "UserImg": "cutiegopher.jpg"
+        },
+        "TodoArray": [
+            {
+                "TodoID" : 1,
+                "IsDeleted": false,
+                "Content": "プログラミング",
+                "CreatedAt": "2020-10-30",
+                "LastAchieved": "達成日はありません",
+                "TodayAchieved": false
+            }
+        ]
     },
-    "TodoArray": [
-        {
-            "TodoID" : 1,
-            "Content": "プログラミング",
-            "CreatedAt": "20201030",
-            "LastAchieved": 4
-        }
-    ]
+    "order": "last_achieved"
 }
 ```
 
@@ -222,6 +233,7 @@ GET /goal{?page,limit}
 | TodoArray | array | 全ゴールリスト| 
 | TodoObj[TodoArray] | object | ゴール内容 |
 | TodoID{TodoObj} | numeric | ゴールしたtodoのID |
+| IsDeleted{TodoObj} | boolean | 削除されたか（falseのみ表示） |
 | Content{TodoObj} | string | ゴールしたtodoの詳細 |
 | GoaledAt{TodoObj} | numeric | ゴール日 |
 | User[TodoArray] | list | 所有user情報|
@@ -236,12 +248,13 @@ GET /goal{?page,limit}
 ### 正常レスポンス
 - ステータス：200
 ```json
-/* status: 200 */
+HTTP/1.1 200 OK
 {
     "TodoArray" :[
         {
             "TodoObj":{
                 "TodoID": 1,
+                "IsDeleted": false,
                 "Content": "プログラミング",
                 "GoaledAt": "20201101",
             },
@@ -304,28 +317,31 @@ GET /goal/:name
 | TodoObj | array | todo取得 |
 | TodoID[TodoArray] | numeric | todoのID |
 | Content[TodoArray] | string | todoの詳細 |
-| CreatedAt[TodoArray] | numeric | todo登録日 |
-| GoaledAt[TodoArray] | numeric | ゴール日 | 
+| CreatedAt[TodoArray] | string | todo登録日 |
+| GoaledAt[TodoArray] | string | ゴール日 | 
 | order | string | 表示順序 |
 
 ### 正常レスポンス
 ```json
 /* status: 200 */
 {
-    "User": {
-        "UserID": 1,
-        "UserName": "gopher0120",
-        "UserHN": "Gopherくん",
-        "UserImg": "cutiegopher.jpg",
+    "Goal":{
+        "User": {
+            "UserID": 1,
+            "UserName": "gopher0120",
+            "UserHN": "Gopherくん",
+            "UserImg": "cutiegopher.jpg",
+        },
+        "TodoArray": [
+            {
+                "TodoID" : 1,
+                "Content": "プログラミング",
+                "CreatedAt": "2020-10-30",
+                "GoaledAt": "2020-11-10"
+            }
+        ]
     },
-    "TodoArray": [
-        {
-            "TodoID" : 1,
-            "Content": "プログラミング",
-            "CreatedAt": "20201030",
-            "GoaledAt": "20201110"
-        }
-    ]
+    "order": "last_achieved
 }
 ```
 
@@ -365,8 +381,8 @@ POST /mypage
 | TodoObj | object | todo内容 |
 | TodoId{TodoObj} | numeric | todoのID |
 | Content{TodoObj} | string | todoの詳細 |
-| CreatedAt{TodoObj} | numeric | todo登録日 | 
-| LastAchieved{TodoObj} | numeric | 最終達成日（0日前） |
+| CreatedAt{TodoObj} | string | todo登録日 | 
+| LastAchieved{TodoObj} | string | 最終達成日（0日前） |
 
 ### 正常レスポンス
 ```json
@@ -377,8 +393,8 @@ HTTP/1.1 201 Created
         {
             "TodoID" : 1,
             "Content": "プログラミング",
-            "CreatedAt": "20201031",
-            "LastAchieved": 0
+            "CreatedAt": "2020-10-31",
+            "LastAchieved": "達成した日はありません"
         }
 }
 ```
@@ -406,7 +422,7 @@ DELETE /mypage/:id
 ```
 ### 処理概要
 - 取得したキーのTodo項目をTodoリストから削除する
-- ゴールしたTodoはDeleteできない
+- ゴールしたTodoは退会しない限りDeleteできない
 
 ### リクエストパラメータ
 
@@ -473,8 +489,10 @@ POST /:id/today
 | ---- | ---- | ---- |
 | TodoObj | list | todo |
 | TodoId | numeric | todoのID |
+| IsDeleted | boolean | 削除されたか（falseのみ表示） |
 | Content | string | todo内容 |
-| LastAchieved | numeric | 0日前に達成 |
+| CreatedAt | string | todo作成日 |
+| LastAchieved | string | 達成日（今日） |
 | TodayAchieved | boolean | 本日達成しているか |
 
 ### 正常レスポンス
@@ -483,9 +501,10 @@ HTTP/1.1 200 OK
 {
     "TodoObj": {
         "ID": 1,
+        "IsDeleted": false,
         "Content": "プログラミング",
-        "CreatedAt": 20201117,
-        "LastAchieved": 0,
+        "CreatedAt": "2020-11-17",
+        "LastAchieved": "今日",
         "TodayAchieved": true
     }
     
@@ -535,8 +554,10 @@ POST /:id/today
 | ---- | ---- | ---- |
 | TodoObj | list | todo |
 | TodoId | numeric | todoのID |
+| IsDeleted | boolean | 削除されたか（falseのみ表示） |
 | Content | string | todo内容 |
-| LastAchieved | numeric | n日前に達成 |
+| CreatedAt | string | todo作成日 |
+| LastAchieved | string | n日前に達成 |
 | TodayAchieved | boolean | 本日達成しているか |
 
 ### 正常レスポンス
@@ -545,9 +566,10 @@ HTTP/1.1 200 OK
 {
     "TodoObj": {
         "ID": 1,
+        "IsDeleted": false,
         "Content": "プログラミング",
-        "CreatedAt": 20201117,
-        "LastAchieved": 4,
+        "CreatedAt": "2020-11-17",
+        "LastAchieved": "4日前",
         "TodayAchieved": false
     }
     
@@ -640,7 +662,7 @@ HTTP/1.1 201 Created
 
 
 ## GET-該当ユーザーの月別TODO達成状況取得
-
+※未実装
 ### URI
 ```
 GET /mypage/achieved
@@ -674,7 +696,7 @@ GET /mypage/achieved
 | TodoArray | array | todo取得 |
 | TodoID[TodoArray] | numeric | todoのID |
 | Content[TodoArray] | string | todoの詳細 |
-| CreatedAt[TodoArray] | numeric | todo登録日 |
+| CreatedAt[TodoArray] | string | todo登録日 |
 | AchievedAll[TodoArray] | numeric | 達成回数 |
 | Achieved[TodoArray] | Object | 達成詳細 |
 | ByYear{Achieved} | list | 年ごとの達成 |
@@ -699,7 +721,7 @@ GET /mypage/achieved
         {
             "TodoID" : 1,
             "Content": "プログラミング",
-            "CreatedAt": "20201030",
+            "CreatedAt": "2020-10-30",
             "AchievedAll": 30,
             "Achieved": {
                 "ByYear": [
@@ -784,18 +806,7 @@ GET /profile
 
 ### 入力例
 ```json
-{
-    "Name": "gopher0120",
-    "HN": "Gopherくん",
-    "Img": "cutiegopher.jpg",
-    "FinalGoal": "Golangの神になりたい！！",
-    "Profile": "僕はGopher。Golangが大好き！最近Goで参加する競技プログラミングのYouTubeチャンネル始めました。Golangがもっと広まると嬉しいな！",
-    "Twitter": "go",
-    "Instagram": "go",
-    "Facebook": "go",
-    "Github": "go",
-    "URL": "http://www.cutiegophergogogo.com/"
-}
+HTTP/1.1 201 Created
 ```
 
 ### レスポンスパラメータ
@@ -863,7 +874,7 @@ GET /profile
 
 ### 正常レスポンス
 ```json
-/* status: 200 */
+HTTP/1.1 200 OK
 {
     "ID": 1,
     "Name": "gopher0120",
@@ -913,7 +924,7 @@ POST /register
 | ---- | ---- | ---- | ---- |
 | Name | string | ユーザー名 | x |
 | HN | string | ハンドルネーム | o |
-| MailAddress | string | メールアドレス | x |
+| MailAddress | string | メールアドレス | o |
 | Password | string | パスワード | x | 
 
 ### 入力例
@@ -927,10 +938,9 @@ POST /register
 ```
 
 ### レスポンスパラメータ
-- "/"にリダイレクト
 
 ```json
-/* status 302 */
+HTTP/1.1 302 redirect GET / 
 ```
 
 ### 異常レスポンス
@@ -982,7 +992,7 @@ GET /login
 ### 正常レスポンス
 
 ```json
-HTTP/1.1 302 Redirect 
+HTTP/1.1 302 redirect 
 GET /mypage
 ```
 
@@ -990,6 +1000,29 @@ GET /mypage
 
 ```json
 HTTP/1.1 〜〜〜 
+```
+
+
+
+## GET-ユーザーログアウト
+
+### URI
+```
+DELETE /logout
+```
+
+### 処理概要
+- ログアウトする。
+- cookieからログイン情報を削除する
+
+### レスポンスパラメータ
+```
+HTTP/1.1 204 No Content
+```
+
+### 異常レスポンス
+```
+HTTP/1.1 404 Not Found
 ```
 
 ## DELETE-退会（論理削除）
@@ -1005,9 +1038,6 @@ DELETE /delete
 | key | type | content | null |
 | ---- | ---- | ---- | ---- |
 | Password | string | パスワード | x |
-
-### レスポンスパラメータ
-- なし。"/"にリダイレクト
 
 ### 正常レスポンス
 ```json
@@ -1035,6 +1065,7 @@ GET /
 ```
 
 ## GET-ユーザー秘匿情報表示
+※未実装
 ### URI
 ```
 GET /secret
@@ -1096,6 +1127,7 @@ GET /secret
 ```
 
 ## PATCH-メールアドレス更新
+※未実装
 ### URI
 ```
 PATCH /secret
@@ -1160,5 +1192,8 @@ PATCH /secret
 
 
 ## GET-フォロー一覧
+※未実装
 
 ## DELETE-フォロー削除（物理削除）
+※未実装
+

@@ -1,6 +1,8 @@
 package todo
 
 import (
+	"../timecalc"
+
 	"../../domain"
 	"../../infra"
 	"../../infra/table"
@@ -18,7 +20,7 @@ func ToGetAll(limit int, page int, order string) (out []allTodoArray, err error)
 
 	base := db.Table("todo_lists").
 		Select("todo_lists.id, todo_lists.Content, todo_lists.user_id, todo_lists.created_at, todo_lists.last_achieved, todo_lists.is_deleted, todo_lists.is_goaled, users.name, users.handle_name, users.img").
-		Where("todo_lists.is_deleted = ? and todo_lists.is_goaled = ?", false, false).
+		Where("todo_lists.is_deleted = ? and todo_lists.is_goaled = ? and users.is_deleted = ?", false, false, false).
 		Joins("left join users on users.ID = todo_lists.user_id").
 		Limit(limit).
 		Offset(limit * (page - 1))
@@ -37,21 +39,11 @@ func ToGetAll(limit int, page int, order string) (out []allTodoArray, err error)
 
 	for _, r := range rows {
 
-		if r.LastAchieved.Valid == false{
-			obj = domain.TodoObjInfo{
-				TodoID:       r.ID,
-				Content:      r.Content,
-				CreatedAt:    r.CreatedAt,
-				LastAchieved: r.LastAchieved,
-			}
-			
-		}
-
 		obj = domain.TodoObjInfo{
 			TodoID:       r.ID,
 			Content:      r.Content,
-			CreatedAt:    r.CreatedAt,
-			LastAchieved: r.LastAchieved,
+			CreatedAt:    timecalc.PickDate(r.CreatedAt),
+			LastAchieved: timecalc.DifftoNow(r.LastAchieved),
 		}
 
 		if r.UserHN == "" {
@@ -133,8 +125,8 @@ func ToGetOneUser(name string, order string) (out userTodoArray, err error) {
 		obj = domain.TodoObjInfo{
 			TodoID:       r.ID,
 			Content:      r.Content,
-			CreatedAt:    r.CreatedAt,
-			LastAchieved: r.LastAchieved,
+			CreatedAt:    timecalc.PickDate(r.CreatedAt),
+			LastAchieved: timecalc.DifftoNow(r.LastAchieved),
 		}
 
 		objArray = append(objArray, obj)
