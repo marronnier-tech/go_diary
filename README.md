@@ -477,7 +477,7 @@ GET /mypage
 ## DELETE-当日TODO完了取消
 ### URI
 ```
-POST /:id/today
+DELETE /:id/today
 ```
 ### 処理概要
 - Todoリストの当日のtodo達成を取り消す
@@ -648,8 +648,9 @@ HTTP/1.1 200 OK
 ## GET-本人情報詳細表示
 
 ### URI
+```
 GET /profile
-
+```
 ### 処理概要
 - [GET-ユーザー情報詳細表示](#GET-ユーザー情報詳細表示)へリダイレクト
 - ただしname = UserName
@@ -658,7 +659,7 @@ GET /profile
 
 ### URI
 ```
-GET /profile
+PATCH /profile
 ```
 ### 処理概要
 - ユーザー情報を更新する（秘匿情報以外）
