@@ -126,7 +126,7 @@ HTTP/1.1 200 OK
 
 ### URI
 ```
-GET /:name{?order}
+GET /todo/:name{?order}
 ```
 ### 処理概要
 - キーで取得したユーザーのTODO一覧を表示する。
@@ -240,9 +240,8 @@ HTTP/1.1 200 OK
         {
             "TodoObj":{
                 "TodoID": 1,
-                "IsDeleted": false,
                 "Content": "プログラミング",
-                "GoaledAt": "20201101",
+                "GoaledAt": "2020-11-01",
             },
             "User":{
                 "UserId": 1,
@@ -291,10 +290,10 @@ GET /goal/:name
 | UserHN{User} | string | ユーザーのハンドルネーム |
 | UserImg{User} | string | ユーザー画像 |
 | TodoObj | array | todo取得 |
-| TodoID[TodoArray] | numeric | todoのID |
-| Content[TodoArray] | string | todoの詳細 |
-| CreatedAt[TodoArray] | string | todo登録日 |
-| GoaledAt[TodoArray] | string | ゴール日 | 
+| TodoID[GoalArray] | numeric | todoのID |
+| Content[GoalArray] | string | todoの詳細 |
+| GoaledAt[GoalArray] | string | ゴール日 | 
+| AchievedDays[GoalArray] | numeric | ゴールまでに達成した回数 |
 | order | string | 表示順序 |
 | owner | boolean | ログイン中のユーザーと該当ユーザーが一致しているか |
 
@@ -309,12 +308,12 @@ GET /goal/:name
             "UserHN": "Gopherくん",
             "UserImg": "cutiegopher.jpg",
         },
-        "TodoArray": [
+        "GoalArray": [
             {
                 "TodoID" : 1,
                 "Content": "プログラミング",
-                "CreatedAt": "2020-10-30",
-                "GoaledAt": "2020-11-10"
+                "GoaledAt": "2020-11-10",
+                "AchievedDays": 10,
             }
         ]
     },
@@ -921,7 +920,6 @@ HTTP/1.1 200 OK
 }
 ```
 ### 異常レスポンス
-```json
 - 400 Bad Request
 - 404 Not Found
 - 500 Internal Server Error

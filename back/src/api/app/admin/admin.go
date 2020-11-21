@@ -108,3 +108,13 @@ func ToDeleteMember(userid int) (err error) {
 	return
 
 }
+
+func JudgeOwner(loginuser string, name string) bool {
+
+	if loginuser == name {
+		return true
+	}
+
+	return false
+
+}

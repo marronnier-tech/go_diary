@@ -4,6 +4,7 @@ import (
 	"fmt"
 	stc "strconv"
 
+	"../app/admin"
 	"../app/todo"
 
 	"github.com/gin-gonic/gin"
@@ -34,6 +35,13 @@ func GetTodo(c *gin.Context) {
 
 func GetOneUserTodo(c *gin.Context) {
 
+	_, user, err := SessionLogin(c)
+
+	if err != nil {
+		c.JSON(500, gin.H{"error": err})
+		c.Abort()
+	}
+
 	name := c.Param("name")
 	order := c.DefaultQuery("order", "last_achieved")
 
@@ -46,6 +54,7 @@ func GetOneUserTodo(c *gin.Context) {
 	c.JSON(200, gin.H{
 		"Todo":  res,
 		"order": order,
+		"owner": admin.JudgeOwner(user, name),
 	})
 
 }
