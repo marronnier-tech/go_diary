@@ -52,6 +52,14 @@ func Login(c *gin.Context) {
 
 }
 
+func Logout(c *gin.Context) {
+	session := sessions.Default(c)
+	session.Clear()
+	session.Save()
+
+	c.JSON(204, gin.H{"message": "Logout done successful"})
+}
+
 func Register(c *gin.Context) {
 	session := sessions.Default(c)
 

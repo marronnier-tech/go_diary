@@ -89,10 +89,21 @@ func ToDeleteMember(userid int) (err error) {
 	if err != nil {
 		return
 	}
+	db.Model(&user).Update("is_deleted", true)
 
-	user.IsDeleted = true
+	var todo table.TodoList
 
-	db.Save(&user)
+	err = db.Table("todo_lists").
+		Where("user_id = ?", userid).
+		Find(&todo).
+		Error
+
+	if err != nil {
+		return
+	}
+
+	todo.IsDeleted = true
+	db.Save(&todo)
 
 	return
 

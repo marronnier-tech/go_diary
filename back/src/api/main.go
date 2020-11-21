@@ -54,7 +54,8 @@ func main() {
 
 	r.POST("/register", ui.Register)
 
-	r.GET("/login", ui.Login)
+	r.POST("/login", ui.Login)
+	r.DELETE("/logout", ui.Logout)
 
 	r.DELETE("/delete", ui.DeleteMembership)
 
