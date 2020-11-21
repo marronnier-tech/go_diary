@@ -76,7 +76,7 @@ GET /todo{?page,limit,order}
 | TodoID{TodoObj} | numeric | todoのID |
 | Content{TodoObj} | string | todoの詳細 |
 | CreatedAt{TodoObj} | numeric | todo登録日 | 
-| LastAchieved{TodoObj} | numeric | 最終達成日（n日前） |
+| LastAchieved{TodoObj} | string | 最終達成日（n日前） |
 | User[TodoArray] | list | 所有user情報|
 | UserId{User} | numeric | 所有userのID |
 | UserName{User} | string | 所有ユーザー名 |
@@ -89,14 +89,14 @@ GET /todo{?page,limit,order}
 ### 正常レスポンス
 - ステータス：200
 ```json
-/* status: 200 */
+HTTP/1.1 200 OK
 {
     "TodoArray" :[
         {
             "TodoObj":{
                 "TodoID": 1,
                 "Content": "プログラミング",
-                "LastAchieved": 2
+                "LastAchieved": "2日前"
             },
             "User":{
                 "UserId": 1,
@@ -157,7 +157,7 @@ GET /:name{?order}
 | TodoID[TodoArray] | numeric | todoのID |
 | Content[TodoArray] | string | todoの詳細 |
 | CreatedAt[TodoArray] | numeric | todo登録日 |
-| LastAchieved[TodoArray] | numeric | 最終達成日（n日前） | 
+| LastAchieved[TodoArray] | string | 最終達成日（n日前） | 
 
 ### 正常レスポンス
 ```json
@@ -174,7 +174,7 @@ GET /:name{?order}
             "TodoID" : 1,
             "Content": "プログラミング",
             "CreatedAt": "20201030",
-            "LastAchieved": 4
+            "LastAchieved": "達成日はありません"
         }
     ]
 }
@@ -366,7 +366,7 @@ POST /mypage
 | TodoId{TodoObj} | numeric | todoのID |
 | Content{TodoObj} | string | todoの詳細 |
 | CreatedAt{TodoObj} | numeric | todo登録日 | 
-| LastAchieved{TodoObj} | numeric | 最終達成日（0日前） |
+| LastAchieved{TodoObj} | string | 最終達成日（0日前） |
 
 ### 正常レスポンス
 ```json
@@ -378,7 +378,7 @@ HTTP/1.1 201 Created
             "TodoID" : 1,
             "Content": "プログラミング",
             "CreatedAt": "20201031",
-            "LastAchieved": 0
+            "LastAchieved": "今日"
         }
 }
 ```
@@ -474,7 +474,7 @@ POST /:id/today
 | TodoObj | list | todo |
 | TodoId | numeric | todoのID |
 | Content | string | todo内容 |
-| LastAchieved | numeric | 0日前に達成 |
+| LastAchieved | string | 達成日（今日） |
 | TodayAchieved | boolean | 本日達成しているか |
 
 ### 正常レスポンス
@@ -485,7 +485,7 @@ HTTP/1.1 200 OK
         "ID": 1,
         "Content": "プログラミング",
         "CreatedAt": 20201117,
-        "LastAchieved": 0,
+        "LastAchieved": "今日",
         "TodayAchieved": true
     }
     
@@ -536,7 +536,7 @@ POST /:id/today
 | TodoObj | list | todo |
 | TodoId | numeric | todoのID |
 | Content | string | todo内容 |
-| LastAchieved | numeric | n日前に達成 |
+| LastAchieved | string | n日前に達成 |
 | TodayAchieved | boolean | 本日達成しているか |
 
 ### 正常レスポンス
@@ -547,7 +547,7 @@ HTTP/1.1 200 OK
         "ID": 1,
         "Content": "プログラミング",
         "CreatedAt": 20201117,
-        "LastAchieved": 4,
+        "LastAchieved": "4日前",
         "TodayAchieved": false
     }
     

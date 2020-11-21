@@ -1,6 +1,8 @@
 package todo
 
 import (
+	"../timecalc"
+
 	"../../domain"
 	"../../infra"
 	"../../infra/table"
@@ -37,21 +39,13 @@ func ToGetAll(limit int, page int, order string) (out []allTodoArray, err error)
 
 	for _, r := range rows {
 
-		if r.LastAchieved.Valid == false{
-			obj = domain.TodoObjInfo{
-				TodoID:       r.ID,
-				Content:      r.Content,
-				CreatedAt:    r.CreatedAt,
-				LastAchieved: r.LastAchieved,
-			}
-			
-		}
+		fromLastAchieved := timecalc.DifftoNow(r.LastAchieved)
 
 		obj = domain.TodoObjInfo{
 			TodoID:       r.ID,
 			Content:      r.Content,
 			CreatedAt:    r.CreatedAt,
-			LastAchieved: r.LastAchieved,
+			LastAchieved: fromLastAchieved,
 		}
 
 		if r.UserHN == "" {
@@ -130,11 +124,13 @@ func ToGetOneUser(name string, order string) (out userTodoArray, err error) {
 
 	for _, r := range rows {
 
+		fromLastAchieved := timecalc.DifftoNow(r.LastAchieved)
+
 		obj = domain.TodoObjInfo{
 			TodoID:       r.ID,
 			Content:      r.Content,
 			CreatedAt:    r.CreatedAt,
-			LastAchieved: r.LastAchieved,
+			LastAchieved: fromLastAchieved,
 		}
 
 		objArray = append(objArray, obj)
