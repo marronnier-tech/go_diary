@@ -12,30 +12,32 @@
 
 ## ログイン必須系列
 - [GET-本人のTODO一覧を表示](#GET-本人のTODO一覧を表示)
+- [GET-本人のゴール一覧を表示](#GET-本人のゴール一覧を表示)
 - [POST-TODOを登録](#POST-TODOを登録)
 - [DELETE-TODOを削除（論理削除）](#DELETE-TODOを削除（論理削除）)
 - [POST-当日TODO完了](#POST-当日TODO完了)
 - [DELETE-当日TODO完了取消](#DELETE-当日TODO完了取消)
 - [PATCH-TODOをゴールに変更](#PATCH-TODOをゴールに変更)
-- [GET-該当ユーザーの月別TODO達成状況取得](#GET-該当ユーザーの月別TODO達成状況取得) - 非優先：グラフで可視化
+- [GET-該当ユーザーの月別TODO達成状況取得](#GET-該当ユーザーの月別TODO達成状況取得) ＜＜未実装＞＞
 
 ## ユーザー情報詳細系列
 - [GET-本人情報詳細表示](#GET-本人情報詳細表示)
-- [PATCH-ユーザー情報の更新](#PATCH-ユーザー情報の変更)
-- [GET-ユーザー情報詳細表示](#GET-ユーザー情報詳細表示)
+- [PATCH-ユーザー情報の更新](#PATCH-ユーザー情報の更新)
+- [GET-該当ユーザー情報詳細表示](#GET-該当ユーザー情報詳細表示)
 
 
 ## ユーザー登録・大会
 - [POST-ユーザー登録](#POST-ユーザー登録)
-- [GET-ユーザーログイン](#GET-ユーザーログイン)
-- [DELETE-退会（論理削除）](#DELETE-退会（論理削除）)
+- [POST-ユーザーログイン](#POST-ユーザーログイン)
+- [DELETE-ユーザーログアウト](#DELETE-ユーザーログアウト)
+- [DELETE-ユーザー退会（論理削除）](#DELETE-ユーザー退会（論理削除）)
 
 
-## ユーザー秘匿情報系列 - ＜＜非優先＞＞
+## ユーザー秘匿情報系列 - ＜＜未実装＞＞
 - [GET-ユーザー秘匿情報表示](#GET-ユーザー秘匿情報表示)
 - [PATCH-メールアドレス更新](#PATCH-メールアドレス更新)
 
-## フォロー系列 - ＜＜非優先＞＞
+## フォロー系列 - ＜＜未実装＞＞
 - [GET-フォロー一覧](#GET-フォロー一覧)
 - [DELETE-フォロー削除（物理削除）](#DELETE-フォロー削除（物理削除）)
 
@@ -88,7 +90,7 @@ GET /todo{?page,limit,order}
 | order | string | 順序 | 
 
 ### 正常レスポンス
-- ステータス：200
+
 ```json
 HTTP/1.1 200 OK
 {
@@ -116,19 +118,9 @@ HTTP/1.1 200 OK
 ```
 
 ### 異常レスポンス
-```json
-/* status: 404 */
-{
-    "Error": "Not Found."
-}
-```
-```json
-/* status: 500 */
-{
-    "error": "Server Error."
-}
-
-```
+- 400 Bad Request
+- 404 Not Found
+- 500 Internal Server Error
 
 ## GET-該当ユーザーのTODO一覧を表示
 
@@ -164,6 +156,7 @@ GET /:name{?order}
 | LastAchieved[TodoArray] | string | 最終達成日（n日前） | 
 | TodayAchieved[TodoArray] | boolean | 本日達成したか |
 | order | string | 表示順序 |
+| owner | boolean | ログイン中のユーザーと一致しているか |
 
 ### 正常レスポンス
 ```json
@@ -187,24 +180,17 @@ HTTP/1.1 200 OK
             }
         ]
     },
-    "order": "last_achieved"
+    "order": "last_achieved",
+    "owner": false
+
 }
 ```
 
 ### 異常レスポンス
-```json
-/* status: 404 */
-{
-    "Error": "Not Found."
-}
-```
-```json
-/* status: 500 */
-{
-    "error": "Server Error."
-}
+- 400 Bad Request
+- 404 Not Found
+- 500 Internal Server Error
 
-```
 
 ## GET-全ユーザーのゴールTODOリスト
 ### URI
@@ -273,19 +259,9 @@ HTTP/1.1 200 OK
 ```
 
 ### 異常レスポンス
-```json
-/* status: 404 */
-{
-    "Error": "Not Found."
-}
-```
-```json
-/* status: 500 */
-{
-    "error": "Server Error."
-}
-
-```
+- 400 Bad Request
+- 404 Not Found
+- 500 Internal Server Error
 
 ## GET-該当ユーザーのゴールTODOリスト
 
@@ -320,6 +296,7 @@ GET /goal/:name
 | CreatedAt[TodoArray] | string | todo登録日 |
 | GoaledAt[TodoArray] | string | ゴール日 | 
 | order | string | 表示順序 |
+| owner | boolean | ログイン中のユーザーと該当ユーザーが一致しているか |
 
 ### 正常レスポンス
 ```json
@@ -341,16 +318,35 @@ GET /goal/:name
             }
         ]
     },
-    "order": "last_achieved
+    "order": "last_achieved",
+    "owner": false
 }
 ```
 
+### 異常レスポンス
+- 400 Bad Request
+- 404 Not Found
+- 500 Internal Server Error
+
 ## GET-本人のTODO一覧を表示
-
+### URI
+```
 GET /mypage{?order}
+```
 
-該当ユーザーのTODO一覧と同じ
-ただしname = 本人UserName
+### 処理概要
+- [GET-該当ユーザーのTODO一覧を表示](#GET-該当ユーザーのTODO一覧を表示)へリダイレクト(302)
+- ただしname = 本人UserName
+
+## GET-本人のゴール一覧を表示
+### URI
+```
+GET /mypage/goal
+```
+
+### 処理概要
+- [GET-該当ユーザーのゴールTODO一覧を表示](#GET-該当ユーザーのゴールTODOリスト)へリダイレクト(302)
+- ただしname = 本人UserName
 
 ## POST-TODOを登録
 
@@ -388,7 +384,6 @@ POST /mypage
 ```json
 HTTP/1.1 201 Created
 {
-    
     "TodoObj": 
         {
             "TodoID" : 1,
@@ -400,19 +395,9 @@ HTTP/1.1 201 Created
 ```
 
 ### 異常レスポンス
-```json
-/* status: 404 */
-{
-    "Error": "Not Found."
-}
-```
-```json
-/* status: 500 */
-{
-    "error": "Server Error."
-}
-
-```
+- 400 Bad Request
+- 404 Not Found
+- 500 Internal Server Error
 
 ## DELETE-TODOを削除（論理削除）
 
@@ -441,33 +426,14 @@ DELETE /mypage/:id
 
 ### 正常レスポンス
 ```json
-HTTP/1.1 200 OK
-{
-    "TodoID": 1,
-    "Is_Deleted": true,
-}
+HTTP/1.1 302 Found
+GET /mypage
 ```
 
 ### 異常レスポンス
-```json
-/* status: 400 */
-{
-    "Error": "Bad Request."
-}
-```
-```json
-/* status: 404 */
-{
-    "Error": "Not Found."
-}
-```
-```json
-/* status: 500 */
-{
-    "error": "Server Error."
-}
-
-```
+- 400 Bad Request
+- 404 Not Found
+- 500 Internal Server Error
 
 ## POST-当日TODO完了
 ### URI
@@ -497,40 +463,14 @@ POST /:id/today
 
 ### 正常レスポンス
 ```json
-HTTP/1.1 200 OK
-{
-    "TodoObj": {
-        "ID": 1,
-        "IsDeleted": false,
-        "Content": "プログラミング",
-        "CreatedAt": "2020-11-17",
-        "LastAchieved": "今日",
-        "TodayAchieved": true
-    }
-    
-}
+HTTP/1.1 302 Found
+GET /mypage
 ```
 
 ### 異常レスポンス
-```json
-/* status: 400 */
-{
-    "Error": "Bad Request."
-}
-```
-```json
-/* status: 404 */
-{
-    "Error": "Not Found."
-}
-```
-```json
-/* status: 500 */
-{
-    "error": "Server Error."
-}
-
-```
+- 400 Bad Request
+- 404 Not Found
+- 500 Internal Server Error
 
 
 
@@ -562,39 +502,13 @@ POST /:id/today
 
 ### 正常レスポンス
 ```json
-HTTP/1.1 200 OK
-{
-    "TodoObj": {
-        "ID": 1,
-        "IsDeleted": false,
-        "Content": "プログラミング",
-        "CreatedAt": "2020-11-17",
-        "LastAchieved": "4日前",
-        "TodayAchieved": false
-    }
-    
-}
+HTTP/1.1 302 Found
+GET /mypage
 ```
 ### 異常レスポンス
-```json
-/* status: 400 */
-{
-    "Error": "Bad Request."
-}
-```
-```json
-/* status: 404 */
-{
-    "Error": "Not Found."
-}
-```
-```json
-/* status: 500 */
-{
-    "error": "Server Error."
-}
-
-```
+- 400 Bad Request
+- 404 Not Found
+- 500 Internal Server Error
 
 
 ## PATCH-TODOをゴールに変更
@@ -629,37 +543,14 @@ PATCH /:id/goal
 
 ### 正常レスポンス
 ```json
-HTTP/1.1 201 Created
+HTTP/1.1 302 Found
+GET /mypage/goal
 ```
 
 ### 異常レスポンス
-```json
-/* status: 400 */
-{
-    "Error": "Bad Request."
-}
-```
-```json
-/* status: 404 */
-{
-    "Error": "Not Found."
-}
-```
-```json
-/* status: 500 */
-{
-    "error": "Server Error."
-}
-
-```
-
-
-
-
-
-
-
-
+- 400 Bad Request
+- 404 Not Found
+- 500 Internal Server Error
 
 ## GET-該当ユーザーの月別TODO達成状況取得
 ※未実装
@@ -669,20 +560,13 @@ GET /mypage/achieved
 ```
 ### 処理概要
 - キーで取得したユーザーのTODO達成状況を確認する
+- TODO達成状況をグラフで表示する
 
 ### リクエストパラメータ
 
 | key | type | content | null |
 | ---- | ---- | ---- | ---- |
 | name | string | ユーザー名 | x |
-
-
-### 入力例
-```json
-{
-    "name": "gopher0120"
-}
-```
 
 ### レスポンスパラメータ
 
@@ -709,7 +593,7 @@ GET /mypage/achieved
 
 ### 正常レスポンス
 ```json
-/* status: 200 */
+HTTP/1.1 200 OK
 {
     "User": {
         "UserID": 1,
@@ -757,28 +641,18 @@ GET /mypage/achieved
 ```
 
 ### 異常レスポンス
-```json
-/* status: 404 */
-{
-    "Error": "Not Found."
-}
-```
-```json
-/* status: 500 */
-{
-    "error": "Server Error."
-}
-
-```
-
-
-
-
+- 400 Bad Request
+- 404 Not Found
+- 500 Internal Server Error
 
 ## GET-本人情報詳細表示
 
-[GET-ユーザー情報詳細表示](#GET-ユーザー情報詳細表示)と同じ
-ただしname = UserName
+### URI
+GET /profile
+
+### 処理概要
+- [GET-ユーザー情報詳細表示](#GET-ユーザー情報詳細表示)へリダイレクト
+- ただしname = UserName
 
 ## PATCH-ユーザー情報の更新
 
@@ -804,41 +678,23 @@ GET /profile
 | GitHub | string | ユーザーのGitHubアカウント | o |
 | URL | string | その他ユーザーが載せたいURL | o |
 
-### 入力例
+### 正常レスポンス
 ```json
 HTTP/1.1 201 Created
 ```
 
-### レスポンスパラメータ
-- なし
-
-### 正常レスポンス
-```json
-/* status: 204 */
-```
-
 ### 異常レスポンス
-```json
-/* status: 404 */
-{
-    "Error": "Not Found."
-}
-```
-```json
-/* status: 500 */
-{
-    "error": "Server Error."
-}
-
-```
+- 400 Bad Request
+- 404 Not Found
+- 500 Internal Server Error
 
 
 
-## GET-ユーザー情報詳細表示
+## GET-該当ユーザー情報詳細表示
 
 ### URI
 ```
-GET /profile
+GET /profile/:name
 ```
 ### 処理概要
 - ユーザー情報の詳細を取得する
@@ -871,6 +727,7 @@ GET /profile
 | Facebook | string | ユーザーのFacebookアカウント |
 | GitHub | string | ユーザーのGitHubアカウント |
 | URL | string | その他ユーザーが載せたいURL |
+| owner | boolean | ログイン中のユーザーと該当ユーザーが一致するか |
 
 ### 正常レスポンス
 ```json
@@ -886,26 +743,15 @@ HTTP/1.1 200 OK
     "Instagram": "go",
     "Facebook": "go",
     "Github": "go",
-    "URL": "http://www.cutiegophergogogo.com/"
+    "URL": "http://www.cutiegophergogogo.com/",
+    "owner": true
 }
 ```
 
 ### 異常レスポンス
-```json
-/* status: 404 */
-{
-    "Error": "Not Found."
-}
-```
-```json
-/* status: 500 */
-{
-    "error": "Server Error."
-}
-
-```
-
-
+- 400 Bad Request
+- 404 Not Found
+- 500 Internal Server Error
 
 ## POST-ユーザー登録
 ### URI
@@ -940,46 +786,27 @@ POST /register
 ### レスポンスパラメータ
 
 ```json
-HTTP/1.1 302 redirect GET / 
+HTTP/1.1 302 Found
+GET / 
 ```
 
 ### 異常レスポンス
-```json
-/* status 400 */
-{
-    "Error": "Bad Request."
-}
-```
-```json
-/* status: 404 */
-{
-    "Error": "Not Found."
-}
-```
-```json
-/* status: 500 */
-{
-    "error": "Server Error."
-}
-
-```
+- 400 Bad Request
+- 404 Not Found
+- 500 Internal Server Error
 
 
-
-
-
-
-## GET-ユーザーログイン
+## POST-ユーザーログイン
 
 ### URI
 ```
-GET /login
+POST /login
 ```
 
 ### 処理概要
 - ユーザーのログイン
 - nameとpasswordで認証する
-- クッキーで情報を保存する
+- Cookieでログイン情報を保存する
 - セッション中はログインをキープする
 
 ### リクエストパラメータ
@@ -992,19 +819,18 @@ GET /login
 ### 正常レスポンス
 
 ```json
-HTTP/1.1 302 redirect 
+HTTP/1.1 302 Found
 GET /mypage
 ```
 
 ### 異常レスポンス
-
-```json
-HTTP/1.1 〜〜〜 
-```
-
+- 400 Bad Request
+- 404 Not Found
+- 500 Internal Server Error
 
 
-## GET-ユーザーログアウト
+
+## DELETE-ユーザーログアウト
 
 ### URI
 ```
@@ -1012,26 +838,28 @@ DELETE /logout
 ```
 
 ### 処理概要
-- ログアウトする。
-- cookieからログイン情報を削除する
+- ログアウトする
+- Cookieからログイン情報を削除する
 
-### レスポンスパラメータ
+### 正常レスポンス
 ```
-HTTP/1.1 204 No Content
+HTTP/1.1 302 Redirect
+GET /
 ```
 
 ### 異常レスポンス
-```
-HTTP/1.1 404 Not Found
-```
+- 400 Bad Request
+- 404 Not Found
+- 500 Internal Server Error
 
-## DELETE-退会（論理削除）
+## DELETE-ユーザー退会（論理削除）
 ### URI
 ```
 DELETE /delete
 ```
 ### 処理概要
 - ユーザーを削除する（論理削除）
+- Todoはゴール含めてすべて削除する
 
 ### リクエストパラメータ
 
@@ -1045,24 +873,9 @@ HTTP/1.1 302 Redirect
 GET /
 ```
 ### 異常レスポンス
-```json
-/* status 400 */
-{
-    "Error": "Bad Request."
-}
-```
-```json
-/* status: 404 */
-{
-    "Error": "Not Found."
-}
-```
-```json
-/* status: 500 */
-{
-    "error": "Server Error."
-}
-```
+- 400 Bad Request
+- 404 Not Found
+- 500 Internal Server Error
 
 ## GET-ユーザー秘匿情報表示
 ※未実装
@@ -1097,7 +910,7 @@ GET /secret
 
 ### 正常レスポンス
 ```json
-/* status 200 */
+HTTP/1.1 200 OK
 ```json
 {
     "ID": 1,
@@ -1108,23 +921,9 @@ GET /secret
 ```
 ### 異常レスポンス
 ```json
-/* status 400 */
-{
-    "Error": "Bad Request."
-}
-```
-```json
-/* status: 404 */
-{
-    "Error": "Not Found."
-}
-```
-```json
-/* status: 500 */
-{
-    "error": "Server Error."
-}
-```
+- 400 Bad Request
+- 404 Not Found
+- 500 Internal Server Error
 
 ## PATCH-メールアドレス更新
 ※未実装
@@ -1161,7 +960,7 @@ PATCH /secret
 
 ### 正常レスポンス
 ```json
-/* status 200 */
+HTTP/1.1 200 OK
 ```json
 {
     "ID": 1,
@@ -1171,24 +970,9 @@ PATCH /secret
 }
 ```
 ### 異常レスポンス
-```json
-/* status 400 */
-{
-    "Error": "Bad Request."
-}
-```
-```json
-/* status: 404 */
-{
-    "Error": "Not Found."
-}
-```
-```json
-/* status: 500 */
-{
-    "error": "Server Error."
-}
-```
+- 400 Bad Request
+- 404 Not Found
+- 500 Internal Server Error
 
 
 ## GET-フォロー一覧
