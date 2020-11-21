@@ -26,3 +26,9 @@ func DifftoNow(previous pq.NullTime) (res string) {
 	return
 
 }
+
+func PickDate(datetime time.Time) (date string) {
+	const layout = "2006-01-02"
+	date = fmt.Sprintf(datetime.Format(layout))
+	return
+}

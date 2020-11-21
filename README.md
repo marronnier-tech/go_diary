@@ -75,7 +75,7 @@ GET /todo{?page,limit,order}
 | TodoObj[TodoArray] | object | todo内容 |
 | TodoID{TodoObj} | numeric | todoのID |
 | Content{TodoObj} | string | todoの詳細 |
-| CreatedAt{TodoObj} | numeric | todo登録日 | 
+| CreatedAt{TodoObj} | string | todo登録日 | 
 | LastAchieved{TodoObj} | string | 最終達成日（n日前） |
 | User[TodoArray] | list | 所有user情報|
 | UserId{User} | numeric | 所有userのID |
@@ -156,7 +156,7 @@ GET /:name{?order}
 | TodoArray | Array | todo内容 |
 | TodoID[TodoArray] | numeric | todoのID |
 | Content[TodoArray] | string | todoの詳細 |
-| CreatedAt[TodoArray] | numeric | todo登録日 |
+| CreatedAt[TodoArray] | string | todo登録日 |
 | LastAchieved[TodoArray] | string | 最終達成日（n日前） | 
 
 ### 正常レスポンス
@@ -173,7 +173,7 @@ GET /:name{?order}
         {
             "TodoID" : 1,
             "Content": "プログラミング",
-            "CreatedAt": "20201030",
+            "CreatedAt": "2020-10-30",
             "LastAchieved": "達成日はありません"
         }
     ]
@@ -304,8 +304,8 @@ GET /goal/:name
 | TodoObj | array | todo取得 |
 | TodoID[TodoArray] | numeric | todoのID |
 | Content[TodoArray] | string | todoの詳細 |
-| CreatedAt[TodoArray] | numeric | todo登録日 |
-| GoaledAt[TodoArray] | numeric | ゴール日 | 
+| CreatedAt[TodoArray] | string | todo登録日 |
+| GoaledAt[TodoArray] | string | ゴール日 | 
 | order | string | 表示順序 |
 
 ### 正常レスポンス
@@ -322,8 +322,8 @@ GET /goal/:name
         {
             "TodoID" : 1,
             "Content": "プログラミング",
-            "CreatedAt": "20201030",
-            "GoaledAt": "20201110"
+            "CreatedAt": "2020-10-30",
+            "GoaledAt": "2020-11-10"
         }
     ]
 }
@@ -365,7 +365,7 @@ POST /mypage
 | TodoObj | object | todo内容 |
 | TodoId{TodoObj} | numeric | todoのID |
 | Content{TodoObj} | string | todoの詳細 |
-| CreatedAt{TodoObj} | numeric | todo登録日 | 
+| CreatedAt{TodoObj} | string | todo登録日 | 
 | LastAchieved{TodoObj} | string | 最終達成日（0日前） |
 
 ### 正常レスポンス
@@ -377,7 +377,7 @@ HTTP/1.1 201 Created
         {
             "TodoID" : 1,
             "Content": "プログラミング",
-            "CreatedAt": "20201031",
+            "CreatedAt": "2020-10-31",
             "LastAchieved": "今日"
         }
 }
@@ -474,6 +474,7 @@ POST /:id/today
 | TodoObj | list | todo |
 | TodoId | numeric | todoのID |
 | Content | string | todo内容 |
+| CreatedAt | string | todo作成日 |
 | LastAchieved | string | 達成日（今日） |
 | TodayAchieved | boolean | 本日達成しているか |
 
@@ -484,7 +485,7 @@ HTTP/1.1 200 OK
     "TodoObj": {
         "ID": 1,
         "Content": "プログラミング",
-        "CreatedAt": 20201117,
+        "CreatedAt": "2020-11-17",
         "LastAchieved": "今日",
         "TodayAchieved": true
     }
@@ -536,6 +537,7 @@ POST /:id/today
 | TodoObj | list | todo |
 | TodoId | numeric | todoのID |
 | Content | string | todo内容 |
+| CreatedAt | string | todo作成日 |
 | LastAchieved | string | n日前に達成 |
 | TodayAchieved | boolean | 本日達成しているか |
 
@@ -546,7 +548,7 @@ HTTP/1.1 200 OK
     "TodoObj": {
         "ID": 1,
         "Content": "プログラミング",
-        "CreatedAt": 20201117,
+        "CreatedAt": "2020-11-17",
         "LastAchieved": "4日前",
         "TodayAchieved": false
     }
@@ -674,7 +676,7 @@ GET /mypage/achieved
 | TodoArray | array | todo取得 |
 | TodoID[TodoArray] | numeric | todoのID |
 | Content[TodoArray] | string | todoの詳細 |
-| CreatedAt[TodoArray] | numeric | todo登録日 |
+| CreatedAt[TodoArray] | string | todo登録日 |
 | AchievedAll[TodoArray] | numeric | 達成回数 |
 | Achieved[TodoArray] | Object | 達成詳細 |
 | ByYear{Achieved} | list | 年ごとの達成 |
@@ -699,7 +701,7 @@ GET /mypage/achieved
         {
             "TodoID" : 1,
             "Content": "プログラミング",
-            "CreatedAt": "20201030",
+            "CreatedAt": "2020-10-30",
             "AchievedAll": 30,
             "Achieved": {
                 "ByYear": [
