@@ -39,7 +39,6 @@ func ToPost(userid int, content string) (err error) {
 		LastAchieved: pq.NullTime{Time: time.Now(), Valid: false},
 		IsDeleted:    false,
 		IsGoaled:     false,
-		GoaledAt:     pq.NullTime{Time: time.Now(), Valid: false},
 	}
 
 	db.Create(&data)
@@ -223,9 +222,18 @@ func ToPatchGoal(todoid int, userid int) (err error) {
 	}
 
 	todo.IsGoaled = true
-	todo.GoaledAt = pq.NullTime{Time: time.Now(), Valid: true}
 
 	db.Save(&todo)
+
+	var counter int64
+
+	db.Table("todo_achieved_logs").
+		Where("todo_id = ?", todoid).
+		Count(&counter)
+
+	data := table.GoalList{TodoID: todoid, Count: counter, GoaledAt: time.Now()}
+
+	err = db.Create(&data).Error
 
 	return
 

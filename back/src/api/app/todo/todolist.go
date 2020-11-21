@@ -40,10 +40,11 @@ func ToGetAll(limit int, page int, order string) (out []allTodoArray, err error)
 	for _, r := range rows {
 
 		obj = domain.TodoObjInfo{
-			TodoID:       r.ID,
-			Content:      r.Content,
-			CreatedAt:    timecalc.PickDate(r.CreatedAt),
-			LastAchieved: timecalc.DifftoNow(r.LastAchieved),
+			TodoID:      r.ID,
+			IsDeleted:   r.IsDeleted,
+			Content:     r.Content,
+			CreatedAt:   timecalc.PickDate(r.CreatedAt),
+			AchieveInfo: timecalc.DifftoNow(r.LastAchieved),
 		}
 
 		if r.UserHN == "" {
@@ -123,10 +124,11 @@ func ToGetOneUser(name string, order string) (out userTodoArray, err error) {
 	for _, r := range rows {
 
 		obj = domain.TodoObjInfo{
-			TodoID:       r.ID,
-			Content:      r.Content,
-			CreatedAt:    timecalc.PickDate(r.CreatedAt),
-			LastAchieved: timecalc.DifftoNow(r.LastAchieved),
+			TodoID:      r.ID,
+			IsDeleted:   r.IsDeleted,
+			Content:     r.Content,
+			CreatedAt:   timecalc.PickDate(r.CreatedAt),
+			AchieveInfo: timecalc.DifftoNow(r.LastAchieved),
 		}
 
 		objArray = append(objArray, obj)

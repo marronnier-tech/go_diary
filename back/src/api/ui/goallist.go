@@ -3,7 +3,8 @@ package ui
 import (
 	stc "strconv"
 
-	"../app/todo"
+	"../app/admin"
+	"../app/goal"
 	"github.com/gin-gonic/gin"
 )
 
@@ -12,13 +13,13 @@ func GetGoal(c *gin.Context) {
 	limit, _ := stc.Atoi(c.DefaultQuery("limit", "100"))
 	order := c.DefaultQuery("order", "last_achieved")
 
-	res, err := todo.ToGetAllGoal(limit, page, order)
+	res, err := goal.ToGetAllGoal(limit, page, order)
 	if err != nil {
 		c.JSON(500, gin.H{"error": err})
 	}
 
 	c.JSON(200, gin.H{
-		"TodoArray": res,
+		"GoalArray": res,
 		"limit":     limit,
 		"page":      page,
 		"order":     order,
@@ -27,10 +28,18 @@ func GetGoal(c *gin.Context) {
 }
 
 func GetOneUserGoal(c *gin.Context) {
+
+	_, user, err := SessionLogin(c)
+
+	if err != nil {
+		c.JSON(500, gin.H{"error": err})
+		c.Abort()
+	}
+
 	name := c.Param("name")
 	order := c.DefaultQuery("order", "last_achieved")
 
-	res, err := todo.ToGetOneGoal(name, order)
+	res, err := goal.ToGetOneGoal(name, order)
 
 	if err != nil {
 		c.JSON(500, gin.H{"error": err})
@@ -39,6 +48,7 @@ func GetOneUserGoal(c *gin.Context) {
 	c.JSON(200, gin.H{
 		"Goal":  res,
 		"order": order,
+		"owner": admin.JudgeOwner(user, name),
 	})
 
 }
