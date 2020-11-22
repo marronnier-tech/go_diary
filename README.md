@@ -871,7 +871,7 @@ DELETE /logout
 ### 正常レスポンス
 ```
 HTTP/1.1 204 No Content
-GET /
+GET /todo
 ```
 
 ### 異常レスポンス
