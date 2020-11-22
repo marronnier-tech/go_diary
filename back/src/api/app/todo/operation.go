@@ -120,8 +120,14 @@ func ToPutAchieve(todoid int, userid int) (out todayTodo, err error) {
 		return
 	}
 
+	if todo.LastAchieved.Valid {
+		err = errors.New("今日は既にToDoが完了しています")
+		tx.Rollback()
+		return
+	}
+
 	todo.LastAchieved = pq.NullTime{Time: time.Now(), Valid: true}
-	todo.Count--
+	todo.Count++
 
 	if userid != todo.UserID {
 		err = errors.New("This user is invalid")
