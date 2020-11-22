@@ -527,7 +527,7 @@ GET /mypage
 ★ログイン必須
 ### URI
 ```
-PATCH /:id/goal
+PATCH /mypage/:id/goal
 ```
 
 ### 処理概要
