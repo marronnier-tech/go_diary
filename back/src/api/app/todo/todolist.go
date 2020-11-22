@@ -49,8 +49,8 @@ func ToGetAll(limit int, page int, order string) (out []allTodoArray, err error)
 			AchieveInfo: timecalc.DifftoNow(r.LastAchieved),
 		}
 
-		if r.UserHN == "" {
-			r.UserHN = r.UserName
+		if r.UserHN == nil {
+			r.UserHN = &r.UserName
 		}
 
 		user = domain.UserSimpleInfo{

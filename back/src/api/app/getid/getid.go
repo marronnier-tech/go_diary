@@ -2,15 +2,15 @@ package getid
 
 import (
 	"../../domain"
+	"../../infra/table"
 	"gorm.io/gorm"
 )
 
 func Fromname(tx *gorm.DB, name string) (user domain.UserSimpleInfo, userID int, err error) {
 
-	var u domain.UserSimpleInfo
+	var u table.User
 
 	err = tx.Table("users").
-		Select("id, name, handle_name, img, goaled_count").
 		Where("name = ?", name).
 		Scan(&u).
 		Error
@@ -20,17 +20,17 @@ func Fromname(tx *gorm.DB, name string) (user domain.UserSimpleInfo, userID int,
 		return
 	}
 
-	userID = u.UserID
+	userID = u.ID
 
-	if u.UserHN == "" {
-		u.UserHN = u.UserName
+	if u.HN == nil {
+		u.HN = &u.Name
 	}
 
 	user = domain.UserSimpleInfo{
-		UserID:      u.UserID,
-		UserName:    u.UserName,
-		UserHN:      u.UserHN,
-		UserImg:     u.UserImg,
+		UserID:      u.ID,
+		UserName:    u.Name,
+		UserHN:      u.HN,
+		UserImg:     u.Img,
 		GoaledCount: u.GoaledCount,
 	}
 

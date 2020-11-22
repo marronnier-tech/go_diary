@@ -43,7 +43,7 @@ func GetOneUserGoal(c *gin.Context) {
 
 	have, res, err := goal.ToGetOneGoal(name, order)
 
-	if !have {
+	if have == false {
 		c.JSON(404, gin.H{"message": "このユーザーにはゴールしたTODOがありません"})
 		return
 
