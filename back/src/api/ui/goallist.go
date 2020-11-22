@@ -71,7 +71,7 @@ func MyGoal(c *gin.Context) {
 		return
 	}
 
-	order := c.DefaultQuery("order", "last_achieved")
+	order := c.DefaultQuery("order", "goaled_at")
 
 	c.Redirect(302, fmt.Sprintf("/goal/%s?order=%s", name, order))
 

@@ -7,11 +7,12 @@ import (
 	"../../domain"
 	"../../infra"
 	"../../infra/table"
+	"../timecalc"
 	"github.com/lib/pq"
 	"gorm.io/gorm"
 )
 
-func ToPost(userid int, content string) (data table.TodoList, err error) {
+func ToPost(userid int, content string) (out OperationView, err error) {
 
 	tx, err := infra.DBConnect()
 
@@ -34,19 +35,36 @@ func ToPost(userid int, content string) (data table.TodoList, err error) {
 
 	userID := u.UserID
 
-	var same int64
+	var rows []sameCheck
 
-	tx.Table("todo_lists").
+	err = tx.Table("todo_lists").
+		Select("is_deleted, content").
 		Where("content = ?", content).
-		Count(&same)
+		Scan(&rows).
+		Error
 
-	if same != 0 {
+	if err != nil {
+		tx.Rollback()
+		return
+	}
+
+	same := false
+
+	for _, r := range rows {
+		if r.IsDeleted {
+			continue
+		}
+		same = true
+		break
+	}
+
+	if same {
 		err = errors.New("同一のToDoが既に存在します")
 		tx.Rollback()
 		return
 	}
 
-	data = table.TodoList{
+	data := table.TodoList{
 		UserID:       userID,
 		Content:      content,
 		CreatedAt:    time.Now(),
@@ -56,6 +74,15 @@ func ToPost(userid int, content string) (data table.TodoList, err error) {
 	if err = tx.Create(&data).Error; err != nil {
 		tx.Rollback()
 		return
+	}
+
+	out = OperationView{
+		TodoID:        data.ID,
+		Content:       content,
+		CreatedAt:     timecalc.PickDate(data.CreatedAt),
+		LastAchieved:  "達成した日はありません",
+		Count:         0,
+		TodayAchieved: false,
 	}
 
 	err = tx.Commit().Error
@@ -103,7 +130,7 @@ func ToDelete(todoid int, userid int) (err error) {
 
 }
 
-func ToPutAchieve(todoid int, userid int) (out todayTodo, err error) {
+func ToPutAchieve(todoid int, userid int) (out OperationView, err error) {
 	tx, err := infra.DBConnect()
 	if err != nil {
 		return
@@ -123,6 +150,12 @@ func ToPutAchieve(todoid int, userid int) (out todayTodo, err error) {
 
 	if userid != todo.UserID {
 		err = errors.New("This user is invalid")
+		tx.Rollback()
+		return
+	}
+
+	if todo.IsGoaled {
+		err = errors.New("既にゴールしたToDoです")
 		tx.Rollback()
 		return
 	}
@@ -151,12 +184,12 @@ func ToPutAchieve(todoid int, userid int) (out todayTodo, err error) {
 		return
 	}
 
-	out = todayTodo{
-		TodoLog: table.TodoAchievedLog{
-			ID:           data.ID,
-			TodoID:       data.TodoID,
-			AchievedDate: data.AchievedDate,
-		},
+	out = OperationView{
+		TodoID:        todo.ID,
+		Content:       todo.Content,
+		CreatedAt:     timecalc.PickDate(todo.CreatedAt),
+		LastAchieved:  timecalc.PickDate(data.AchievedDate.Time),
+		Count:         todo.Count,
 		TodayAchieved: true,
 	}
 

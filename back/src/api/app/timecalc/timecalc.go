@@ -37,4 +37,3 @@ func PickDate(datetime time.Time) (date string) {
 	date = fmt.Sprintf(datetime.Format(layout))
 	return
 }
-

@@ -11,3 +11,8 @@ type inGetAll struct {
 	UserImg     *string `gorm:"column:img"`
 	GoaledCount int64   `gorm:"column:goaled_count"`
 }
+
+type sameCheck struct {
+	IsDeleted bool   `gorm:"column:is_deleted"`
+	Content   string `gorm:"column:content"`
+}
