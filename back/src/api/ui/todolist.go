@@ -68,7 +68,7 @@ func MyTodo(c *gin.Context) {
 		c.JSON(500, gin.H{"error": err.Error()})
 		return
 	}
-
-	c.Redirect(302, fmt.Sprintf("/todo/%s", name))
+	order := c.DefaultQuery("order", "last_achieved")
+	c.Redirect(302, fmt.Sprintf("/todo/%s?order=%s", name, order))
 
 }

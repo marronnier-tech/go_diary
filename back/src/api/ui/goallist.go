@@ -62,6 +62,7 @@ func GetOneUserGoal(c *gin.Context) {
 	})
 
 }
+
 func MyGoal(c *gin.Context) {
 	_, name, err := SessionLogin(c)
 
@@ -70,6 +71,8 @@ func MyGoal(c *gin.Context) {
 		return
 	}
 
-	c.Redirect(302, fmt.Sprintf("/goal/%s", name))
+	order := c.DefaultQuery("order", "last_achieved")
+
+	c.Redirect(302, fmt.Sprintf("/goal/%s?order=%s", name, order))
 
 }

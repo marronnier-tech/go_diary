@@ -14,6 +14,7 @@ func GetMyProfile(c *gin.Context) {
 		c.JSON(500, gin.H{"error": err.Error()})
 		return
 	}
+	
 
 	c.Redirect(302, fmt.Sprintf("/profile/%s", name))
 
