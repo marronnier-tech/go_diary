@@ -3,6 +3,7 @@ package ui
 import (
 	"fmt"
 
+	"../app/admin"
 	"../app/profile"
 	"github.com/gin-gonic/gin"
 )
@@ -14,7 +15,6 @@ func GetMyProfile(c *gin.Context) {
 		c.JSON(500, gin.H{"error": err.Error()})
 		return
 	}
-	
 
 	c.Redirect(302, fmt.Sprintf("/profile/%s", name))
 
@@ -52,7 +52,7 @@ func PatchProfile(c *gin.Context) {
 }
 
 func GetOnesProfile(c *gin.Context) {
-	_, _, err := SessionLogin(c)
+	_, user, err := SessionLogin(c)
 
 	if err != nil {
 		c.JSON(500, gin.H{"error": err.Error()})
@@ -67,6 +67,9 @@ func GetOnesProfile(c *gin.Context) {
 		return
 	}
 
-	c.JSON(200, res)
+	c.JSON(200, gin.H{
+		"UserInfo": res,
+		"owner":    admin.JudgeOwner(user, name),
+	})
 
 }
