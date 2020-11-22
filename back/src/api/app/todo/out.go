@@ -25,6 +25,6 @@ type OperationView struct {
 	Content       string `json:"Content"`
 	CreatedAt     string `json:"CreatedAt"`
 	LastAchieved  string `json:"LastAchieved"`
-	Count         int    `json:"Count"`
+	Count         int64  `json:"Count"`
 	TodayAchieved bool   `json:"TodayAchieved"`
 }

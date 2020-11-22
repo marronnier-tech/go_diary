@@ -130,7 +130,7 @@ func ToDelete(todoid int, userid int) (err error) {
 
 }
 
-func ToPutAchieve(todoid int, userid int) (out todayTodo, err error) {
+func ToPutAchieve(todoid int, userid int) (out OperationView, err error) {
 	tx, err := infra.DBConnect()
 	if err != nil {
 		return
@@ -184,12 +184,12 @@ func ToPutAchieve(todoid int, userid int) (out todayTodo, err error) {
 		return
 	}
 
-	out = todayTodo{
-		TodoLog: table.TodoAchievedLog{
-			ID:           data.ID,
-			TodoID:       data.TodoID,
-			AchievedDate: data.AchievedDate,
-		},
+	out = OperationView{
+		TodoID:        todo.ID,
+		Content:       todo.Content,
+		CreatedAt:     timecalc.PickDate(todo.CreatedAt),
+		LastAchieved:  timecalc.PickDate(data.AchievedDate.Time),
+		Count:         todo.Count,
 		TodayAchieved: true,
 	}
 

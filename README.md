@@ -388,23 +388,23 @@ POST /mypage
 
 | key | type | content | 
 | ---- | ---- | ---- |
-| TodoObj | object | todo内容 |
-| TodoId{TodoObj} | numeric | todoのID |
-| Content{TodoObj} | string | todoの詳細 |
-| CreatedAt{TodoObj} | string | todo登録日 | 
-| LastAchieved{TodoObj} | string | 最終達成日（0日前） |
+| TodoID | numeric | todoのID |
+| Content | string | todoの詳細 |
+| CreatedAt | string | todo登録日 | 
+| LastAchieved | string | 最終達成日（0日前） |
+| Count | numeric | 累計達成回数 |
+| TodayAchieved | bool | 本日達成したか |
 
 ### 正常レスポンス
 ```json
-HTTP/1.1 201 Created
+HTTP/1.1 200 OK
 {
-    "TodoObj": 
-        {
-            "TodoID" : 1,
-            "Content": "プログラミング",
-            "CreatedAt": "2020-10-31",
-            "LastAchieved": "達成した日はありません"
-        }
+        "TodoID" : 1,
+        "Content": "プログラミング",
+        "CreatedAt": "2020-10-31",
+        "LastAchieved": "2020-11-03",
+        "Count": 3,
+        "TodayAchieved": true
 }
 ```
 
@@ -467,18 +467,24 @@ POST /mypage/:id/today
 
 | key | type | content | 
 | ---- | ---- | ---- |
-| TodoObj | list | todo |
-| TodoId | numeric | todoのID |
-| IsDeleted | boolean | 削除されたか（falseのみ表示） |
-| Content | string | todo内容 |
-| CreatedAt | string | todo作成日 |
-| LastAchieved | string | 達成日（今日） |
-| TodayAchieved | boolean | 本日達成しているか |
+| TodoID | numeric | todoのID |
+| Content | string | todoの詳細 |
+| CreatedAt | string | todo登録日 | 
+| LastAchieved | string | 最終達成日（0日前） |
+| Count | numeric | 累計達成回数 |
+| TodayAchieved | bool | 本日達成したか |
 
 ### 正常レスポンス
 ```json
-HTTP/1.1 302 Found
-GET /mypage
+HTTP/1.1 200 OK
+{
+        "TodoID" : 1,
+        "Content": "プログラミング",
+        "CreatedAt": "2020-10-31",
+        "LastAchieved": "2020-11-03",
+        "Count": 3,
+        "TodayAchieved": true
+}
 ```
 
 ### 異常レスポンス
