@@ -171,20 +171,6 @@ func ToClearAchieve(todoid int, userid int) (out todayTodo, err error) {
 		return
 	}
 
-	var dellog table.TodoAchievedLog
-
-	err = tx.Table("todo_achieved_logs").
-		Where("todo_id = ?", todoid).
-		Order("achieved_date desc").
-		Limit(1).
-		Delete(&dellog).
-		Error
-
-	if err != nil {
-		tx.Rollback()
-		return
-	}
-
 	var todo table.TodoList
 
 	err = tx.Table("todo_lists").
@@ -197,10 +183,30 @@ func ToClearAchieve(todoid int, userid int) (out todayTodo, err error) {
 		return
 	}
 
+	if !todo.LastAchieved.Valid {
+		err = errors.New("今日のToDoは完了していないため、何も処理をしていません")
+		tx.Rollback()
+		return
+	}
+
 	todo.Count--
 
 	if todo.UserID != userid {
 		err = errors.New("This user is invalid")
+		tx.Rollback()
+		return
+	}
+
+	var dellog table.TodoAchievedLog
+
+	err = tx.Table("todo_achieved_logs").
+		Where("todo_id = ?", todoid).
+		Order("achieved_date desc").
+		Limit(1).
+		Delete(&dellog).
+		Error
+
+	if err != nil {
 		tx.Rollback()
 		return
 	}
