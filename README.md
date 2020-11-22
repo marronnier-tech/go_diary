@@ -437,8 +437,7 @@ DELETE /mypage/:id
 
 ### 正常レスポンス
 ```json
-HTTP/1.1 302 Found
-GET /mypage
+HTTP/1.1 201 Created
 ```
 
 ### 異常レスポンス
@@ -450,7 +449,7 @@ GET /mypage
 ★ログイン必須
 ### URI
 ```
-POST /:id/today
+POST /mypage/:id/today
 ```
 ### 処理概要
 - Todoリストに当日のtodo達成を登録する
@@ -490,7 +489,7 @@ GET /mypage
 ★ログイン必須
 ### URI
 ```
-DELETE /:id/today
+DELETE /mypage/:id/today
 ```
 ### 処理概要
 - Todoリストの当日のtodo達成を取り消す
@@ -528,7 +527,7 @@ GET /mypage
 ★ログイン必須
 ### URI
 ```
-PATCH /:id/goal
+PATCH /mypage/:id/goal
 ```
 
 ### 処理概要
@@ -556,8 +555,7 @@ PATCH /:id/goal
 
 ### 正常レスポンス
 ```json
-HTTP/1.1 302 Found
-GET /mypage/goal
+HTTP/1.1 201 Created
 ```
 
 ### 異常レスポンス
@@ -733,35 +731,38 @@ GET /profile/:name
 
 | key | type | content | 
 | ---- | ---- | ---- |
-| ID | numeric | ユーザーID |
-| Name | string | ユーザーの名前 |
-| HN | string | ユーザーのハンドルネーム |
-| Img | string | ユーザーのアイコン；非優先 |
-| FinalGoal | string | ユーザーの目標 |
-| Profile | string | ユーザーのプロフィール（自由記述） |
-| Twitter | string | ユーザーのTwitterアカウント |
-| Instagram | string | ユーザーのInstagramアカウント |
-| Facebook | string | ユーザーのFacebookアカウント |
-| GitHub | string | ユーザーのGitHubアカウント |
-| URL | string | その他ユーザーが載せたいURL |
-| owner | boolean | ログイン中のユーザーと該当ユーザーが一致するか |
+| UserInfo | list | 該当ユーザー情報 |
+| ID{UserInfo} | numeric | ユーザーID |
+| Name{UserInfo} | string | ユーザーの名前 |
+| HN{UserInfo} | string | ユーザーのハンドルネーム |
+| Img{UserInfo} | string | ユーザーのアイコン；非優先 |
+| FinalGoal{UserInfo} | string | ユーザーの目標 |
+| Profile{UserInfo} | string | ユーザーのプロフィール（自由記述） |
+| Twitter{UserInfo} | string | ユーザーのTwitterアカウント |
+| Instagram{UserInfo} | string | ユーザーのInstagramアカウント |
+| Facebook{UserInfo} | string | ユーザーのFacebookアカウント |
+| GitHub{UserInfo} | string | ユーザーのGitHubアカウント |
+| URL{UserInfo} | string | その他ユーザーが載せたいURL |
+| owner{UserInfo} | boolean | ログイン中のユーザーと該当ユーザーが一致するか |
 
 ### 正常レスポンス
 ```json
 HTTP/1.1 200 OK
 {
-    "ID": 1,
-    "Name": "gopher0120",
-    "HN": "Gopherくん",
-    "Img": "cutiegopher.jpg",
-    "FinalGoal": "Golangの神になりたい！！",
-    "Profile": "僕はGopher。Golangが大好き！最近Goで参加する競技プログラミングのYouTubeチャンネル始めました。Golangがもっと広まると嬉しいな！",
-    "Twitter": "go",
-    "Instagram": "go",
-    "Facebook": "go",
-    "Github": "go",
-    "URL": "http://www.cutiegophergogogo.com/",
-    "owner": true
+    "UserInfo": {
+        "ID": 1,
+        "Name": "gopher0120",
+        "HN": "Gopherくん",
+        "Img": "cutiegopher.jpg",
+        "FinalGoal": "Golangの神になりたい！！",
+        "Profile": "僕はGopher。Golangが大好き！最近Goで参加する競技プログラミングのYouTubeチャンネル始めました。Golangがもっと広まると嬉しいな！",
+        "Twitter": "go",
+        "Instagram": "go",
+        "Facebook": "go",
+        "Github": "go",
+        "URL": "http://www.cutiegophergogogo.com/"
+    },
+    "owner": false
 }
 ```
 
@@ -804,7 +805,7 @@ POST /register
 
 ```json
 HTTP/1.1 302 Found
-GET / 
+GET /mypage
 ```
 
 ### 異常レスポンス
@@ -860,7 +861,7 @@ DELETE /logout
 
 ### 正常レスポンス
 ```
-HTTP/1.1 302 Redirect
+HTTP/1.1 204 No Content
 GET /
 ```
 

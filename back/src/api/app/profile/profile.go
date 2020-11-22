@@ -63,11 +63,11 @@ func ToGetOneProfile(name string) (out domain.UserDetailInfo, err error) {
 		return
 	}
 
-	var p table.User
+	var u table.User
 
 	err = tx.Table("users").
 		Where("name = ?", name).
-		Scan(&p).
+		Scan(&u).
 		Error
 
 	if err != nil {
@@ -76,17 +76,18 @@ func ToGetOneProfile(name string) (out domain.UserDetailInfo, err error) {
 	}
 
 	out = domain.UserDetailInfo{
-		ID:        p.ID,
-		Name:      p.Name,
-		HN:        p.HN,
-		Img:       p.Img,
-		FinalGoal: p.FinalGoal,
-		Profile:   p.Profile,
-		Twitter:   p.Twitter,
-		Instagram: p.Instagram,
-		Facebook:  p.Facebook,
-		Github:    p.Github,
-		URL:       p.URL,
+		ID:          u.ID,
+		Name:        u.Name,
+		HN:          u.HN,
+		Img:         u.Img,
+		GoaledCount: u.GoaledCount,
+		FinalGoal:   u.FinalGoal,
+		Profile:     u.Profile,
+		Twitter:     u.Twitter,
+		Instagram:   u.Instagram,
+		Facebook:    u.Facebook,
+		Github:      u.Github,
+		URL:         u.URL,
 	}
 
 	err = tx.Commit().Error

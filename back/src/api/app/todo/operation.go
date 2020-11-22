@@ -8,14 +8,15 @@ import (
 	"../../infra"
 	"../../infra/table"
 	"github.com/lib/pq"
+	"gorm.io/gorm"
 )
 
-func ToPost(userid int, content string) (err error) {
+func ToPost(userid int, content string) (data table.TodoList, err error) {
 
 	tx, err := infra.DBConnect()
 
 	if err != nil {
-		return err
+		return
 	}
 
 	var u domain.UserSimpleInfo
@@ -33,7 +34,19 @@ func ToPost(userid int, content string) (err error) {
 
 	userID := u.UserID
 
-	data := table.TodoList{
+	var same int64
+
+	tx.Table("todo_lists").
+		Where("content = ?", content).
+		Count(&same)
+
+	if same != 0 {
+		err = errors.New("同一のToDoが既に存在します")
+		tx.Rollback()
+		return
+	}
+
+	data = table.TodoList{
 		UserID:       userID,
 		Content:      content,
 		CreatedAt:    time.Now(),
@@ -72,7 +85,7 @@ func ToDelete(todoid int, userid int) (err error) {
 	}
 
 	if todo.UserID != userid {
-		err = errors.New("Error:user is wrong")
+		err = errors.New("user is wrong")
 		tx.Rollback()
 		return
 	}
@@ -108,14 +121,20 @@ func ToPutAchieve(todoid int, userid int) (out todayTodo, err error) {
 		return
 	}
 
-	todo.LastAchieved = pq.NullTime{Time: time.Now(), Valid: true}
-	todo.Count--
-
 	if userid != todo.UserID {
-		err = errors.New("Error:This user is invalid")
+		err = errors.New("This user is invalid")
 		tx.Rollback()
 		return
 	}
+
+	if todo.LastAchieved.Time.YearDay() == time.Now().YearDay() {
+		err = errors.New("今日は既にToDoが完了しています")
+		tx.Rollback()
+		return
+	}
+
+	todo.LastAchieved = pq.NullTime{Time: time.Now(), Valid: true}
+	todo.Count++
 
 	if err = tx.Save(&todo).Error; err != nil {
 		tx.Rollback()
@@ -153,20 +172,6 @@ func ToClearAchieve(todoid int, userid int) (out todayTodo, err error) {
 		return
 	}
 
-	var dellog table.TodoAchievedLog
-
-	err = tx.Table("todo_achieved_logs").
-		Where("todo_id = ?", todoid).
-		Order("achieved_date desc").
-		Limit(1).
-		Delete(&dellog).
-		Error
-
-	if err != nil {
-		tx.Rollback()
-		return
-	}
-
 	var todo table.TodoList
 
 	err = tx.Table("todo_lists").
@@ -179,10 +184,30 @@ func ToClearAchieve(todoid int, userid int) (out todayTodo, err error) {
 		return
 	}
 
+	if todo.UserID != userid {
+		err = errors.New("This user is invalid")
+		tx.Rollback()
+		return
+	}
+
+	if todo.LastAchieved.Time.YearDay() != time.Now().YearDay() {
+		err = errors.New("今日のToDoは完了していないため、何も処理をしていません")
+		tx.Rollback()
+		return
+	}
+
 	todo.Count--
 
-	if todo.UserID != userid {
-		err = errors.New("Error:This user is invalid")
+	var dellog table.TodoAchievedLog
+
+	err = tx.Table("todo_achieved_logs").
+		Where("todo_id = ?", todoid).
+		Order("achieved_date desc").
+		Limit(1).
+		Delete(&dellog).
+		Error
+
+	if err != nil {
 		tx.Rollback()
 		return
 	}
@@ -272,27 +297,14 @@ func ToPatchGoal(todoid int, userid int) (err error) {
 	}
 
 	if todo.UserID != userid {
-		err = errors.New("Error:This user is invalid")
+		err = errors.New("This user is invalid")
 		tx.Rollback()
 		return
 	}
 
 	todo.IsGoaled = true
 
-	var u domain.UserSimpleInfo
-
-	err = tx.Table("users").
-		Select("id, name, handle_name, img, goaled_count").
-		Where("id = ?", userid).
-		First(&u).
-		Error
-
-	if err != nil {
-		tx.Rollback()
-		return
-	}
-
-	u.GoaledCount++
+	var u table.User
 
 	data := table.GoalList{TodoID: todoid, Count: todo.Count, GoaledAt: time.Now()}
 
@@ -301,7 +313,12 @@ func ToPatchGoal(todoid int, userid int) (err error) {
 		return
 	}
 
-	if err = tx.Save(&u).Error; err != nil {
+	err = tx.Model(&u).
+		Where("id = ?", userid).
+		Update("goaled_count", gorm.Expr("goaled_count + 1")).
+		Error
+
+	if err != nil {
 		tx.Rollback()
 		return
 	}
@@ -311,6 +328,7 @@ func ToPatchGoal(todoid int, userid int) (err error) {
 		return
 	}
 
+	err = tx.Commit().Error
 	return
 
 }

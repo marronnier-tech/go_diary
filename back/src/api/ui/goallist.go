@@ -1,6 +1,7 @@
 package ui
 
 import (
+	"fmt"
 	stc "strconv"
 
 	"../app/admin"
@@ -42,7 +43,7 @@ func GetOneUserGoal(c *gin.Context) {
 
 	have, res, err := goal.ToGetOneGoal(name, order)
 
-	if !have {
+	if have == false {
 		c.JSON(404, gin.H{"message": "このユーザーにはゴールしたTODOがありません"})
 		return
 
@@ -59,5 +60,19 @@ func GetOneUserGoal(c *gin.Context) {
 		"order": order,
 		"owner": admin.JudgeOwner(user, name),
 	})
+
+}
+
+func MyGoal(c *gin.Context) {
+	_, name, err := SessionLogin(c)
+
+	if err != nil {
+		c.JSON(500, gin.H{"error": err.Error()})
+		return
+	}
+
+	order := c.DefaultQuery("order", "last_achieved")
+
+	c.Redirect(302, fmt.Sprintf("/goal/%s?order=%s", name, order))
 
 }

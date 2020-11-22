@@ -20,5 +20,5 @@ type GoalObjInfo struct {
 	TodoID        int       `json:"TodoID"`
 	Content       string    `json:"content"`
 	GoaledAt      time.Time `json:"GoaledAt"`
-	AchievedCount int64     `json:"AchievedCount`
+	AchievedCount int64     `json:"AchievedCount"`
 }
