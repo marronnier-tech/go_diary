@@ -5,6 +5,7 @@ import (
 	"../../infra"
 	"../align"
 	"../getid"
+	"../timecalc"
 )
 
 func ToGetAllGoal(limit int, page int, order string) (out []allGoalArray, err error) {
@@ -34,15 +35,15 @@ func ToGetAllGoal(limit int, page int, order string) (out []allGoalArray, err er
 		return
 	}
 
-	var obj domain.GoalObjInfo
+	var obj domain.OutGoalObjInfo
 	var user domain.UserSimpleInfo
 
 	for _, r := range rows {
 
-		obj = domain.GoalObjInfo{
+		obj = domain.OutGoalObjInfo{
 			TodoID:        r.ID,
 			Content:       r.Content,
-			GoaledAt:      r.GoaledAt,
+			GoaledAt:      timecalc.PickDate(r.GoaledAt),
 			AchievedCount: r.Count,
 		}
 
@@ -101,15 +102,15 @@ func ToGetOneGoal(name string, order string) (have bool, out userGoalArray, err 
 		return
 	}
 
-	var obj domain.GoalObjInfo
-	var objArray []domain.GoalObjInfo
+	var obj domain.OutGoalObjInfo
+	var objArray []domain.OutGoalObjInfo
 
 	for _, r := range rows {
 
-		obj = domain.GoalObjInfo{
+		obj = domain.OutGoalObjInfo{
 			TodoID:        r.TodoID,
 			Content:       r.Content,
-			GoaledAt:      r.GoaledAt,
+			GoaledAt:      timecalc.PickDate(r.GoaledAt),
 			AchievedCount: r.AchievedCount,
 		}
 

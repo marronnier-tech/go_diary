@@ -102,6 +102,7 @@ HTTP/1.1 200 OK
                 "IsDeleted": false,
                 "Content": "プログラミング",
                 "CreatedAt": "2020-10-31",
+                "Count": 1,
                 "LastAchieved": "2日前"
             },
             "User":{
@@ -179,6 +180,7 @@ HTTP/1.1 200 OK
                 "IsDeleted": false,
                 "Content": "プログラミング",
                 "CreatedAt": "2020-10-30",
+                "Count": 0,
                 "LastAchieved": "達成日はありません",
                 "TodayAchieved": false
             }
@@ -249,6 +251,7 @@ HTTP/1.1 200 OK
                 "TodoID": 1,
                 "Content": "プログラミング",
                 "GoaledAt": "2020-11-01",
+                "AchievedCount": 1
             },
             "User":{
                 "UserId": 1,
@@ -323,7 +326,7 @@ HTTP/1.1 200 OK
                 "TodoID" : 1,
                 "Content": "プログラミング",
                 "GoaledAt": "2020-11-10",
-                "AchievedDays": 10,
+                "AchievedCount": 10,
             }
         ]
     },

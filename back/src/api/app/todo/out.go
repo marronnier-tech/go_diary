@@ -19,3 +19,12 @@ type todayTodo struct {
 	TodoLog       table.TodoAchievedLog `json:"TodoLogInfo"`
 	TodayAchieved bool                  `json:"TodayAchieved"`
 }
+
+type OperationView struct {
+	TodoID        int    `json:"TodoID"`
+	Content       string `json:"Content"`
+	CreatedAt     string `json:"CreatedAt"`
+	LastAchieved  string `json:"LastAchieved"`
+	Count         int    `json:"Count"`
+	TodayAchieved bool   `json:"TodayAchieved"`
+}
