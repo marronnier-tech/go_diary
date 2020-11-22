@@ -120,7 +120,7 @@ func ToPutAchieve(todoid int, userid int) (out todayTodo, err error) {
 		return
 	}
 
-	if todo.LastAchieved.Valid {
+	if todo.LastAchieved.Time.YearDay() == time.Now().YearDay() {
 		err = errors.New("今日は既にToDoが完了しています")
 		tx.Rollback()
 		return
@@ -183,7 +183,7 @@ func ToClearAchieve(todoid int, userid int) (out todayTodo, err error) {
 		return
 	}
 
-	if !todo.LastAchieved.Valid {
+	if todo.LastAchieved.Time.YearDay() != time.Now().YearDay() {
 		err = errors.New("今日のToDoは完了していないため、何も処理をしていません")
 		tx.Rollback()
 		return
