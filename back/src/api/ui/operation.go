@@ -19,7 +19,7 @@ func PostTodo(c *gin.Context) {
 	content := c.PostForm("content")
 
 	if content == "" {
-		c.JSON(500, gin.H{"error": err.Error()})
+		c.JSON(500, gin.H{"error": "ToDoに設定したい内容を入力してください"})
 		return
 	}
 
