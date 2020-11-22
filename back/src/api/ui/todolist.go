@@ -19,7 +19,8 @@ func GetTodo(c *gin.Context) {
 	res, err := todo.ToGetAll(limit, page, order)
 
 	if err != nil {
-		fmt.Println(err)
+		c.JSON(500, gin.H{"error": err.Error()})
+		return
 	}
 
 	c.JSON(200, gin.H{
@@ -38,8 +39,8 @@ func GetOneUserTodo(c *gin.Context) {
 	_, user, err := SessionLogin(c)
 
 	if err != nil {
-		c.JSON(500, gin.H{"error": err})
-		c.Abort()
+		c.JSON(500, gin.H{"error": err.Error()})
+		return
 	}
 
 	name := c.Param("name")
@@ -48,7 +49,8 @@ func GetOneUserTodo(c *gin.Context) {
 	res, err := todo.ToGetOneUser(name, order)
 
 	if err != nil {
-		c.JSON(500, err)
+		c.JSON(500, gin.H{"error": err.Error()})
+		return
 	}
 
 	c.JSON(200, gin.H{
@@ -63,8 +65,8 @@ func MyTodo(c *gin.Context) {
 	_, name, err := SessionLogin(c)
 
 	if err != nil {
-		c.JSON(500, gin.H{"error": err})
-		c.Abort()
+		c.JSON(500, gin.H{"error": err.Error()})
+		return
 	}
 
 	c.Redirect(302, fmt.Sprintf("/todo/%s", name))

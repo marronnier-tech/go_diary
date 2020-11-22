@@ -11,8 +11,8 @@ func GetMyProfile(c *gin.Context) {
 	_, name, err := SessionLogin(c)
 
 	if err != nil {
-		c.JSON(500, gin.H{"error": err})
-		c.Abort()
+		c.JSON(500, gin.H{"error": err.Error()})
+		return
 	}
 
 	c.Redirect(302, fmt.Sprintf("/profile/%s", name))
@@ -23,8 +23,8 @@ func PatchProfile(c *gin.Context) {
 	userid, _, err := SessionLogin(c)
 
 	if err != nil {
-		c.JSON(500, gin.H{"error": err})
-		c.Abort()
+		c.JSON(500, gin.H{"error": err.Error()})
+		return
 	}
 
 	HN := c.PostForm("handle_name")
@@ -41,7 +41,8 @@ func PatchProfile(c *gin.Context) {
 		Profile, Twitter, Instagram, Facebook, Github, URL)
 
 	if err != nil {
-		c.JSON(500, err)
+		c.JSON(500, gin.H{"error": err.Error()})
+		return
 	}
 
 	c.JSON(201, nil)
@@ -53,15 +54,16 @@ func GetOnesProfile(c *gin.Context) {
 	_, _, err := SessionLogin(c)
 
 	if err != nil {
-		c.JSON(500, gin.H{"error": err})
-		c.Abort()
+		c.JSON(500, gin.H{"error": err.Error()})
+		return
 	}
 
 	name := c.Param("name")
 	res, err := profile.ToGetOneProfile(name)
 
 	if err != nil {
-		c.JSON(500, gin.H{"error": err})
+		c.JSON(500, gin.H{"error": err.Error()})
+		return
 	}
 
 	c.JSON(200, res)

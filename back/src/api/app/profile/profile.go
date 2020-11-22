@@ -12,7 +12,7 @@ func ToPatch(userid int, HN string, Img string, FinalGoal string,
 	Profile string, Twitter string, Instagram string,
 	Facebook string, Github string, URL string) (err error) {
 
-	db, err := infra.DBConnect()
+	tx, err := infra.DBConnect()
 
 	if err != nil {
 		return
@@ -20,17 +20,18 @@ func ToPatch(userid int, HN string, Img string, FinalGoal string,
 
 	var user table.User
 
-	err = db.Table("users").
+	err = tx.Table("users").
 		Select("id").
 		Where("id = ?", userid).
 		Scan(&user).
 		Error
 
 	if err != nil {
+		tx.Rollback()
 		return
 	}
 
-	db.Model(&user).Updates(table.User{
+	err = tx.Model(&user).Updates(table.User{
 		HN:        &HN,
 		Img:       &Img,
 		FinalGoal: &FinalGoal,
@@ -41,7 +42,14 @@ func ToPatch(userid int, HN string, Img string, FinalGoal string,
 		Github:    &Github,
 		URL:       &URL,
 		UpdatedAt: time.Now(),
-	})
+	}).Error
+
+	if err != nil {
+		tx.Rollback()
+		return
+	}
+
+	err = tx.Commit().Error
 
 	return
 
@@ -49,7 +57,7 @@ func ToPatch(userid int, HN string, Img string, FinalGoal string,
 
 func ToGetOneProfile(name string) (out domain.UserDetailInfo, err error) {
 
-	db, err := infra.DBConnect()
+	tx, err := infra.DBConnect()
 
 	if err != nil {
 		return
@@ -57,12 +65,13 @@ func ToGetOneProfile(name string) (out domain.UserDetailInfo, err error) {
 
 	var p table.User
 
-	err = db.Table("users").
+	err = tx.Table("users").
 		Where("name = ?", name).
 		Scan(&p).
 		Error
 
 	if err != nil {
+		tx.Rollback()
 		return
 	}
 
@@ -79,6 +88,8 @@ func ToGetOneProfile(name string) (out domain.UserDetailInfo, err error) {
 		Github:    p.Github,
 		URL:       p.URL,
 	}
+
+	err = tx.Commit().Error
 
 	return
 

@@ -2,6 +2,8 @@ package def
 
 import (
 	"os"
+
+	"github.com/joho/godotenv"
 )
 
 const (
@@ -13,10 +15,19 @@ const (
 	Loc       = "Local"
 )
 
-func GetEnvUser() string {
-	return os.Getenv("user")
+type FromEnv struct {
+	User string
+	Pass string
 }
 
-func GetEnvPass() string {
-	return os.Getenv("envpass")
+func GetEnv() (out FromEnv, err error) {
+	err = godotenv.Load()
+	if err != nil {
+		return
+	}
+	out = FromEnv{
+		User: os.Getenv("USER"),
+		Pass: os.Getenv("ENVPASS"),
+	}
+	return
 }
