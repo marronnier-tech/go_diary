@@ -4,11 +4,12 @@ import (
 	"../../domain"
 	"../../infra"
 	"../align"
+	"../getid"
 )
 
 func ToGetAllGoal(limit int, page int, order string) (out []allGoalArray, err error) {
 
-	db, err := infra.DBConnect()
+	tx, err := infra.DBConnect()
 
 	if err != nil {
 		return
@@ -16,7 +17,7 @@ func ToGetAllGoal(limit int, page int, order string) (out []allGoalArray, err er
 
 	var rows []inGoal
 
-	base := db.Table("goal_lists").
+	base := tx.Table("goal_lists").
 		Select("goal_lists.ID, goal_lists.todo_id, goal_lists.count, goal_lists.goaled_at, todo_lists.Content, todo_lists.is_deleted, users.id, users.name, users.handle_name, users.img, users.goaled_count").
 		Where("todo_lists.is_deleted = ?", false).
 		Joins("join todo_lists on goal_lists.todo_id = todo_lists.id").
@@ -29,6 +30,7 @@ func ToGetAllGoal(limit int, page int, order string) (out []allGoalArray, err er
 		Error
 
 	if err != nil {
+		tx.Rollback()
 		return
 	}
 
@@ -46,7 +48,6 @@ func ToGetAllGoal(limit int, page int, order string) (out []allGoalArray, err er
 
 		if r.UserHN == "" {
 			r.UserHN = r.UserName
-
 		}
 
 		user = domain.UserSimpleInfo{
@@ -64,47 +65,29 @@ func ToGetAllGoal(limit int, page int, order string) (out []allGoalArray, err er
 
 	}
 
+	err = tx.Commit().Error
+
 	return
 
 }
 
-func ToGetOneGoal(name string, order string) (out userGoalArray, err error) {
-	db, err := infra.DBConnect()
+func ToGetOneGoal(name string, order string) (have bool, out userGoalArray, err error) {
+	tx, err := infra.DBConnect()
 
 	if err != nil {
 		return
 	}
 
-	var u domain.UserSimpleInfo
-
-	err = db.Table("users").
-		Select("id, name, handle_name, img, goaled_count").
-		Where("name = ?", name).
-		Scan(&u).
-		Error
+	user, userID, err := getid.Fromname(tx, name)
 
 	if err != nil {
+		tx.Rollback()
 		return
-	}
-
-	userID := u.UserID
-
-	if u.UserHN == "" {
-		u.UserHN = u.UserName
-
-	}
-
-	user := domain.UserSimpleInfo{
-		UserID:      u.UserID,
-		UserName:    u.UserName,
-		UserHN:      u.UserHN,
-		UserImg:     u.UserImg,
-		GoaledCount: u.GoaledCount,
 	}
 
 	var rows []domain.GoalObjInfo
 
-	base := db.Table("todo_lists").
+	base := tx.Table("todo_lists").
 		Select("todo_lists.id, todo_lists.content, goal_lists.goaled_at, goal_lists.count").
 		Where("todo_lists.user_id = ? and todo_lists.is_deleted = ? and todo_lists.is_goaled = ?", userID, false, true).
 		Joins("todo_lists.id = goal_lists.todo_id")
@@ -114,6 +97,7 @@ func ToGetOneGoal(name string, order string) (out userGoalArray, err error) {
 		Error
 
 	if err != nil {
+		tx.Rollback()
 		return
 	}
 
@@ -137,6 +121,8 @@ func ToGetOneGoal(name string, order string) (out userGoalArray, err error) {
 		User:    user,
 		GoalObj: objArray,
 	}
+
+	err = tx.Commit().Error
 
 	return
 

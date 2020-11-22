@@ -125,7 +125,7 @@ HTTP/1.1 200 OK
 - 500 Internal Server Error
 
 ## GET-該当ユーザーのTODO一覧を表示
-
+★ログイン必須
 ### URI
 ```
 GET /todo/:name{?order}
@@ -197,6 +197,7 @@ HTTP/1.1 200 OK
 
 
 ## GET-全ユーザーのゴールTODOリスト
+
 ### URI
 ```
 GET /goal{?page,limit}
@@ -270,7 +271,7 @@ HTTP/1.1 200 OK
 - 500 Internal Server Error
 
 ## GET-該当ユーザーのゴールTODOリスト
-
+★ログイン必須
 ### URI
 ```
 GET /goal/:name
@@ -337,6 +338,7 @@ HTTP/1.1 200 OK
 - 500 Internal Server Error
 
 ## GET-本人のTODO一覧を表示
+★ログイン必須
 ### URI
 ```
 GET /mypage{?order}
@@ -347,6 +349,7 @@ GET /mypage{?order}
 - ただしname = 本人UserName
 
 ## GET-本人のゴール一覧を表示
+★ログイン必須
 ### URI
 ```
 GET /mypage/goal
@@ -357,7 +360,7 @@ GET /mypage/goal
 - ただしname = 本人UserName
 
 ## POST-TODOを登録
-
+★ログイン必須
 ### URI
 ```
 POST /mypage
@@ -408,7 +411,7 @@ HTTP/1.1 201 Created
 - 500 Internal Server Error
 
 ## DELETE-TODOを削除（論理削除）
-
+★ログイン必須
 ### URI
 ```
 DELETE /mypage/:id
@@ -444,6 +447,7 @@ GET /mypage
 - 500 Internal Server Error
 
 ## POST-当日TODO完了
+★ログイン必須
 ### URI
 ```
 POST /:id/today
@@ -483,6 +487,7 @@ GET /mypage
 
 
 ## DELETE-当日TODO完了取消
+★ログイン必須
 ### URI
 ```
 DELETE /:id/today
@@ -520,7 +525,7 @@ GET /mypage
 
 
 ## PATCH-TODOをゴールに変更
-
+★ログイン必須
 ### URI
 ```
 PATCH /:id/goal
@@ -561,6 +566,7 @@ GET /mypage/goal
 - 500 Internal Server Error
 
 ## GET-該当ユーザーの月別TODO達成状況取得
+★ログイン必須
 ※未実装
 ### URI
 ```
@@ -656,7 +662,7 @@ HTTP/1.1 200 OK
 - 500 Internal Server Error
 
 ## GET-本人情報詳細表示
-
+★ログイン必須
 ### URI
 ```
 GET /profile
@@ -702,7 +708,7 @@ HTTP/1.1 201 Created
 
 
 ## GET-該当ユーザー情報詳細表示
-
+★ログイン必須
 ### URI
 ```
 GET /profile/:name
@@ -842,7 +848,7 @@ GET /mypage
 
 
 ## DELETE-ユーザーログアウト
-
+★ログイン必須
 ### URI
 ```
 DELETE /logout
@@ -864,6 +870,7 @@ GET /
 - 500 Internal Server Error
 
 ## DELETE-ユーザー退会（論理削除）
+★ログイン必須
 ### URI
 ```
 DELETE /delete
@@ -881,7 +888,7 @@ DELETE /delete
 ### 正常レスポンス
 ```json
 HTTP/1.1 302 Redirect
-GET /
+GET /todo
 ```
 ### 異常レスポンス
 - 400 Bad Request
@@ -889,6 +896,7 @@ GET /
 - 500 Internal Server Error
 
 ## GET-ユーザー秘匿情報表示
+★ログイン必須
 ※未実装
 ### URI
 ```
@@ -936,6 +944,7 @@ HTTP/1.1 200 OK
 - 500 Internal Server Error
 
 ## PATCH-メールアドレス更新
+★ログイン必須
 ※未実装
 ### URI
 ```

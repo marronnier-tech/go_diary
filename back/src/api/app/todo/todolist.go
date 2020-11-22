@@ -2,6 +2,7 @@ package todo
 
 import (
 	"../align"
+	"../getid"
 	"../timecalc"
 
 	"../../domain"
@@ -11,7 +12,7 @@ import (
 
 func ToGetAll(limit int, page int, order string) (out []allTodoArray, err error) {
 
-	db, err := infra.DBConnect()
+	tx, err := infra.DBConnect()
 
 	if err != nil {
 		return
@@ -19,7 +20,7 @@ func ToGetAll(limit int, page int, order string) (out []allTodoArray, err error)
 
 	var rows []inGetAll
 
-	base := db.Table("todo_lists").
+	base := tx.Table("todo_lists").
 		Select("todo_lists.id, todo_lists.Content, todo_lists.user_id, todo_lists.created_at, todo_lists.last_achieved, todo_lists.count, todo_lists.is_deleted, todo_lists.is_goaled, users.name, users.handle_name, users.img, users.goaled_count").
 		Where("todo_lists.is_deleted = ? and todo_lists.is_goaled = ? and users.is_deleted = ?", false, false, false).
 		Joins("left join users on users.ID = todo_lists.user_id").
@@ -50,7 +51,6 @@ func ToGetAll(limit int, page int, order string) (out []allTodoArray, err error)
 
 		if r.UserHN == "" {
 			r.UserHN = r.UserName
-
 		}
 
 		user = domain.UserSimpleInfo{
@@ -68,47 +68,29 @@ func ToGetAll(limit int, page int, order string) (out []allTodoArray, err error)
 
 	}
 
+	err = tx.Commit().Error
+
 	return
 
 }
 
 func ToGetOneUser(name string, order string) (out userTodoArray, err error) {
-	db, err := infra.DBConnect()
+	tx, err := infra.DBConnect()
 
 	if err != nil {
 		return
 	}
 
-	var u domain.UserSimpleInfo
-
-	err = db.Table("users").
-		Select("id, name, handle_name, img, goaled_count").
-		Where("name = ?", name).
-		Scan(&u).
-		Error
+	user, userID, err := getid.Fromname(tx, name)
 
 	if err != nil {
+		tx.Rollback()
 		return
-	}
-
-	userID := u.UserID
-
-	if u.UserHN == "" {
-		u.UserHN = u.UserName
-
-	}
-
-	user := domain.UserSimpleInfo{
-		UserID:      u.UserID,
-		UserName:    u.UserName,
-		UserHN:      u.UserHN,
-		UserImg:     u.UserImg,
-		GoaledCount: u.GoaledCount,
 	}
 
 	var rows []table.TodoList
 
-	base := db.Table("todo_lists").
+	base := tx.Table("todo_lists").
 		Select("id, user_id, content, created_at, last_achieved, count, is_deleted, is_goaled").
 		Where("user_id = ? and is_deleted = ? and is_goaled = ?", userID, false, false)
 
@@ -117,6 +99,7 @@ func ToGetOneUser(name string, order string) (out userTodoArray, err error) {
 		Error
 
 	if err != nil {
+		tx.Rollback()
 		return
 	}
 
@@ -142,6 +125,8 @@ func ToGetOneUser(name string, order string) (out userTodoArray, err error) {
 		User:    user,
 		TodoObj: objArray,
 	}
+
+	err = tx.Commit().Error
 
 	return
 

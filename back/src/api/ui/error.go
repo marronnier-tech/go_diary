@@ -7,8 +7,8 @@ import (
 func errHundle(err error, status int, c *gin.Context) {
 
 	if status == 500 {
-		c.JSON(500, gin.H{"message": err})
-
+		c.JSON(500, gin.H{"error": err.Error()})
+		return
 	}
 
 }

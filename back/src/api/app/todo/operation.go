@@ -12,7 +12,7 @@ import (
 
 func ToPost(userid int, content string) (err error) {
 
-	db, err := infra.DBConnect()
+	tx, err := infra.DBConnect()
 
 	if err != nil {
 		return err
@@ -20,13 +20,14 @@ func ToPost(userid int, content string) (err error) {
 
 	var u domain.UserSimpleInfo
 
-	err = db.Table("users").
+	err = tx.Table("users").
 		Select("id").
 		Where("id = ?", userid).
 		Scan(&u).
 		Error
 
 	if err != nil {
+		tx.Rollback()
 		return
 	}
 
@@ -39,7 +40,12 @@ func ToPost(userid int, content string) (err error) {
 		LastAchieved: pq.NullTime{Time: time.Now(), Valid: false},
 	}
 
-	db.Create(&data)
+	if err = tx.Create(&data).Error; err != nil {
+		tx.Rollback()
+		return
+	}
+
+	err = tx.Commit().Error
 
 	return
 
@@ -47,7 +53,7 @@ func ToPost(userid int, content string) (err error) {
 
 func ToDelete(todoid int, userid int) (err error) {
 
-	db, err := infra.DBConnect()
+	tx, err := infra.DBConnect()
 
 	if err != nil {
 		return err
@@ -55,56 +61,76 @@ func ToDelete(todoid int, userid int) (err error) {
 
 	var todo table.TodoList
 
-	db.Table("todo_lists").
+	err = tx.Table("todo_lists").
 		Where("id = ?", todoid).
-		First(&todo)
+		First(&todo).
+		Error
+
+	if err != nil {
+		tx.Rollback()
+		return
+	}
 
 	if todo.UserID != userid {
-		err = errors.New("This is not your todo!")
+		err = errors.New("Error:user is wrong")
+		tx.Rollback()
 		return
 	}
 
 	todo.IsDeleted = true
 
-	db.Save(&todo)
+	if err = tx.Save(&todo).Error; err != nil {
+		tx.Rollback()
+		return
+	}
+
+	err = tx.Commit().Error
 
 	return
 
 }
 
 func ToPutAchieve(todoid int, userid int) (out todayTodo, err error) {
-	db, err := infra.DBConnect()
+	tx, err := infra.DBConnect()
 	if err != nil {
 		return
 	}
 
 	var todo table.TodoList
 
-	err = db.Table("todo_lists").
+	err = tx.Table("todo_lists").
 		Where("id = ?", todoid).
 		First(&todo).
 		Error
 
 	if err != nil {
-		return
-	}
-
-	if userid != todo.UserID {
-		err = errors.New("This user is invalid")
+		tx.Rollback()
 		return
 	}
 
 	todo.LastAchieved = pq.NullTime{Time: time.Now(), Valid: true}
 	todo.Count--
 
-	db.Save(&todo)
+	if userid != todo.UserID {
+		err = errors.New("Error:This user is invalid")
+		tx.Rollback()
+		return
+	}
+
+	if err = tx.Save(&todo).Error; err != nil {
+		tx.Rollback()
+		return
+	}
 
 	data := table.TodoAchievedLog{
 		TodoID:       todoid,
 		AchievedDate: pq.NullTime{Time: time.Now(), Valid: true},
 	}
 
-	db.Create(&data)
+	if err = tx.Create(&data).Error; err != nil {
+		tx.Rollback()
+		return
+	}
 
 	out = todayTodo{
 		TodoLog: table.TodoAchievedLog{
@@ -115,47 +141,63 @@ func ToPutAchieve(todoid int, userid int) (out todayTodo, err error) {
 		TodayAchieved: true,
 	}
 
+	err = tx.Commit().Error
+
 	return
 
 }
 
 func ToClearAchieve(todoid int, userid int) (out todayTodo, err error) {
-	db, err := infra.DBConnect()
+	tx, err := infra.DBConnect()
 	if err != nil {
 		return
 	}
 
 	var dellog table.TodoAchievedLog
 
-	db.Table("todo_achieved_logs").
+	err = tx.Table("todo_achieved_logs").
 		Where("todo_id = ?", todoid).
 		Order("achieved_date desc").
 		Limit(1).
-		Delete(&dellog)
+		Delete(&dellog).
+		Error
+
+	if err != nil {
+		tx.Rollback()
+		return
+	}
 
 	var todo table.TodoList
 
-	err = db.Table("todo_lists").
+	err = tx.Table("todo_lists").
 		Where("id = ?", todoid).
 		Scan(&todo).
 		Error
 
 	if err != nil {
+		tx.Rollback()
 		return
 	}
 
 	todo.Count--
 
 	if todo.UserID != userid {
-		err = errors.New("This user is invalid")
+		err = errors.New("Error:This user is invalid")
+		tx.Rollback()
 		return
 	}
 
 	var counter int64
 
-	db.Table("todo_achieved_logs").
+	err = tx.Table("todo_achieved_logs").
 		Where("todo_id = ?", todoid).
-		Count(&counter)
+		Count(&counter).
+		Error
+
+	if err != nil {
+		tx.Rollback()
+		return
+	}
 
 	if counter == 0 {
 		todo.LastAchieved = pq.NullTime{
@@ -175,10 +217,16 @@ func ToClearAchieve(todoid int, userid int) (out todayTodo, err error) {
 	} else {
 		var lastlog table.TodoAchievedLog
 
-		db.Table("todo_achieved_logs").
+		err = tx.Table("todo_achieved_logs").
 			Where("todo_id = ?", todoid).
 			Order("achieved_date desc").
-			First(&lastlog)
+			First(&lastlog).
+			Error
+
+		if err != nil {
+			tx.Rollback()
+			return
+		}
 
 		todo.LastAchieved = pq.NullTime{
 			Time:  lastlog.AchievedDate.Time,
@@ -195,30 +243,37 @@ func ToClearAchieve(todoid int, userid int) (out todayTodo, err error) {
 		}
 	}
 
-	db.Save(&todo)
+	if err = tx.Save(&todo).Error; err != nil {
+		tx.Rollback()
+		return
+	}
+
+	err = tx.Commit().Error
 
 	return
 }
 
 func ToPatchGoal(todoid int, userid int) (err error) {
-	db, err := infra.DBConnect()
+	tx, err := infra.DBConnect()
 	if err != nil {
 		return err
 	}
 
 	var todo table.TodoList
 
-	err = db.Table("todo_lists").
+	err = tx.Table("todo_lists").
 		Where("id = ?", todoid).
 		First(&todo).
 		Error
 
 	if err != nil {
+		tx.Rollback()
 		return
 	}
 
 	if todo.UserID != userid {
-		err = errors.New("This user is invalid")
+		err = errors.New("Error:This user is invalid")
+		tx.Rollback()
 		return
 	}
 
@@ -226,27 +281,35 @@ func ToPatchGoal(todoid int, userid int) (err error) {
 
 	var u domain.UserSimpleInfo
 
-	err = db.Table("users").
+	err = tx.Table("users").
 		Select("id, name, handle_name, img, goaled_count").
 		Where("id = ?", userid).
 		First(&u).
 		Error
 
 	if err != nil {
+		tx.Rollback()
 		return
 	}
 
 	u.GoaledCount++
 
 	data := table.GoalList{TodoID: todoid, Count: todo.Count, GoaledAt: time.Now()}
-	err = db.Create(&data).Error
 
-	if err != nil {
+	if err = tx.Create(&data).Error; err != nil {
+		tx.Rollback()
 		return
 	}
 
-	db.Save(&u)
-	db.Save(&todo)
+	if err = tx.Save(&u).Error; err != nil {
+		tx.Rollback()
+		return
+	}
+
+	if err = tx.Save(&todo).Error; err != nil {
+		tx.Rollback()
+		return
+	}
 
 	return
 

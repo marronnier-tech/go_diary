@@ -11,7 +11,7 @@ import (
 )
 
 func Validation(name string, password string) (id int, user string, err error) {
-	db, err := infra.DBConnect()
+	tx, err := infra.DBConnect()
 
 	if err != nil {
 		return
@@ -19,29 +19,33 @@ func Validation(name string, password string) (id int, user string, err error) {
 
 	var userauth domain.LoginInfo
 
-	db.Table("users").Select("id, name, password").Where("name = ?", name).Find(&userauth)
+	tx.Table("users").Select("id, name, password").Where("name = ?", name).Find(&userauth)
 	selectpass := userauth.Password
 
 	err = bcrypt.CompareHashAndPassword(selectpass, []byte(password))
 
 	if err != nil {
+		tx.Rollback()
 		return
 	}
 
 	id = userauth.UserID
 	user = userauth.UserName
+
+	tx.Commit()
 	return
 }
 
 func SignUp(user string, password string) (err error) {
 
-	gormdb, err := infra.DBConnect()
+	tx, err := infra.DBConnect()
 
 	hash, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
 
 	fmt.Println(hash)
 
 	if err != nil {
+		tx.Rollback()
 		return err
 	}
 
@@ -63,17 +67,18 @@ func SignUp(user string, password string) (err error) {
 		IsDeleted:   false,
 	}
 
-	err = gormdb.Create(&newuser).Error
+	err = tx.Create(&newuser).Error
 
 	if err != nil {
+		tx.Rollback()
 		return err
 	}
 
-	return nil
+	return tx.Commit().Error
 }
 
 func ToDeleteMember(userid int) (err error) {
-	db, err := infra.DBConnect()
+	tx, err := infra.DBConnect()
 
 	if err != nil {
 		return
@@ -81,31 +86,34 @@ func ToDeleteMember(userid int) (err error) {
 
 	var user table.User
 
-	err = db.Table("users").
+	err = tx.Table("users").
 		Where("id = ?", userid).
 		First(&user).
 		Error
 
 	if err != nil {
+		tx.Rollback()
 		return
 	}
-	db.Model(&user).Update("is_deleted", true)
+
+	tx.Model(&user).Update("is_deleted", true)
 
 	var todo table.TodoList
 
-	err = db.Table("todo_lists").
+	err = tx.Table("todo_lists").
 		Where("user_id = ?", userid).
 		Find(&todo).
 		Error
 
 	if err != nil {
+		tx.Rollback()
 		return
 	}
 
 	todo.IsDeleted = true
-	db.Save(&todo)
+	tx.Save(&todo)
 
-	return
+	return tx.Commit().Error
 
 }
 

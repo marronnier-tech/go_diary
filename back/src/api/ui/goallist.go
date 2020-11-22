@@ -15,7 +15,8 @@ func GetGoal(c *gin.Context) {
 
 	res, err := goal.ToGetAllGoal(limit, page, order)
 	if err != nil {
-		c.JSON(500, gin.H{"error": err})
+		c.JSON(500, gin.H{"error": err.Error()})
+		return
 	}
 
 	c.JSON(200, gin.H{
@@ -32,18 +33,23 @@ func GetOneUserGoal(c *gin.Context) {
 	_, user, err := SessionLogin(c)
 
 	if err != nil {
-		c.JSON(500, gin.H{"error": err})
-		c.Abort()
+		c.JSON(500, gin.H{"error": err.Error()})
+		return
 	}
 
 	name := c.Param("name")
 	order := c.DefaultQuery("order", "goaled_at")
 
-	res, err := goal.ToGetOneGoal(name, order)
+	have, res, err := goal.ToGetOneGoal(name, order)
+
+	if !have {
+		c.JSON(404, gin.H{"message": "このユーザーにはゴールしたTODOがありません"})
+		return
+
+	}
 
 	if err != nil {
-		c.JSON(404, gin.H{"error": "ゴールしたTodoはありません"})
-		c.Abort()
+		c.JSON(404, gin.H{"error": err.Error()})
 		return
 
 	}

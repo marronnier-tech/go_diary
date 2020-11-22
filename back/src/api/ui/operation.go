@@ -12,21 +12,22 @@ func PostTodo(c *gin.Context) {
 	id, _, err := SessionLogin(c)
 
 	if err != nil {
-		c.JSON(500, gin.H{"error": err})
-		c.Abort()
+		c.JSON(500, gin.H{"error": err.Error()})
+		return
 	}
 
 	content := c.PostForm("content")
 
 	if content == "" {
-		c.JSON(500, gin.H{"error": "content is null!"})
+		c.JSON(500, gin.H{"error": err.Error()})
 		return
 	}
 
 	err = todo.ToPost(id, content)
 
 	if err != nil {
-		c.JSON(500, err)
+		c.JSON(500, gin.H{"error": err.Error()})
+		return
 	}
 
 	c.JSON(201, nil)
@@ -39,8 +40,8 @@ func DeleteTodo(c *gin.Context) {
 	userid, _, err := SessionLogin(c)
 
 	if err != nil {
-		c.JSON(500, gin.H{"error": err})
-		c.Abort()
+		c.JSON(500, gin.H{"error": err.Error()})
+		return
 	}
 
 	todoid, _ := stc.Atoi(c.Param("id"))
@@ -48,7 +49,7 @@ func DeleteTodo(c *gin.Context) {
 	err = todo.ToDelete(todoid, userid)
 
 	if err != nil {
-		c.JSON(500, gin.H{"error": err})
+		c.JSON(500, gin.H{"error": err.Error()})
 		return
 	}
 
@@ -62,7 +63,7 @@ func PutAchieveTodo(c *gin.Context) {
 	userid, _, err := SessionLogin(c)
 
 	if err != nil {
-		c.JSON(500, gin.H{"error": err})
+		c.JSON(500, gin.H{"error": err.Error()})
 		return
 	}
 
@@ -71,7 +72,7 @@ func PutAchieveTodo(c *gin.Context) {
 	res, err := todo.ToPutAchieve(todoid, userid)
 
 	if err != nil {
-		c.JSON(500, gin.H{"error": "It's not your Todo!"})
+		c.JSON(500, gin.H{"error": err.Error()})
 		return
 	}
 
@@ -84,7 +85,7 @@ func ClearAchieveTodo(c *gin.Context) {
 	userid, _, err := SessionLogin(c)
 
 	if err != nil {
-		c.JSON(500, gin.H{"error": err})
+		c.JSON(500, gin.H{"error": err.Error()})
 		return
 	}
 
@@ -93,7 +94,8 @@ func ClearAchieveTodo(c *gin.Context) {
 	res, err := todo.ToClearAchieve(todoid, userid)
 
 	if err != nil {
-		c.JSON(500, gin.H{"error": err})
+		c.JSON(500, gin.H{"error": err.Error()})
+		return
 	}
 
 	c.JSON(200, res)
@@ -103,7 +105,7 @@ func PatchGoal(c *gin.Context) {
 	userid, _, err := SessionLogin(c)
 
 	if err != nil {
-		c.JSON(500, gin.H{"error": err})
+		c.JSON(500, gin.H{"error": err.Error()})
 		return
 	}
 
@@ -112,7 +114,8 @@ func PatchGoal(c *gin.Context) {
 	err = todo.ToPatchGoal(todoid, userid)
 
 	if err != nil {
-		c.JSON(500, gin.H{"error": err})
+		c.JSON(500, gin.H{"error": err.Error()})
+		return
 	}
 
 	c.JSON(201, nil)
