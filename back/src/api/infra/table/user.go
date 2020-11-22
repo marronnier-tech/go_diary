@@ -9,6 +9,7 @@ type User struct {
 	MailAddress *string   `gorm:"column:mail_address"`
 	HN          *string   `gorm:"column:handle_name"`
 	Img         *string   `gorm:"column:img"`
+	GoaledCount int64     `gorm:"column:goaled_count;default:0"`
 	FinalGoal   *string   `gorm:"column:final_goal"`
 	Profile     *string   `gorm:"column:profile"`
 	Twitter     *string   `gorm:"column:twitter"`

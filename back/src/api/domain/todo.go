@@ -12,6 +12,7 @@ type TodoObjInfo struct {
 	IsDeleted bool   `json:"IsDeleted"`
 	Content   string `json:"Content"`
 	CreatedAt string `json:"CreatedAt"`
+	Count     int64  `json:"Count"`
 	AchieveInfo
 }
 

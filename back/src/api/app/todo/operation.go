@@ -37,8 +37,6 @@ func ToPost(userid int, content string) (err error) {
 		Content:      content,
 		CreatedAt:    time.Now(),
 		LastAchieved: pq.NullTime{Time: time.Now(), Valid: false},
-		IsDeleted:    false,
-		IsGoaled:     false,
 	}
 
 	db.Create(&data)
@@ -97,6 +95,7 @@ func ToPutAchieve(todoid int, userid int) (out todayTodo, err error) {
 	}
 
 	todo.LastAchieved = pq.NullTime{Time: time.Now(), Valid: true}
+	todo.Count--
 
 	db.Save(&todo)
 
@@ -145,18 +144,20 @@ func ToClearAchieve(todoid int, userid int) (out todayTodo, err error) {
 		return
 	}
 
+	todo.Count--
+
 	if todo.UserID != userid {
 		err = errors.New("This user is invalid")
 		return
 	}
 
-	var count int64
+	var counter int64
 
 	db.Table("todo_achieved_logs").
 		Where("todo_id = ?", todoid).
-		Count(&count)
+		Count(&counter)
 
-	if count == 0 {
+	if counter == 0 {
 		todo.LastAchieved = pq.NullTime{
 			Time:  time.Now(),
 			Valid: false,
@@ -223,17 +224,29 @@ func ToPatchGoal(todoid int, userid int) (err error) {
 
 	todo.IsGoaled = true
 
-	db.Save(&todo)
+	var u domain.UserSimpleInfo
 
-	var counter int64
+	err = db.Table("users").
+		Select("id, name, handle_name, img, goaled_count").
+		Where("id = ?", userid).
+		First(&u).
+		Error
 
-	db.Table("todo_achieved_logs").
-		Where("todo_id = ?", todoid).
-		Count(&counter)
+	if err != nil {
+		return
+	}
 
-	data := table.GoalList{TodoID: todoid, Count: counter, GoaledAt: time.Now()}
+	u.GoaledCount++
 
+	data := table.GoalList{TodoID: todoid, Count: todo.Count, GoaledAt: time.Now()}
 	err = db.Create(&data).Error
+
+	if err != nil {
+		return
+	}
+
+	db.Save(&u)
+	db.Save(&todo)
 
 	return
 

@@ -56,7 +56,7 @@ GET /todo{?page,limit,order}
 - 全ユーザーのTODO一覧を表示する。
 - limitで各ページ上限、pageでページ数を指定できる。
 デフォルトはlimit:100、page:1。クエリパラメータで取得する。
-- orderは最終達成日順（last_achieved）、達成回数順（achieved_times）、最近設定された順（set）にできる。デフォルトは最終達成日順。
+- orderは最終達成日順（last_achieved）、達成回数順（count）、最近設定された順（created_at）にできる。デフォルトは最終達成日順。
 - ゴールは含まない
 
 
@@ -85,6 +85,7 @@ GET /todo{?page,limit,order}
 | UserName{User} | string | 所有ユーザー名 |
 | UserHN{User} | string | 所有ユーザーのハンドルネーム |
 | UserImg{User} | string | 所有ユーザーのアイコン；非優先 |
+| GoaledCount{User} | count | ゴール数 |
 | limit | numeric | ページ内表示Todo数 |
 | page | numeric | ページ数 | 
 | order | string | 順序 | 
@@ -108,12 +109,13 @@ HTTP/1.1 200 OK
                 "UserName": "gopher0120",
                 "UserHN": "Gopherくん",
                 "UserImg": "cutiegopher.jpg",
+                "GoaledCount": 1
             },
         },
     ],
     "limit": 100,
     "page": 1,
-    "order": "Achieved_times"
+    "order": "count"
 }
 ```
 
@@ -130,7 +132,7 @@ GET /todo/:name{?order}
 ```
 ### 処理概要
 - キーで取得したユーザーのTODO一覧を表示する。
-- orderは最終達成日順（last_Achieved）、達成回数順（Achieved_times）、最近設定された順（set）にできる。デフォルトは最終達成日順。
+- orderは最終達成日順（last_achieved）、達成回数順（count）、最近設定された順（created_at）にできる。デフォルトは最終達成日順。
 
 ### リクエストパラメータ
 
@@ -148,6 +150,7 @@ GET /todo/:name{?order}
 | UserName{User} | string | ユーザー名 |
 | UserHN{User} | string | ユーザーのハンドルネーム |
 | UserImg{User} | string | ユーザー画像 |
+| GoaledCount{User} | count | ゴール数 |
 | TodoArray | Array | todo内容 |
 | TodoID[TodoArray] | numeric | todoのID |
 | IsDeleted[TodoArray] | boolean | 削除されたか（falseのみ表示） |
@@ -167,7 +170,8 @@ HTTP/1.1 200 OK
             "UserID": 1,
             "UserName": "gopher0120",
             "UserHN": "Gopherくん",
-            "UserImg": "cutiegopher.jpg"
+            "UserImg": "cutiegopher.jpg",
+            "GoaledCount": 1
         },
         "TodoArray": [
             {
@@ -200,7 +204,8 @@ GET /goal{?page,limit}
 ### 処理概要
 - 全ユーザーのゴールしたTODO一覧を表示する。
 - limitで各ページ上限、pageでページ数、orderで表示順序を指定できる。
-デフォルトはlimit:100、page:1、order:"last_achieved"。クエリパラメータで取得する。
+デフォルトはlimit:100、page:1、order:"goaled_at"。クエリパラメータで取得する。
+- orderはゴール達成日順（goaled_at）、達成回数順（count）にできる。デフォルトは最終達成日順。
 - ゴールのみ表示
 
 
@@ -227,6 +232,7 @@ GET /goal{?page,limit}
 | UserName{User} | string | 所有ユーザーの名前 |
 | UserHN{User} | string | 所有ユーザーのハンドルネーム |
 | UserImg{User} | string | 所有ユーザーのアイコン；非優先 |
+| GoaledCount{User} | count | ゴール数 |
 | limit | numeric | ページ内表示Todo数 |
 | page | numeric | ページ数 | 
 | order | string | 表示順序 |
@@ -248,12 +254,13 @@ HTTP/1.1 200 OK
                 "UserName": "gopher0120",
                 "UserHN": "Gopherくん",
                 "UserImg": "cutiegopher.jpg",
+                "GoaledCount": 1
             },
         },
     ],
     "limit": 100,
     "page": 1,
-    "order": "last_achieved"
+    "order": "goaled_at"
 }
 ```
 
@@ -271,7 +278,7 @@ GET /goal/:name
 ### 処理概要
 - キーで取得したユーザーのTODO一覧を表示する。
 - ゴール日順に表示する。
-- orderで表示順序を指定できる。デフォルトは"last_achieved"。
+- orderはゴール達成日順（goaled_at）、達成回数順（count）にできる。デフォルトはゴール達成日順。
 
 ### リクエストパラメータ
 
@@ -289,6 +296,7 @@ GET /goal/:name
 | UserName{User} | string | ユーザー名 |
 | UserHN{User} | string | ユーザーのハンドルネーム |
 | UserImg{User} | string | ユーザー画像 |
+| GoaledCount{User} | count | ゴール数 |
 | TodoObj | array | todo取得 |
 | TodoID[GoalArray] | numeric | todoのID |
 | Content[GoalArray] | string | todoの詳細 |
@@ -299,7 +307,7 @@ GET /goal/:name
 
 ### 正常レスポンス
 ```json
-/* status: 200 */
+HTTP/1.1 200 OK
 {
     "Goal":{
         "User": {
@@ -307,6 +315,7 @@ GET /goal/:name
             "UserName": "gopher0120",
             "UserHN": "Gopherくん",
             "UserImg": "cutiegopher.jpg",
+            "GoaledCount": 1
         },
         "GoalArray": [
             {
@@ -317,7 +326,7 @@ GET /goal/:name
             }
         ]
     },
-    "order": "last_achieved",
+    "order": "goaled_at",
     "owner": false
 }
 ```
@@ -576,6 +585,7 @@ GET /mypage/achieved
 | UserName{User} | string | ユーザー名 |
 | UserHN{User} | string | ユーザーのハンドルネーム |
 | UserImg{User} | string | ユーザー画像 |
+| GoaledCount{User} | count | ゴール数 |
 | TodoArray | array | todo取得 |
 | TodoID[TodoArray] | numeric | todoのID |
 | Content[TodoArray] | string | todoの詳細 |
@@ -599,6 +609,7 @@ HTTP/1.1 200 OK
         "UserName": "gopher0120",
         "UserHN": "Gopherくん",
         "UserImg": "cutiegopher.jpg",
+        "GoaledCount": 1
     },
     "TodoArray": [
         {

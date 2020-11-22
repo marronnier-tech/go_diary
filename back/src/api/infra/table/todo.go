@@ -12,8 +12,9 @@ type TodoList struct {
 	Content      string      `gorm:"column:content"`
 	CreatedAt    time.Time   `gorm:"column:created_at"`
 	LastAchieved pq.NullTime `gorm:"column:last_achieved"`
-	IsDeleted    bool        `gorm:"column:is_deleted"`
-	IsGoaled     bool        `gorm:"column:is_goaled"`
+	Count        int64       `gorm:"column:count;default:0"`
+	IsDeleted    bool        `gorm:"column:is_deleted;default:false"`
+	IsGoaled     bool        `gorm:"column:is_goaled;default:false"`
 }
 
 // 達成ログ
