@@ -88,7 +88,7 @@ func ToGetOneGoal(name string, order string) (have bool, out userGoalArray, err 
 	var rows []domain.GoalObjInfo
 
 	base := tx.Table("todo_lists").
-		Select("todo_lists.id, todo_lists.content, goal_lists.goaled_at, goal_lists.count").
+		Select("todo_lists.id as todo_id, todo_lists.content, goal_lists.goaled_at, goal_lists.count as achieved_count").
 		Where("todo_lists.user_id = ? and todo_lists.is_deleted = ? and todo_lists.is_goaled = ?", userID, false, true).
 		Joins("join goal_lists on todo_lists.id = goal_lists.todo_id")
 
