@@ -31,5 +31,5 @@ type GoalList struct {
 	ID       int       `gorm:"column:id; autoIncrement"`
 	TodoID   int       `gorm:"column:todo_id"`
 	Count    int64     `gorm:"column:count"`
-	GoaledAt time.Time `gorm:"column:created_at"`
+	GoaledAt time.Time `gorm:"column:goaled_at"`
 }

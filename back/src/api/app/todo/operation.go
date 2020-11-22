@@ -8,6 +8,7 @@ import (
 	"../../infra"
 	"../../infra/table"
 	"github.com/lib/pq"
+	"gorm.io/gorm"
 )
 
 func ToPost(userid int, content string) (data table.TodoList, err error) {
@@ -303,20 +304,7 @@ func ToPatchGoal(todoid int, userid int) (err error) {
 
 	todo.IsGoaled = true
 
-	var u domain.UserSimpleInfo
-
-	err = tx.Table("users").
-		Select("id, name, handle_name, img, goaled_count").
-		Where("id = ?", userid).
-		First(&u).
-		Error
-
-	if err != nil {
-		tx.Rollback()
-		return
-	}
-
-	u.GoaledCount++
+	var u table.User
 
 	data := table.GoalList{TodoID: todoid, Count: todo.Count, GoaledAt: time.Now()}
 
@@ -325,7 +313,12 @@ func ToPatchGoal(todoid int, userid int) (err error) {
 		return
 	}
 
-	if err = tx.Save(&u).Error; err != nil {
+	err = tx.Model(&u).
+		Where("id = ?", userid).
+		Update("goaled_count", gorm.Expr("goaled_count + 1")).
+		Error
+
+	if err != nil {
 		tx.Rollback()
 		return
 	}
@@ -335,6 +328,7 @@ func ToPatchGoal(todoid int, userid int) (err error) {
 		return
 	}
 
+	err = tx.Commit().Error
 	return
 
 }
