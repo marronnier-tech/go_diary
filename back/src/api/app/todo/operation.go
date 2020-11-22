@@ -121,6 +121,12 @@ func ToPutAchieve(todoid int, userid int) (out todayTodo, err error) {
 		return
 	}
 
+	if userid != todo.UserID {
+		err = errors.New("This user is invalid")
+		tx.Rollback()
+		return
+	}
+
 	if todo.LastAchieved.Time.YearDay() == time.Now().YearDay() {
 		err = errors.New("今日は既にToDoが完了しています")
 		tx.Rollback()
@@ -129,12 +135,6 @@ func ToPutAchieve(todoid int, userid int) (out todayTodo, err error) {
 
 	todo.LastAchieved = pq.NullTime{Time: time.Now(), Valid: true}
 	todo.Count++
-
-	if userid != todo.UserID {
-		err = errors.New("This user is invalid")
-		tx.Rollback()
-		return
-	}
 
 	if err = tx.Save(&todo).Error; err != nil {
 		tx.Rollback()
@@ -184,6 +184,12 @@ func ToClearAchieve(todoid int, userid int) (out todayTodo, err error) {
 		return
 	}
 
+	if todo.UserID != userid {
+		err = errors.New("This user is invalid")
+		tx.Rollback()
+		return
+	}
+
 	if todo.LastAchieved.Time.YearDay() != time.Now().YearDay() {
 		err = errors.New("今日のToDoは完了していないため、何も処理をしていません")
 		tx.Rollback()
@@ -191,12 +197,6 @@ func ToClearAchieve(todoid int, userid int) (out todayTodo, err error) {
 	}
 
 	todo.Count--
-
-	if todo.UserID != userid {
-		err = errors.New("This user is invalid")
-		tx.Rollback()
-		return
-	}
 
 	var dellog table.TodoAchievedLog
 
