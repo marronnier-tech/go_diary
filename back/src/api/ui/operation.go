@@ -23,14 +23,14 @@ func PostTodo(c *gin.Context) {
 		return
 	}
 
-	err = todo.ToPost(id, content)
+	res, err := todo.ToPost(id, content)
 
 	if err != nil {
 		c.JSON(500, gin.H{"error": err.Error()})
 		return
 	}
 
-	c.JSON(201, nil)
+	c.JSON(201, gin.H{"TodoObj": res})
 
 	return
 

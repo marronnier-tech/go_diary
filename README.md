@@ -437,8 +437,7 @@ DELETE /mypage/:id
 
 ### 正常レスポンス
 ```json
-HTTP/1.1 302 Found
-GET /mypage
+HTTP/1.1 201 Created
 ```
 
 ### 異常レスポンス

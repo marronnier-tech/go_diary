@@ -10,12 +10,12 @@ import (
 	"github.com/lib/pq"
 )
 
-func ToPost(userid int, content string) (err error) {
+func ToPost(userid int, content string) (data table.TodoList, err error) {
 
 	tx, err := infra.DBConnect()
 
 	if err != nil {
-		return err
+		return
 	}
 
 	var u domain.UserSimpleInfo
@@ -33,7 +33,19 @@ func ToPost(userid int, content string) (err error) {
 
 	userID := u.UserID
 
-	data := table.TodoList{
+	var same int64
+
+	tx.Table("todo_lists").
+		Where("content = ?", content).
+		Count(&same)
+
+	if same != 0 {
+		err = errors.New("同一のToDoが既に存在します")
+		tx.Rollback()
+		return
+	}
+
+	data = table.TodoList{
 		UserID:       userID,
 		Content:      content,
 		CreatedAt:    time.Now(),
@@ -72,7 +84,7 @@ func ToDelete(todoid int, userid int) (err error) {
 	}
 
 	if todo.UserID != userid {
-		err = errors.New("Error:user is wrong")
+		err = errors.New("user is wrong")
 		tx.Rollback()
 		return
 	}
@@ -112,7 +124,7 @@ func ToPutAchieve(todoid int, userid int) (out todayTodo, err error) {
 	todo.Count--
 
 	if userid != todo.UserID {
-		err = errors.New("Error:This user is invalid")
+		err = errors.New("This user is invalid")
 		tx.Rollback()
 		return
 	}
@@ -182,7 +194,7 @@ func ToClearAchieve(todoid int, userid int) (out todayTodo, err error) {
 	todo.Count--
 
 	if todo.UserID != userid {
-		err = errors.New("Error:This user is invalid")
+		err = errors.New("This user is invalid")
 		tx.Rollback()
 		return
 	}
@@ -272,7 +284,7 @@ func ToPatchGoal(todoid int, userid int) (err error) {
 	}
 
 	if todo.UserID != userid {
-		err = errors.New("Error:This user is invalid")
+		err = errors.New("This user is invalid")
 		tx.Rollback()
 		return
 	}
