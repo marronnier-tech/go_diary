@@ -15,7 +15,7 @@ func SessionLogin(c *gin.Context) (id int, user string, err error) {
 	password := session.Get("password")
 
 	if name == nil || password == nil {
-		c.Redirect(302, "/login")
+		c.Redirect(302, "/todo")
 	}
 
 	strname := name.(string)
