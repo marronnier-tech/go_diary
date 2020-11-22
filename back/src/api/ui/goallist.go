@@ -1,6 +1,7 @@
 package ui
 
 import (
+	"fmt"
 	stc "strconv"
 
 	"../app/admin"
@@ -59,5 +60,16 @@ func GetOneUserGoal(c *gin.Context) {
 		"order": order,
 		"owner": admin.JudgeOwner(user, name),
 	})
+
+}
+func MyGoal(c *gin.Context) {
+	_, name, err := SessionLogin(c)
+
+	if err != nil {
+		c.JSON(500, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.Redirect(302, fmt.Sprintf("/goal/%s", name))
 
 }

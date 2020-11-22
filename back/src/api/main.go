@@ -33,6 +33,7 @@ func main() {
 	{
 		my.GET("", ui.MyTodo)
 		my.POST("", ui.PostTodo)
+		my.GET("/goal", ui.MyGoal)
 		my.DELETE("/:id", ui.DeleteTodo)
 
 		my.POST("/:id/today", ui.PutAchieveTodo)

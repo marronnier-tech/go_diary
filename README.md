@@ -804,7 +804,7 @@ POST /register
 
 ```json
 HTTP/1.1 302 Found
-GET / 
+GET /mypage
 ```
 
 ### 異常レスポンス
@@ -860,7 +860,7 @@ DELETE /logout
 
 ### 正常レスポンス
 ```
-HTTP/1.1 302 Redirect
+HTTP/1.1 204 No Content
 GET /
 ```
 
