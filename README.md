@@ -449,7 +449,7 @@ HTTP/1.1 201 Created
 ★ログイン必須
 ### URI
 ```
-POST /:id/today
+POST /mypage/:id/today
 ```
 ### 処理概要
 - Todoリストに当日のtodo達成を登録する
@@ -489,7 +489,7 @@ GET /mypage
 ★ログイン必須
 ### URI
 ```
-DELETE /:id/today
+DELETE /mypage/:id/today
 ```
 ### 処理概要
 - Todoリストの当日のtodo達成を取り消す
