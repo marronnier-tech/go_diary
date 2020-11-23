@@ -1,6 +1,8 @@
 package main
 
 import (
+	"net/http"
+
 	"./ui"
 
 	"github.com/gin-contrib/sessions"
@@ -12,7 +14,8 @@ import (
 func main() {
 
 	r := gin.Default()
-	r.LoadHTMLGlob("../../../front/templates/*")
+	// r.Static("../../../front/templates", "./../../../front/templates")
+	r.StaticFS("/top", http.Dir("./../../../front/templates"))
 
 	store := cookie.NewStore([]byte("secret"))
 	r.Use(sessions.Sessions("useradmin", store))
@@ -51,28 +54,12 @@ func main() {
 
 	}
 
-	// ログイン、あとでsuccess変更
-
 	r.POST("/register", ui.Register)
 
 	r.POST("/login", ui.Login)
 	r.DELETE("/logout", ui.Logout)
 
 	r.DELETE("/delete", ui.DeleteMembership)
-
-	r.GET("/success", func(c *gin.Context) {
-		c.JSON(201, gin.H{"message": "success!"})
-	})
-
-	// ここでDBとじるのは問題なのであとでなんとかする
-
-	/* sqldb, err := gormdb.DB()
-
-	if err != nil {
-		fmt.Println("cannot use sqldb.")
-	}
-
-	sqldb.Close() */
 
 	r.Run()
 
