@@ -187,6 +187,7 @@ func ToPutAchieve(todoid int, userid int) (out OperationView, err error) {
 
 	out = OperationView{
 		TodoID:        todo.ID,
+		IsDeleted:     false,
 		Content:       todo.Content,
 		CreatedAt:     timecalc.PickDate(todo.CreatedAt),
 		LastAchieved:  timecalc.PickDate(data.AchievedDate.Time),
@@ -200,7 +201,7 @@ func ToPutAchieve(todoid int, userid int) (out OperationView, err error) {
 
 }
 
-func ToClearAchieve(todoid int, userid int) (out todayTodo, err error) {
+func ToClearAchieve(todoid int, userid int) (out OperationView, err error) {
 	tx, err := infra.DBConnect()
 	if err != nil {
 		return
@@ -264,15 +265,6 @@ func ToClearAchieve(todoid int, userid int) (out todayTodo, err error) {
 			Valid: false,
 		}
 
-		out = todayTodo{
-			TodoLog: table.TodoAchievedLog{
-				ID:           0,
-				TodoID:       todo.ID,
-				AchievedDate: todo.LastAchieved,
-			},
-			TodayAchieved: false,
-		}
-
 	} else {
 		var lastlog table.TodoAchievedLog
 
@@ -291,20 +283,21 @@ func ToClearAchieve(todoid int, userid int) (out todayTodo, err error) {
 			Time:  lastlog.AchievedDate.Time,
 			Valid: true,
 		}
-
-		out = todayTodo{
-			TodoLog: table.TodoAchievedLog{
-				ID:           lastlog.ID,
-				TodoID:       lastlog.TodoID,
-				AchievedDate: lastlog.AchievedDate,
-			},
-			TodayAchieved: false,
-		}
 	}
 
 	if err = tx.Save(&todo).Error; err != nil {
 		tx.Rollback()
 		return
+	}
+
+	out = OperationView{
+		TodoID:        todo.ID,
+		IsDeleted:     false,
+		Content:       todo.Content,
+		CreatedAt:     timecalc.PickDate(todo.CreatedAt),
+		LastAchieved:  timecalc.PickDate(todo.LastAchieved.Time),
+		Count:         todo.Count,
+		TodayAchieved: false,
 	}
 
 	err = tx.Commit().Error
