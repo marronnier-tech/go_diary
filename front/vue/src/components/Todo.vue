@@ -1,7 +1,17 @@
 <template>
   <div class="todo">
     Todo!<br />
-    {{ todos.TodoArray }}
+    <!-- {{ todos.TodoArray }} --><br />
+    <ul>
+      <li v-for="todo in todos.TodoArray" :key="todo.TodoIbj">
+        {{ todo.TodoObj.Content }}<br />
+        {{ todo.TodoObj.CreatedAt }}<br />
+        {{ todo.TodoObj.Count }}<br />
+        {{ todo.TodoObj.LastAchieved }}<br />
+        {{ todo.TodayAchieved }}<br />
+        {{ todo.User.UserName }}
+      </li>
+    </ul>
   </div>
 </template>
 
