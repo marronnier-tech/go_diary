@@ -468,6 +468,7 @@ POST /mypage/:id/today
 | key | type | content | 
 | ---- | ---- | ---- |
 | TodoID | numeric | todoのID |
+| IsDeleted | bool | 削除されていない |
 | Content | string | todoの詳細 |
 | CreatedAt | string | todo登録日 | 
 | LastAchieved | string | 最終達成日（0日前） |
@@ -479,6 +480,7 @@ POST /mypage/:id/today
 HTTP/1.1 200 OK
 {
         "TodoID" : 1,
+        "IsDeleted": false,
         "Content": "プログラミング",
         "CreatedAt": "2020-10-31",
         "LastAchieved": "2020-11-03",
