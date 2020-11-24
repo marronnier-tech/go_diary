@@ -5,16 +5,23 @@
 const path = require('path')
 
 module.exports = {
+  devServer: {
+    proxy: 'http://localhost:8080'
+  },
   dev: {
-
     // Paths
     assetsSubDirectory: 'static',
     assetsPublicPath: '/',
     proxyTable: {},
 
     // Various Dev Server settings
+
+    env: require('./dev.env'),
+    port: 4200,// can be overwritten by process.env.PORT, if port is in use, a free one will be determined
+    assetsSubDirectory: 'static',
+    assetsPublicPath: '/',
     host: 'localhost', // can be overwritten by process.env.HOST
-    port: 8080, // can be overwritten by process.env.PORT, if port is in use, a free one will be determined
+    // port: 8080,
     autoOpenBrowser: false,
     errorOverlay: true,
     notifyOnErrors: true,

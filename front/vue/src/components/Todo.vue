@@ -1,14 +1,26 @@
 <template>
-  <div class="hello">Todo!</div>
+  <div class="todo">
+    Todo!<br />
+    {{ todos.TodoArray }}
+  </div>
 </template>
 
 <script>
+import axios from "axios";
+
 export default {
   name: "Todo",
+
   data() {
     return {
-      msg: "Welcome to Your Vue.js App",
+      todos: [],
     };
+  },
+  mounted: function () {
+    axios.get("/todo").then((res) => {
+      this.todos = res.data;
+      console.log(res);
+    });
   },
 };
 </script>
