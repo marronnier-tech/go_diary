@@ -1,13 +1,13 @@
 <template>
-  <div class="hello">Hello,{{ user }}</div>
+  <div class="hello">Logout!</div>
 </template>
 
 <script>
 export default {
-  name: "Mypage",
+  name: "Logout",
   data() {
     return {
-      user: "Meow",
+      msg: "Welcome to Your Vue.js App",
     };
   },
 };

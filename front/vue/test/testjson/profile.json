@@ -1,0 +1,17 @@
+{
+    "UserInfo": {
+        "ID": 1,
+        "Name": "meow",
+        "HN": "こねこ",
+        "Img": "",
+        "GoaledCount": 2,
+        "FinalGoal": "世界一の猫になる",
+        "Profile": "すごい猫",
+        "Twitter": "cat_town_moon_forest",
+        "Instagram": "catcatnyaonyaomeow",
+        "Facebook": "konekonekoneko",
+        "Github": "neco",
+        "URL": "neconeco.com"
+    },
+    "owner": true
+}
