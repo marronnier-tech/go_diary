@@ -78,6 +78,7 @@ func ToPost(userid int, content string) (out OperationView, err error) {
 
 	out = OperationView{
 		TodoID:        data.ID,
+		IsDeleted:     false,
 		Content:       content,
 		CreatedAt:     timecalc.PickDate(data.CreatedAt),
 		LastAchieved:  "達成した日はありません",

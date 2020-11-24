@@ -22,6 +22,7 @@ type todayTodo struct {
 
 type OperationView struct {
 	TodoID        int    `json:"TodoID"`
+	IsDeleted     bool   `json:"IsDeleted"`
 	Content       string `json:"Content"`
 	CreatedAt     string `json:"CreatedAt"`
 	LastAchieved  string `json:"LastAchieved"`
