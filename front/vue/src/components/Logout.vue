@@ -1,5 +1,7 @@
 <template>
-  <div class="hello">Logout!</div>
+  <div class="hello">
+    
+  </div>
 </template>
 
 <script>

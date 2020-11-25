@@ -1,7 +1,7 @@
 <template>
   <div class="hello">
     Hello,{{ user }}<br />
-    {{ todoobj }}
+    {{ todos }}
   </div>
 </template>
 
@@ -13,13 +13,12 @@ export default {
 
   data() {
     return {
-      user: null,
-      todoobj: [],
+      todos: [],
     };
   },
   mounted: function () {
-    axios.get("/todo/mypage").then((res) => {
-      this.todos = res.data.Todo.TodoObj;
+    axios.get("/mypage").then((res) => {
+      this.todos = res.data;
       console.log(res);
     });
   },

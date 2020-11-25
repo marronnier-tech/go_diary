@@ -31,6 +31,7 @@
       <button class="btn btn-lg btn-primary btn-block" type="submit">
         ログイン</button
       ><br />
+
       <p>あるいは<router-link to="register">登録する</router-link></p>
     </form>
   </div>
@@ -47,15 +48,14 @@ export default {
   },
   methods: {
     submitForm() {
+      const params = new URLSearchParams();
+      params.append("name", "meow");
+      params.append("password", "nemnem");
       axios
-        .post("/login", {
-          name: "meow",
-          password: "nemnem",
+        .post("/login", params, (res) => {
+          this.$router.push({ name: "Mypage" });
         })
-        .then((res) => {
-          next({ path: "/mypage" });
-        })
-        .catch((error) => {
+        .catch(() => {
           alert("ユーザー名もしくはパスワードが違います");
         });
     },

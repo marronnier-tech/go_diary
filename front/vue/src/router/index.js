@@ -1,7 +1,6 @@
 import Vue from 'vue'
 import Router from 'vue-router'
 import Top from '@/components/Top'
-import Service from '@/components/Service'
 import Todo from '@/components/Todo'
 import Profile from '@/components/Profile'
 import Goal from '@/components/Goal'
@@ -22,33 +21,26 @@ export default new Router({
       component: Top
     },
     {
-      path: '/service',
-      component: Service,
-      children: [
-        {
-          path: '/mypage',
-          name: 'Mypage',
-          component: Mypage
-        },
-        {
-          path: '/todo',
-          name: 'Todo',
-          component: Todo
-        },
-        {
-          path: '/profile',
-          name: 'Profile',
-          component: Profile
-        },
-        {
-          path: '/goal',
-          name: 'Goal',
-          component: Goal
-        }
-      ]
+      path: '/mypage',
+      name: 'Mypage',
+      component: Mypage
     },
     {
-
+      path: '/todo',
+      name: 'Todo',
+      component: Todo
+    },
+    {
+      path: '/profile',
+      name: 'Profile',
+      component: Profile
+    },
+    {
+      path: '/goal',
+      name: 'Goal',
+      component: Goal
+    },
+    {
       path: '/login',
       name: 'Login',
       component: Login

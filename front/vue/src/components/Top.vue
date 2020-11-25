@@ -1,7 +1,8 @@
 <template>
   <div class="top">
-    <router-link to="/login">login</router-link>
-    <router-link to="/register">register</router-link>
+    <p><router-link to="/todo">みんなのToDoを覗いてみる</router-link></p>
+    <p><router-link to="/login">login</router-link></p>
+    <p><router-link to="/register">register</router-link></p>
   </div>
 </template>
 

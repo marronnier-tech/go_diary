@@ -20,6 +20,36 @@ module.exports = {
     port: 4200,// can be overwritten by process.env.PORT, if port is in use, a free one will be determined
     assetsSubDirectory: 'static',
     assetsPublicPath: '/',
+    proxyTable: {
+      '/todo': {
+        target: 'http://localhost:8080',
+        changeOrigin: true
+      },
+      '/goal': {
+        target: 'http://localhost:8080',
+        changeOrigin: true
+      },
+      '/profile': {
+        target: 'http://localhost:8080',
+        changeOrigin: true
+      },
+      '/mypage': {
+        target: 'http://localhost:8080',
+        changeOrigin: true
+      },
+      '/login': {
+        target: 'http://localhost:8080',
+        changeOrigin: true
+      },
+      '/logout': {
+        target: 'http://localhost:8080',
+        changeOrigin: true
+      },
+      '/register': {
+        target: 'http://localhost:8080',
+        changeOrigin: true
+      },
+    },
     host: 'localhost', // can be overwritten by process.env.HOST
     // port: 8080,
     autoOpenBrowser: false,
