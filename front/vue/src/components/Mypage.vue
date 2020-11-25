@@ -1,16 +1,30 @@
 <template>
-  <div class="hello">Hello,{{ user }}</div>
+  <div class="hello">
+    Hello,{{ user }}<br />
+    {{ todoobj }}
+  </div>
 </template>
 
 <script>
+import axios from "axios";
+
 export default {
-  name: "Mypage",
+  name: "Todo",
+
   data() {
     return {
-      user: "Meow",
+      user: null,
+      todoobj: [],
     };
   },
+  mounted: function () {
+    axios.get("/todo/mypage").then((res) => {
+      this.todos = res.data.Todo.TodoObj;
+      console.log(res);
+    });
+  },
 };
+</script>
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
