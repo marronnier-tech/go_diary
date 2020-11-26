@@ -5,7 +5,7 @@
       同じ目標の仲間を探そう！
     </div>
 
-    <div class="todo-obj" v-for="todo in todos.TodoArray" :key="todo.TodoIbj">
+    <div class="todo-obj" v-for="todo in todos.TodoArray" :key="todo.TodoIndex">
       <p class="user">@{{ todo.User.UserName }}</p>
       <h4 class="content">{{ todo.TodoObj.Content }}</h4>
       <div class="achieved-info">
