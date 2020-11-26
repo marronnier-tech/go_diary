@@ -1,16 +1,29 @@
 <template>
-  <div class="hello">
-    
+  <div class="logout">
+    <button v-on:click="logout">ログアウトする</button>
   </div>
 </template>
 
 <script>
+import axios from "axios";
 export default {
   name: "Logout",
   data() {
     return {
       msg: "Welcome to Your Vue.js App",
     };
+  },
+  methods: {
+    logout() {
+      axios
+        .delete("/logout")
+        .then((res) => {
+          this.$router.push({ name: "Top" });
+        })
+        .catch((error) => {
+          alert("エラーが発生しました");
+        });
+    },
   },
 };
 </script>
