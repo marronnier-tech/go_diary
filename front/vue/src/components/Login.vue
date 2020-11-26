@@ -1,12 +1,9 @@
 <template>
   <div class="login userAdmin">
-    <form class="form-signin" @submit.prevent="submitForm" action="">
-      <img class="mb-4" src="" alt="" width="72" height="72" />
-      <!-- <h1 class="h3 mb-3 font-weight-normal">Please sign in</h1> -->
+    <form class="form-signin" @submit.prevent="submitForm">
+      <!-- <img class="mb-4" src="" alt="" width="72" height="72" /> -->
       <h1 class="h3 mb-3 font-weight-normal">ログインする</h1>
-      <!-- <label for="inputEmail" class="sr-only">Email address</label> -->
       <label for="name" class="sr-only">ユーザー名</label>
-      <!-- <inpuzt type="email" id="inputEmail" class="form-control" placeholder="Email address" required autofocus> -->
       <input
         v-model="name"
         type="name"
@@ -16,9 +13,7 @@
         required
         autofocus
       />
-      <!-- <label for="inputPassword" class="sr-only">Password</label> -->
       <label for="password" class="sr-only">パスワード</label>
-      <!-- <input type="password" id="inputPassword" class="form-control" placeholder="Password" required> -->
       <input
         v-model="password"
         type="password"
@@ -27,7 +22,6 @@
         placeholder="パスワード"
         required
       />
-      <!-- <button class="btn btn-lg btn-primary btn-block" type="submit">Sign in</button> -->
       <button class="btn btn-lg btn-primary btn-block" type="submit">
         ログイン</button
       ><br />
@@ -49,13 +43,14 @@ export default {
   methods: {
     submitForm() {
       const params = new URLSearchParams();
-      params.append("name", "meow");
-      params.append("password", "nemnem");
+      params.append("name", this.name);
+      params.append("password", this.password);
       axios
-        .post("/login", params, (res) => {
+        .post("/login", params)
+        .then((res) => {
           this.$router.push({ name: "Mypage" });
         })
-        .catch(() => {
+        .catch((error) => {
           alert("ユーザー名もしくはパスワードが違います");
         });
     },
