@@ -6,13 +6,19 @@
       <b-navbar-toggle target="nav-collapse"></b-navbar-toggle>
 
       <b-collapse id="nav-collapse" is-nav>
-        <b-navbar-nav>
+        <b-navbar-nav v-if="loginFlag">
           <b-nav-item to="/todo">みんなのToDo</b-nav-item>
           <b-nav-item to="/mypage">My ToDo</b-nav-item>
           <b-nav-item to="/mygoal">My Goaled</b-nav-item>
           <b-nav-item to="/profile">My Profile</b-nav-item>
+          <b-nav-item to="/question">Q &amp; A</b-nav-item>
           <b-nav-item to="/logout">Logout</b-nav-item>
-          <b-nav-item href="#" disabled>Disabled</b-nav-item>
+        </b-navbar-nav>
+
+        <b-navbar-nav v-else>
+          <b-nav-item to="/todo">みんなのToDo</b-nav-item>
+          <b-nav-item to="/login">Login</b-nav-item>
+          <b-nav-item to="/login">Register</b-nav-item>
         </b-navbar-nav>
 
         <!-- Right aligned nav items -->
@@ -38,15 +44,28 @@
   </div>
 </template>
 
+
 <script>
+import axios from "axios";
 export default {
   name: "Service",
   data() {
     return {
-      msg: "Welcome to Your Vue.js App",
+      loginFlag: "",
     };
   },
+  mounted: function () {
+    this.getFlag();
+  },
+  methods: {
+    getFlag() {
+      axios.get("/adminflag").then((res) => {
+        this.loginFlag = res.data.LoginFlag;
+      });
+    },
+  },
 };
+</script>
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->

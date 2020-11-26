@@ -49,6 +49,10 @@ module.exports = {
         target: 'http://localhost:8080',
         changeOrigin: true
       },
+      '/adminflag': {
+        target: 'http://localhost:8080',
+        changeOrigin: true
+      },
     },
     host: 'localhost', // can be overwritten by process.env.HOST
     // port: 8080,

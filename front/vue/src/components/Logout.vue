@@ -24,6 +24,7 @@ export default {
       axios
         .delete("/logout")
         .then((res) => {
+          this.$parent.loginFlag = false;
           this.$router.push({ name: "Top" });
         })
         .catch((error) => {

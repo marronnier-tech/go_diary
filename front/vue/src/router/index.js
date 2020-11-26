@@ -9,6 +9,7 @@ import MyGoal from '@/components/MyGoal'
 import Mypage from '@/components/Mypage'
 import Users from '@/components/UsersTodo'
 import Profs from '@/components/UserProf'
+import QandA from '@/components/QandA'
 import Login from '@/components/Login'
 import Register from '@/components/Register'
 import Logout from '@/components/Logout'
@@ -21,14 +22,14 @@ export default new Router({
   mode: 'history',
   routes: [
     {
-      path: '/',
-      name: 'Top',
-      component: Top
-    },
-    {
       path: '',
       component: Service,
       children: [
+        {
+          path: '/',
+          name: 'Top',
+          component: Top
+        },
         {
           path: '/mypage',
           name: 'Mypage',
@@ -68,11 +69,15 @@ export default new Router({
           path: '/profile/:id',
           name: 'Profs',
           component: Profs
-        }
+        },
+        {
+          path: '/question',
+          name: 'QandA',
+          component: QandA
+        },
       ]
     },
     {
-
       path: '/login',
       name: 'Login',
       component: Login
