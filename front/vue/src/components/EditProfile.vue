@@ -2,7 +2,7 @@
   <div class="profile">
     <div class="top-copy">
       <h1>プロフィール</h1>
-      <p>みんなに公開されます。<br /></p>
+      <p>公開したくない情報は空欄でかまいません。<br /></p>
     </div>
     <div class="whole-prof">
       <div class="prof-item">
@@ -42,11 +42,7 @@
         <h2>その他URL</h2>
         <p>{{ UserInfo.URL }}</p>
       </div>
-      <b-button
-        :pressed="false"
-        variant="info"
-        class="edit-profile"
-        to="/edit-profile"
+      <b-button :pressed="false" variant="info" class="edit-profile"
         >編集する</b-button
       >
     </div>
@@ -100,5 +96,8 @@ ul {
 li {
   display: inline-block;
   margin: 0 10px;
+}
+a {
+  color: #42b983;
 }
 </style>

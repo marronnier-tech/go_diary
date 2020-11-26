@@ -9,7 +9,7 @@
         <b-navbar-nav>
           <b-nav-item to="/todo">みんなのToDo</b-nav-item>
           <b-nav-item to="/mypage">My ToDo</b-nav-item>
-          <b-nav-item to="/goal">My Goaled</b-nav-item>
+          <b-nav-item to="/mygoal">My Goaled</b-nav-item>
           <b-nav-item to="/profile">My Profile</b-nav-item>
           <b-nav-item to="/logout">Logout</b-nav-item>
           <b-nav-item href="#" disabled>Disabled</b-nav-item>
@@ -30,10 +30,11 @@
         </b-navbar-nav>
       </b-collapse>
     </b-navbar>
-    <div class="hello">
+    <div class="container">
       <br />
+
+      <router-view></router-view>
     </div>
-    <router-view></router-view>
   </div>
 </template>
 
@@ -50,19 +51,10 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
-h1,
-h2 {
-  font-weight: normal;
-}
-ul {
-  list-style-type: none;
-  padding: 0;
-}
-li {
-  display: inline-block;
-  margin: 0 10px;
-}
 a {
   color: #42b983;
+}
+.container {
+  padding: 1em 10% 5em 10%;
 }
 </style>

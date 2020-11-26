@@ -4,7 +4,8 @@ import Top from '@/components/Top'
 import Service from '@/components/Service'
 import Todo from '@/components/Todo'
 import Profile from '@/components/Profile'
-import Goal from '@/components/Goal'
+import EditProfile from '@/components/EditProfile'
+import MyGoal from '@/components/MyGoal'
 import Mypage from '@/components/Mypage'
 import Login from '@/components/Login'
 import Register from '@/components/Register'
@@ -42,9 +43,19 @@ export default new Router({
           component: Profile
         },
         {
-          path: '/goal',
-          name: 'Goal',
-          component: Goal
+          path: '/edit-profile',
+          name: 'EditProfile',
+          component: EditProfile
+        },
+        {
+          path: '/mygoal',
+          name: 'MyGoal',
+          component: MyGoal
+        },
+        {
+          path: '/logout',
+          name: 'Logout',
+          component: Logout
         }
       ]
     },
@@ -59,10 +70,6 @@ export default new Router({
       name: 'Regiter',
       component: Register
     },
-    {
-      path: '/logout',
-      name: 'Logout',
-      component: Logout
-    }
+
   ]
 })

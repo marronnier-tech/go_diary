@@ -1,6 +1,12 @@
 <template>
   <div class="logout">
-    <button v-on:click="logout">ログアウトする</button>
+    <b-button
+      v-on:click="logout"
+      :pressed="false"
+      variant="info"
+      class="edit-profile"
+      >ログアウトする</b-button
+    >
   </div>
 </template>
 

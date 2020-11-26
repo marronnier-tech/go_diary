@@ -41,4 +41,50 @@
   h1 {
     font-size: 1.7em;
     font-weight: normal;
+    margin-bottom:0.6em;
   }
+
+  .todo-set {
+    text-align: left;
+    padding: 15px 15px 5px 20px;
+    background: #e4ecec;
+    border-left: solid 6px #ccdbdb;
+    box-shadow: 0 3px 3px rgba(0, 0, 0, 0.22);
+  }
+
+  .created-at {
+    font-size: 0.8em;
+    text-align: right;
+    margin-top:1em;
+  }
+
+  .achieved-info p {
+    font-size: 0.9em;
+    margin-bottom:0.4em;
+    text-indent:-6em;
+    padding-left:6em;
+  }
+
+  h4 {
+    font-weight: normal;
+    font-size: 1.3em;
+    line-height: 1.3em;
+    margin-bottom: 1em;
+    margin-top:0.1em;
+  }
+  
+  ul {
+    list-style-type: none;
+    padding-left:0px;
+  }
+  li {
+    display: block;
+    margin-bottom: 20px;
+  }
+  .user-icon{
+    margin-right:0.3em;
+  }
+  .top-copy {
+    margin: 1% auto 8% auto;
+  }
+  
