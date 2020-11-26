@@ -18,14 +18,14 @@ type TodoObjInfo struct {
 
 type GoalObjInfo struct {
 	TodoID        int       `json:"TodoID"`
-	Content       string    `json:"content"`
+	Content       string    `json:"Content"`
 	GoaledAt      time.Time `json:"GoaledAt"`
 	AchievedCount int64     `json:"AchievedCount"`
 }
 
 type OutGoalObjInfo struct {
 	TodoID        int    `json:"TodoID"`
-	Content       string `json:"content"`
+	Content       string `json:"Content"`
 	GoaledAt      string `json:"GoaledAt"`
 	AchievedCount int64  `json:"AchievedCount"`
 }
