@@ -8,6 +8,7 @@ import EditProfile from '@/components/EditProfile'
 import MyGoal from '@/components/MyGoal'
 import Mypage from '@/components/Mypage'
 import Users from '@/components/UsersTodo'
+import Profs from '@/components/UserProf'
 import Login from '@/components/Login'
 import Register from '@/components/Register'
 import Logout from '@/components/Logout'
@@ -62,6 +63,11 @@ export default new Router({
           path: '/user/:id',
           name: 'Users',
           component: Users
+        },
+        {
+          path: '/profile/:id',
+          name: 'Profs',
+          component: Profs
         }
       ]
     },

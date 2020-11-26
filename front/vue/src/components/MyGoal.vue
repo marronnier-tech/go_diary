@@ -8,7 +8,7 @@
       </p>
     </div>
     <ul>
-      <li class="todo-set" v-for="goal in goals.GoalObj" :key="goal.GoalIndex">
+      <li class="todo-set todo-goal" v-for="goal in goals.GoalObj" :key="goal.GoalIndex">
         <h3 class="content">
           <div class="award-line">
             <b-icon icon="award" class="award"></b-icon>{{ goal.Content }}
@@ -62,8 +62,6 @@ a {
   color: #42b983;
 }
 .award {
-  color: #b99942;
-  margin-right: 0.3em;
   font-size: 1.4em;
 }
 </style>

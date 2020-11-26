@@ -1,19 +1,45 @@
 <template>
   <div class="mypage">
     <div class="top-copy">
-      <h1>Hello, {{ todos.User.UserName }}!</h1>
+      <h1>Hello, {{ user.UserName }}!</h1>
       <p>あなたの今の日課はこちらです。</p>
     </div>
     <ul>
-      <li class="todo-set" v-for="todo in todos.TodoObj" :key="todo.TodoIndex">
+      <li
+        class="todo-set todo-yet"
+        v-for="todo in todosYet"
+        :key="todo.TodoIndex"
+      >
         <div class="my-todoset">
-          <h4 class="content">
-            <b-icon icon="bookmark-star-fill" class="check"></b-icon
-            >{{ todo.Content }}
+          <h4 class="content content-yet">
+            {{ todo.Content }}
           </h4>
           <b-button variant="info" class="yatta" v-on:click="Yatta(todo.TodoID)"
             >Yatta!</b-button
           >
+        </div>
+        <div class="achieved-info">
+          <p class="count">実行日数：{{ todo.Count }}日</p>
+          <p class="last-achieved">最終実行日：{{ todo.LastAchieved }}</p>
+          <p class="created-at">{{ todo.CreatedAt }}</p>
+        </div>
+      </li>
+      <li
+        class="todo-set todo-get"
+        v-for="todo in todosGet"
+        :key="todo.TodoIndex"
+      >
+        <div class="my-todoset">
+          <h4 class="content content-set">
+            <b-icon icon="bookmark-star-fill" class="check"></b-icon
+            >{{ todo.Content }}
+          </h4>
+          <b-icon
+            icon="arrow-return-left"
+            class="unget"
+            v-on:click="unGet(todo.TodoID)"
+            :pressed="false"
+          ></b-icon>
         </div>
         <div class="achieved-info">
           <p class="count">実行日数：{{ todo.Count }}日</p>
@@ -49,34 +75,35 @@ export default {
   message: "Not yet",
   data() {
     return {
-      todos: {
-        User: {
-          UserID: "0",
-          UserName: "",
-          UserHN: "",
-          UserImg: "",
-        },
-        TodoArray: [],
-      },
+      user: "",
+      todosYet: [],
+      todosGet: [],
       content: "",
     };
   },
   mounted: function () {
-    axios.get("/mypage").then((res) => {
-      this.todos = res.data.Todo;
-      console.log(res);
-    });
+    this.GetAndSep();
   },
   methods: {
+    GetAndSep() {
+      axios.get("/mypage").then((res) => {
+        this.user = res.data.Todo.User;
+        /* ↓あとでまとめる↓ */
+        this.todosYet = res.data.Todo.TodoObj.filter(
+          (t) => t.TodayAchieved === false
+        );
+        this.todosGet = res.data.Todo.TodoObj.filter(
+          (t) => t.TodayAchieved === true
+        );
+      });
+    },
     AddTodo() {
       const params = new URLSearchParams();
       params.append("content", this.content);
       axios
         .post("/mypage", params)
         .then((postres) => {
-          axios.get("/mypage").then((res) => {
-            this.todos = res.data.Todo;
-          });
+          this.GetAndSep();
         })
         .catch((error) => {
           alert("同じ日課が既に登録されています");
@@ -84,10 +111,13 @@ export default {
         });
     },
     Yatta(todo_id) {
-      axios.post("mypage/" + todo_id + "/today").then((postres) => {
-        axios.get("/mypage").then((res) => {
-          this.todos = res.data.Todo;
-        });
+      axios.post("mypage/" + todo_id + "/today").then((res) => {
+        this.GetAndSep();
+      });
+    },
+    unGet(todo_id) {
+      axios.delete("mypage/" + todo_id + "/today").then((res) => {
+        this.GetAndSep();
       });
     },
   },
@@ -103,6 +133,9 @@ h4 {
 }
 .content {
   margin-bottom: 1.2em;
+}
+.content-yet {
+  padding-left: 1.2em;
 }
 .achieved-info {
   padding-left: 1em;

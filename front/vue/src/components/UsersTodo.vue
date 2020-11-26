@@ -1,12 +1,35 @@
 <template>
   <div class="mypage">
     <div class="top-copy">
-      <h1>{{ todos.User.UserName }}の日課</h1>
+      <h1>{{ user.UserName }}の日課</h1>
+      <router-link :to="{ name: 'Profs', params: { id: user.UserName } }"
+        >プロフィール</router-link
+      >
     </div>
     <ul>
-      <li class="todo-set" v-for="todo in todos.TodoObj" :key="todo.TodoIndex">
+      <li
+        class="todo-set todo-yet"
+        v-for="todo in todosYet"
+        :key="todo.TodoIndex"
+      >
         <div class="my-todoset">
-          <h4 class="content">
+          <h4 class="content content-yet">
+            {{ todo.Content }}
+          </h4>
+        </div>
+        <div class="achieved-info">
+          <p class="count">実行日数：{{ todo.Count }}日</p>
+          <p class="last-achieved">最終実行日：{{ todo.LastAchieved }}</p>
+          <p class="created-at">{{ todo.CreatedAt }}</p>
+        </div>
+      </li>
+      <li
+        class="todo-set todo-get"
+        v-for="todo in todosGet"
+        :key="todo.TodoIndex"
+      >
+        <div class="my-todoset">
+          <h4 class="content content-set">
             <b-icon icon="bookmark-star-fill" class="check"></b-icon
             >{{ todo.Content }}
           </h4>
@@ -30,16 +53,9 @@ export default {
   message: "Not yet",
   data() {
     return {
-      todos: {
-        User: {
-          UserID: "0",
-          UserName: "",
-          UserHN: "",
-          UserImg: "",
-        },
-        TodoArray: [],
-      },
-      content: "",
+      user: "",
+      todosYet: [],
+      todosGet: [],
     };
   },
   computed: {
@@ -49,11 +65,16 @@ export default {
   },
   mounted: function () {
     axios.get("/todo/" + this.id).then((res) => {
-      this.todos = res.data.Todo;
-      console.log(res);
+      this.user = res.data.Todo.User;
+      /* ↓あとでまとめる↓ */
+      this.todosYet = res.data.Todo.TodoObj.filter(
+        (t) => t.TodayAchieved === false
+      );
+      this.todosGet = res.data.Todo.TodoObj.filter(
+        (t) => t.TodayAchieved === true
+      );
     });
   },
-  methods: {},
 };
 </script>
 
@@ -64,6 +85,7 @@ h4 {
   padding-top: 0.5em;
   margin-right: 1em;
 }
+
 .content {
   margin-bottom: 1.2em;
 }

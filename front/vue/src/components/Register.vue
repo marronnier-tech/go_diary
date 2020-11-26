@@ -1,31 +1,27 @@
 <template>
-  <div class="register userAdmin">
-    <form class="form-signin">
-      <img class="mb-4" src="" alt="" width="72" height="72" />
-      <!-- <h1 class="h3 mb-3 font-weight-normal">Please sign in</h1> -->
+  <div class="login userAdmin">
+    <form class="form-signin" @submit.prevent="registerForm">
+      <!-- <img class="mb-4" src="" alt="" width="72" height="72" /> -->
       <h1 class="h3 mb-3 font-weight-normal">登録する</h1>
-      <!-- <label for="inputEmail" class="sr-only">Email address</label> -->
-      <label for="inputName" class="sr-only">ユーザー名</label>
-      <!-- <inpuzt type="email" id="inputEmail" class="form-control" placeholder="Email address" required autofocus> -->
+      <label for="name" class="sr-only">ユーザー名</label>
       <input
-        type="name"
-        id="inputName"
+        v-model="name"
+        id="name"
         class="form-control"
         placeholder="ユーザー名"
         required
         autofocus
       />
-      <!-- <label for="inputPassword" class="sr-only">Password</label> -->
-      <label for="inputPassword" class="sr-only">パスワード</label>
-      <!-- <input type="password" id="inputPassword" class="form-control" placeholder="Password" required> -->
+      <label for="password" class="sr-only">パスワード</label>
       <input
+        v-model="password"
         type="password"
-        id="inputPassword"
+        id="password"
         class="form-control"
         placeholder="パスワード"
         required
       />
-      <!-- <button class="btn btn-lg btn-primary btn-block" type="submit">Sign in</button> -->
+
       <button class="btn btn-lg btn-primary btn-block" type="submit">
         登録する</button
       ><br />
@@ -35,30 +31,29 @@
 </template>
 
 <script>
+import axios from "axios";
 export default {
-  name: "Register",
   data() {
     return {
-      msg: "Welcome to Your Vue.js App",
+      name: "",
+      password: "",
     };
+  },
+  methods: {
+    registerForm() {
+      const params = new URLSearchParams();
+      params.append("name", this.name);
+      params.append("password", this.password);
+      axios.post("/register", params).then((res) => {
+        this.$router.push({ name: "Mypage" });
+      });
+    },
   },
 };
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
-h1,
-h2 {
-  font-weight: normal;
-}
-ul {
-  list-style-type: none;
-  padding: 0;
-}
-li {
-  display: inline-block;
-  margin: 0 10px;
-}
 a {
   color: #42b983;
 }

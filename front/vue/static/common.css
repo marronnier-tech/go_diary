@@ -47,9 +47,21 @@
   .todo-set {
     text-align: left;
     padding: 15px 15px 5px 20px;
+    box-shadow: 0 3px 3px rgba(0, 0, 0, 0.22);
+  }
+
+  .todo-yet {
     background: #e4ecec;
     border-left: solid 6px #ccdbdb;
-    box-shadow: 0 3px 3px rgba(0, 0, 0, 0.22);
+  }
+
+  .todo-get {
+    background: #eeead4;
+    border-left: solid 6px #dbd8cc;
+  }
+  .todo-goal {
+    background: #fcebed;
+    border-left: solid 6px #f0cfcb
   }
 
   .created-at {
@@ -87,4 +99,8 @@
   .top-copy {
     margin: 1% auto 8% auto;
   }
-  
+
+  .award {
+    color: #b99942;
+    margin-right: 0.3em;
+  }

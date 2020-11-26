@@ -3,7 +3,7 @@
 import Vue from 'vue'
 import App from './App'
 import router from './router'
-import { BootstrapVue, BIcon, BIconBookmarkStarFill, BIconPersonCircle, BIconAward } from 'bootstrap-vue'
+import { BootstrapVue, BIcon, BIconBookmarkStarFill, BIconPersonCircle, BIconAward, BIconArrowReturnLeft } from 'bootstrap-vue'
 import axios from "axios";
 import VueAxios from 'vue-axios'
 
@@ -17,6 +17,7 @@ Vue.component('BIcon', BIcon)
 Vue.component('BIconBookmarkStarFill', BIconBookmarkStarFill)
 Vue.component('BIconPersonCircle', BIconPersonCircle)
 Vue.component('BIconAward', BIconAward)
+Vue.component('BIconArrowReturnLeft', BIconArrowReturnLeft)
 
 
 /* eslint-disable no-new */

@@ -1,8 +1,12 @@
 <template>
-  <div class="profile">
+  <div class="mypage">
     <div class="top-copy">
-      <h1>プロフィール</h1>
-      <p>みんなに公開されます。<br /></p>
+      <h1>＠{{ UserInfo.Name }}のプロフィール</h1>
+      <p>
+        <b-icon icon="award" class="award"></b-icon>ゴール数：{{
+          UserInfo.GoaledCount
+        }}
+      </p>
     </div>
     <div class="whole-prof">
       <div class="prof-item">
@@ -70,10 +74,6 @@
           }}</a>
         </p>
       </div>
-      <b-button :pressed="false" variant="info" class="edit-profile"
-        >編集する</b-button
-      >
-      ※メンテナンス中のため動きません
     </div>
   </div>
 </template>
@@ -87,8 +87,13 @@ export default {
       UserInfo: "",
     };
   },
+  computed: {
+    id: function () {
+      return this.$route.params.id;
+    },
+  },
   mounted: function () {
-    axios.get("/profile").then((res) => {
+    axios.get("/profile/" + this.id).then((res) => {
       this.UserInfo = res.data.UserInfo;
       console.log(res.data);
     });
