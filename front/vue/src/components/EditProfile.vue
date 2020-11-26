@@ -5,46 +5,76 @@
       <p>公開したくない情報は空欄でかまいません。<br /></p>
     </div>
     <div class="whole-prof">
-      <div class="prof-item">
-        <h2>ユーザー名</h2>
-        <p>{{ UserInfo.Name }}</p>
-      </div>
+      <b-form @submit="SubmitProf">
+        <b-form-group
+          id="input-group-1"
+          label="ハンドルネーム："
+          label-for="input-1"
+        >
+          <b-form-input id="handle-name" v-model="UserInfo.HN"></b-form-input>
+        </b-form-group>
 
-      <div class="prof-item">
-        <h2>ハンドルネーム</h2>
-        <p>{{ UserInfo.HN }}</p>
-      </div>
-      <div class="prof-item">
-        <h2>目標</h2>
-        <p>{{ UserInfo.FinalGoal }}</p>
-      </div>
-      <div class="prof-item">
-        <h2>自由プロフィール</h2>
-        <p>{{ UserInfo.Profile }}</p>
-      </div>
-      <div class="prof-item">
-        <h2>Twitter</h2>
-        <p>{{ UserInfo.Twitter }}</p>
-      </div>
-      <div class="prof-item">
-        <h2>Instagram</h2>
-        <p>{{ UserInfo.Instagram }}</p>
-      </div>
-      <div class="prof-item">
-        <h2>Facebook</h2>
-        <p>{{ UserInfo.Facebook }}</p>
-      </div>
-      <div class="prof-item">
-        <h2>Github</h2>
-        <p>{{ UserInfo.Github }}</p>
-      </div>
-      <div class="prof-item">
-        <h2>その他URL</h2>
-        <p>{{ UserInfo.URL }}</p>
-      </div>
-      <b-button :pressed="false" variant="info" class="edit-profile"
-        >編集する</b-button
-      >
+        <b-form-group id="input-group-2" label="目標：" label-for="input-2">
+          <b-form-input
+            id="final-goal"
+            v-model="UserInfo.FinalGoal"
+          ></b-form-input>
+        </b-form-group>
+
+        <b-form-group
+          id="input-group-3"
+          label="自由プロフィール："
+          label-for="input-3"
+        >
+          <b-form-textarea
+            id="free-profile"
+            v-model="UserInfo.Profile"
+            rows="5"
+          ></b-form-textarea>
+        </b-form-group>
+
+        <b-form-group id="input-group-4" label="Twitter：" label-for="input-2">
+          <b-form-input
+            id="handle-name"
+            v-model="UserInfo.Twitter"
+          ></b-form-input>
+        </b-form-group>
+
+        <b-form-group
+          id="input-group-5"
+          label="Instagram："
+          label-for="input-2"
+        >
+          <b-form-input
+            id="handle-name"
+            v-model="UserInfo.Instagram"
+          ></b-form-input>
+        </b-form-group>
+
+        <b-form-group id="input-group-6" label="Facebook：" label-for="input-2">
+          <b-form-input
+            id="handle-name"
+            v-model="UserInfo.Facebook"
+          ></b-form-input>
+        </b-form-group>
+
+        <b-form-group id="input-group-7" label="GitHub：" label-for="input-2">
+          <b-form-input
+            id="handle-name"
+            v-model="UserInfo.Github"
+          ></b-form-input>
+        </b-form-group>
+
+        <b-form-group
+          id="input-group-8"
+          label="その他URL："
+          label-for="input-2"
+        >
+          <b-form-input id="handle-name" v-model="UserInfo.URL"></b-form-input>
+        </b-form-group>
+
+        <b-button type="submit" variant="primary">Submit</b-button>
+      </b-form>
     </div>
   </div>
 </template>
@@ -66,6 +96,9 @@ export default {
         URL: "http://cat.com/",
       },
     };
+  },
+  methods: {
+    SubmitProf() {},
   },
 };
 </script>
