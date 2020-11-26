@@ -108,3 +108,21 @@ func DeleteMembership(c *gin.Context) {
 	c.Redirect(302, "/todo")
 
 }
+
+func AdminFlag(c *gin.Context) {
+	session := sessions.Default(c)
+
+	name := session.Get("name")
+	password := session.Get("password")
+
+	flag := true
+
+	if name == nil || password == nil {
+		flag = false
+	}
+
+	c.JSON(200, gin.H{
+		"LoginFlag": flag,
+	})
+
+}
