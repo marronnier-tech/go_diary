@@ -8,7 +8,11 @@
       </p>
     </div>
     <ul>
-      <li class="todo-set todo-goal" v-for="goal in goals.GoalObj" :key="goal.GoalIndex">
+      <li
+        class="todo-set todo-goal"
+        v-for="goal in goals.GoalObj"
+        :key="goal.GoalIndex"
+      >
         <h3 class="content">
           <div class="award-line">
             <b-icon icon="award" class="award"></b-icon>{{ goal.Content }}
@@ -27,6 +31,8 @@
     <b-button :pressed="false" variant="info" class="add-todo"
       >日課をゴールする!</b-button
     >
+    <br />
+    ※メンテナンス中
   </div>
 </template>
 

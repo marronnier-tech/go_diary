@@ -3,7 +3,6 @@
     <div class="top-copy">
       <h1>みんなの日課</h1>
       <p>同志を探そう！</p>
-      {{ todos }}
     </div>
 
     <ul>
