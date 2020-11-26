@@ -1,8 +1,7 @@
 <template>
   <div class="mypage">
     <div class="top-copy">
-      <h1>Hello, {{ todos.User.UserName }}!</h1>
-      <p>あなたの今の日課はこちらです。</p>
+      <h1>{{ todos.User.UserName }}の日課</h1>
     </div>
     <ul>
       <li class="todo-set" v-for="todo in todos.TodoObj" :key="todo.TodoIndex">
@@ -11,9 +10,6 @@
             <b-icon icon="bookmark-star-fill" class="check"></b-icon
             >{{ todo.Content }}
           </h4>
-          <b-button variant="info" class="yatta" v-on:click="Yatta(todo.TodoID)"
-            >Yatta!</b-button
-          >
         </div>
         <div class="achieved-info">
           <p class="count">実行日数：{{ todo.Count }}日</p>
@@ -23,21 +19,6 @@
       </li>
     </ul>
     <br />
-    今日も一日頑張りましょう！<br />
-    <br />
-    <div class="todo-add">
-      <h2>日課を追加する</h2>
-      <div class="add-form">
-        <b-form @submit.prevent="AddTodo">
-          <b-form-input
-            id="content"
-            placeholder="新しい日課"
-            v-model="content"
-          ></b-form-input>
-          <b-button variant="info" type="submit">追加</b-button>
-        </b-form>
-      </div>
-    </div>
   </div>
 </template>
 
@@ -61,36 +42,18 @@ export default {
       content: "",
     };
   },
+  computed: {
+    id: function () {
+      return this.$route.params.id;
+    },
+  },
   mounted: function () {
-    axios.get("/mypage").then((res) => {
+    axios.get("/todo/" + this.id).then((res) => {
       this.todos = res.data.Todo;
       console.log(res);
     });
   },
-  methods: {
-    AddTodo() {
-      const params = new URLSearchParams();
-      params.append("content", this.content);
-      axios
-        .post("/mypage", params)
-        .then((postres) => {
-          axios.get("/mypage").then((res) => {
-            this.todos = res.data.Todo;
-          });
-        })
-        .catch((error) => {
-          alert("同じ日課が既に登録されています");
-          console.log(error);
-        });
-    },
-    Yatta(todo_id) {
-      axios.post("mypage/" + todo_id + "/today").then((postres) => {
-        axios.get("/mypage").then((res) => {
-          this.todos = res.data.Todo;
-        });
-      });
-    },
-  },
+  methods: {},
 };
 </script>
 

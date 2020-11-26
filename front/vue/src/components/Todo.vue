@@ -12,7 +12,10 @@
       >
         <p class="user">
           <b-icon icon="person-circle" class="user-icon"></b-icon
-          >{{ todo.User.UserName }}
+          ><router-link
+            :to="{ name: 'Users', params: { id: todo.User.UserName } }"
+            >{{ todo.User.UserName }}</router-link
+          >
         </p>
         <h4 class="content">{{ todo.TodoObj.Content }}</h4>
         <div class="achieved-info">

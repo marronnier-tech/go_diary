@@ -7,6 +7,7 @@ import Profile from '@/components/Profile'
 import EditProfile from '@/components/EditProfile'
 import MyGoal from '@/components/MyGoal'
 import Mypage from '@/components/Mypage'
+import Users from '@/components/UsersTodo'
 import Login from '@/components/Login'
 import Register from '@/components/Register'
 import Logout from '@/components/Logout'
@@ -56,6 +57,11 @@ export default new Router({
           path: '/logout',
           name: 'Logout',
           component: Logout
+        },
+        {
+          path: '/user/:id',
+          name: 'Users',
+          component: Users
         }
       ]
     },

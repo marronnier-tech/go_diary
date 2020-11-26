@@ -6,7 +6,6 @@
       <label for="name" class="sr-only">ユーザー名</label>
       <input
         v-model="name"
-        type="name"
         id="name"
         class="form-control"
         placeholder="ユーザー名"
