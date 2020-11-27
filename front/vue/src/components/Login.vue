@@ -1,32 +1,64 @@
 <template>
-  <div class="hello">Login!</div>
+  <div class="login userAdmin">
+    <form class="form-signin" @submit.prevent="submitForm">
+      <!-- <img class="mb-4" src="" alt="" width="72" height="72" /> -->
+      <h1 class="h3 mb-3 font-weight-normal">ログインする</h1>
+      <label for="name" class="sr-only">ユーザー名</label>
+      <input
+        v-model="name"
+        id="name"
+        class="form-control"
+        placeholder="ユーザー名"
+        required
+        autofocus
+      />
+      <label for="password" class="sr-only">パスワード</label>
+      <input
+        v-model="password"
+        type="password"
+        id="password"
+        class="form-control"
+        placeholder="パスワード"
+        required
+      />
+      <button class="btn btn-lg btn-primary btn-block" type="submit">
+        ログイン</button
+      ><br />
+
+      <p>あるいは<router-link to="register">登録する</router-link></p>
+    </form>
+  </div>
 </template>
 
 <script>
+import axios from "axios";
 export default {
-  name: "Login",
   data() {
     return {
-      msg: "Welcome to Your Vue.js App",
+      name: "",
+      password: "",
     };
+  },
+  methods: {
+    submitForm() {
+      const params = new URLSearchParams();
+      params.append("name", this.name);
+      params.append("password", this.password);
+      axios
+        .post("/login", params)
+        .then((res) => {
+          this.$router.push({ name: "Mypage" });
+        })
+        .catch((error) => {
+          alert("ユーザー名もしくはパスワードが違います");
+        });
+    },
   },
 };
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
-h1,
-h2 {
-  font-weight: normal;
-}
-ul {
-  list-style-type: none;
-  padding: 0;
-}
-li {
-  display: inline-block;
-  margin: 0 10px;
-}
 a {
   color: #42b983;
 }

@@ -5,16 +5,57 @@
 const path = require('path')
 
 module.exports = {
+  devServer: {
+    proxy: 'http://localhost:8080'
+  },
   dev: {
-
     // Paths
     assetsSubDirectory: 'static',
     assetsPublicPath: '/',
     proxyTable: {},
 
     // Various Dev Server settings
+
+    env: require('./dev.env'),
+    port: 4200,// can be overwritten by process.env.PORT, if port is in use, a free one will be determined
+    assetsSubDirectory: 'static',
+    assetsPublicPath: '/',
+    proxyTable: {
+      '/todo': {
+        target: 'http://localhost:8080',
+        changeOrigin: true
+      },
+      '/goal': {
+        target: 'http://localhost:8080',
+        changeOrigin: true
+      },
+      '/profile': {
+        target: 'http://localhost:8080',
+        changeOrigin: true
+      },
+      '/mypage': {
+        target: 'http://localhost:8080',
+        changeOrigin: true
+      },
+      '/login': {
+        target: 'http://localhost:8080',
+        changeOrigin: true
+      },
+      '/logout': {
+        target: 'http://localhost:8080',
+        changeOrigin: true
+      },
+      '/register': {
+        target: 'http://localhost:8080',
+        changeOrigin: true
+      },
+      '/adminflag': {
+        target: 'http://localhost:8080',
+        changeOrigin: true
+      },
+    },
     host: 'localhost', // can be overwritten by process.env.HOST
-    port: 8080, // can be overwritten by process.env.PORT, if port is in use, a free one will be determined
+    // port: 8080,
     autoOpenBrowser: false,
     errorOverlay: true,
     notifyOnErrors: true,

@@ -58,6 +58,7 @@ func main() {
 
 	r.POST("/login", ui.Login)
 	r.DELETE("/logout", ui.Logout)
+	r.GET("/adminflag", ui.AdminFlag)
 
 	r.DELETE("/delete", ui.DeleteMembership)
 

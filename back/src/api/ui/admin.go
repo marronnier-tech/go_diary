@@ -1,6 +1,8 @@
 package ui
 
 import (
+	"errors"
+
 	"../app/admin"
 
 	"github.com/gin-contrib/sessions"
@@ -15,7 +17,10 @@ func SessionLogin(c *gin.Context) (id int, user string, err error) {
 	password := session.Get("password")
 
 	if name == nil || password == nil {
-		c.Redirect(302, "/todo")
+		err = errors.New("not found")
+		c.JSON(404, err.Error)
+		c.Abort()
+		return
 	}
 
 	strname := name.(string)
@@ -25,6 +30,7 @@ func SessionLogin(c *gin.Context) (id int, user string, err error) {
 
 	if err != nil {
 		c.JSON(500, gin.H{"error": err.Error()})
+		c.Abort()
 	}
 	return
 }
@@ -47,7 +53,8 @@ func Login(c *gin.Context) {
 	session.Set("password", password)
 	session.Save()
 
-	c.Redirect(302, "/mypage")
+	// c.Redirect(302, "/mypage")
+	c.JSON(201, nil)
 	return
 
 }
@@ -99,5 +106,23 @@ func DeleteMembership(c *gin.Context) {
 	})
 
 	c.Redirect(302, "/todo")
+
+}
+
+func AdminFlag(c *gin.Context) {
+	session := sessions.Default(c)
+
+	name := session.Get("name")
+	password := session.Get("password")
+
+	flag := true
+
+	if name == nil || password == nil {
+		flag = false
+	}
+
+	c.JSON(200, gin.H{
+		"LoginFlag": flag,
+	})
 
 }
