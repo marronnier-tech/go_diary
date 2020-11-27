@@ -23,6 +23,7 @@ type TodoAchievedLog struct {
 	ID           int         `gorm:"column:id; autoIncrement"`
 	TodoID       int         `gorm:"column:todo_id"`
 	AchievedDate pq.NullTime `gorm:"column:achieved_date"`
+	IsDeleted    bool        `gorm:"column:is_deleted;default:false"`
 }
 
 // ゴールログ

@@ -34,4 +34,8 @@ footer {
   margin: 10px 0px 0px 0px;
   padding: 30px 0px 20px 30px;
 }
+
+a {
+  color: #42b983;
+}
 </style>

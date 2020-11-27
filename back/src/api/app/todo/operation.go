@@ -167,7 +167,9 @@ func ToPutAchieve(todoid int, userid int) (out OperationView, err error) {
 		return
 	}
 
-	todo.LastAchieved = pq.NullTime{Time: time.Now(), Valid: true}
+	nowAchieved := pq.NullTime{Time: time.Now(), Valid: true}
+
+	todo.LastAchieved = nowAchieved
 	todo.Count++
 
 	if err = tx.Save(&todo).Error; err != nil {
@@ -175,14 +177,38 @@ func ToPutAchieve(todoid int, userid int) (out OperationView, err error) {
 		return
 	}
 
-	data := table.TodoAchievedLog{
-		TodoID:       todoid,
-		AchievedDate: pq.NullTime{Time: time.Now(), Valid: true},
+	var lastlog table.TodoAchievedLog
+	updateFlag := false
+
+	if todo.LastAchieved.Valid {
+		tx.Table("todo_achieved_logs").
+			Where("todo_id = ?", todoid).
+			Order("achieved_date desc").First(&lastlog)
+
+		if timecalc.PickDate(lastlog.AchievedDate.Time) == timecalc.PickDate(time.Now()) {
+			updateFlag = true
+			if err = tx.Model(&lastlog).Updates(map[string]interface{}{
+				"todo_id":       todoid,
+				"achieved_date": nowAchieved,
+				"is_deleted":    false,
+			}).Error; err != nil {
+				return
+			}
+		}
+
 	}
 
-	if err = tx.Create(&data).Error; err != nil {
-		tx.Rollback()
-		return
+	if !updateFlag {
+		data := table.TodoAchievedLog{
+			TodoID:       todoid,
+			AchievedDate: nowAchieved,
+		}
+
+		if err = tx.Create(&data).Error; err != nil {
+			tx.Rollback()
+			return
+		}
+
 	}
 
 	out = OperationView{
@@ -190,7 +216,7 @@ func ToPutAchieve(todoid int, userid int) (out OperationView, err error) {
 		IsDeleted:     false,
 		Content:       todo.Content,
 		CreatedAt:     timecalc.PickDate(todo.CreatedAt),
-		LastAchieved:  timecalc.PickDate(data.AchievedDate.Time),
+		LastAchieved:  timecalc.PickDate(nowAchieved.Time),
 		Count:         todo.Count,
 		TodayAchieved: true,
 	}
@@ -225,7 +251,7 @@ func ToClearAchieve(todoid int, userid int) (out OperationView, err error) {
 		return
 	}
 
-	if todo.LastAchieved.Time.YearDay() != time.Now().YearDay() {
+	if (timecalc.PickDate(todo.LastAchieved.Time) != timecalc.PickDate(time.Now())) || (todo.LastAchieved.Valid == false) {
 		err = errors.New("今日のToDoは完了していないため、何も処理をしていません")
 		tx.Rollback()
 		return
@@ -236,11 +262,16 @@ func ToClearAchieve(todoid int, userid int) (out OperationView, err error) {
 	var dellog table.TodoAchievedLog
 
 	err = tx.Table("todo_achieved_logs").
-		Where("todo_id = ?", todoid).
+		Where("todo_id = ? and is_deleted = ?", todoid, false).
 		Order("achieved_date desc").
-		Limit(1).
-		Delete(&dellog).
-		Error
+		First(&dellog).Error
+
+	if err != nil {
+		tx.Rollback()
+		return
+	}
+
+	err = tx.Model(&dellog).Update("is_deleted", true).Error
 
 	if err != nil {
 		tx.Rollback()
@@ -250,7 +281,7 @@ func ToClearAchieve(todoid int, userid int) (out OperationView, err error) {
 	var counter int64
 
 	err = tx.Table("todo_achieved_logs").
-		Where("todo_id = ?", todoid).
+		Where("todo_id = ? and is_deleted = ?", todoid, false).
 		Count(&counter).
 		Error
 
@@ -269,7 +300,7 @@ func ToClearAchieve(todoid int, userid int) (out OperationView, err error) {
 		var lastlog table.TodoAchievedLog
 
 		err = tx.Table("todo_achieved_logs").
-			Where("todo_id = ?", todoid).
+			Where("todo_id = ? and is_deleted = ?", todoid, false).
 			Order("achieved_date desc").
 			First(&lastlog).
 			Error

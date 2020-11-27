@@ -13,7 +13,7 @@ func DifftoNow(previous pq.NullTime) (res domain.AchieveInfo) {
 
 	res.Today = false
 
-	if previous.Valid == false {
+	if !previous.Valid {
 		res.Last = "達成日はありません"
 		return
 	}
