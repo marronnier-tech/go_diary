@@ -1,7 +1,7 @@
 # デプロイの都合によりレポジトリを移動しました。
 以降は以下で更新しています。
-- [バックエンド](https://github.com/todot-com-api)
-- [フロントエンド](https://github.com/todot-com-front)
+- [バックエンド](https://github.com/tocchy-tocchy/todot-com-api)
+- [フロントエンド](https://github.com/tocchy-tocchy/todot-com-front)
 
 # 目次
 - [API一覧](#API一覧)
